@@ -18,7 +18,10 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
-    staticDir: path.resolve(dirname, "../../public/media"),
+    // Local dev only — Vercel Blob plugin handles storage when BLOB_READ_WRITE_TOKEN is set
+    ...(process.env.BLOB_READ_WRITE_TOKEN
+      ? {}
+      : { staticDir: path.resolve(dirname, "../../public/media") }),
     adminThumbnail: "thumbnail",
     imageSizes: [
       { name: "thumbnail", width: 400, height: 300, position: "centre" },

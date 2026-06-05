@@ -1,4 +1,5 @@
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import path from "path";
 import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
@@ -11,6 +12,8 @@ import { getDatabaseAdapter } from "./lib/database";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+
+const useBlobStorage = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 export default buildConfig({
   admin: {
@@ -26,5 +29,15 @@ export default buildConfig({
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
   db: getDatabaseAdapter(),
+  plugins: [
+    vercelBlobStorage({
+      enabled: useBlobStorage,
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      clientUploads: true,
+    }),
+  ],
   sharp,
 });
