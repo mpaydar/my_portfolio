@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { resume } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -11,36 +12,62 @@ export default function ResumePage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-16">
       <header className="mb-12 border-b border-border pb-10">
-        <p className="section-label mb-3">Resume</p>
-        <h1 className="mb-1 text-3xl font-bold text-foreground">
-          {resume.name}
-        </h1>
-        <p className="mb-4 font-mono text-sm text-accent">{resume.title}</p>
-        <p className="mb-6 text-lg leading-relaxed text-muted">
-          {resume.summary}
-        </p>
-        <div className="flex flex-wrap gap-x-4 gap-y-2 font-mono text-sm text-muted">
-          <a href={resume.links.email} className="transition hover:text-accent">
-            {resume.links.email.replace("mailto:", "")}
-          </a>
-          <span>{resume.phone}</span>
-          <span>{resume.location}</span>
-          <a
-            href={resume.links.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition hover:text-accent"
-          >
-            {resume.links.github.replace("https://", "")}
-          </a>
-          <a
-            href={resume.links.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition hover:text-accent"
-          >
-            {resume.links.linkedin.replace("https://", "")}
-          </a>
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10">
+          <div className="relative mx-auto shrink-0 sm:mx-0">
+            <div
+              aria-hidden
+              className="absolute -inset-2 rounded-full bg-gradient-to-br from-accent/25 via-accent/10 to-transparent blur-xl"
+            />
+            <div className="relative rounded-full bg-gradient-to-br from-accent/40 to-accent-dim/20 p-[3px] shadow-[0_0_32px_var(--glow)]">
+              <div className="relative size-28 overflow-hidden rounded-full bg-surface sm:size-32">
+                <Image
+                  src="/images/headshot.png"
+                  alt={`${resume.name} — ${resume.title}`}
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 112px, 128px"
+                  className="object-cover object-[center_15%]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="min-w-0 flex-1 text-center sm:text-left">
+            <p className="section-label mb-3">Resume</p>
+            <h1 className="mb-1 text-3xl font-bold text-foreground">
+              {resume.name}
+            </h1>
+            <p className="mb-4 font-mono text-sm text-accent">{resume.title}</p>
+            <p className="mb-6 text-lg leading-relaxed text-muted">
+              {resume.summary}
+            </p>
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 font-mono text-sm text-muted sm:justify-start">
+              <a
+                href={resume.links.email}
+                className="transition hover:text-accent"
+              >
+                {resume.links.email.replace("mailto:", "")}
+              </a>
+              <span>{resume.phone}</span>
+              <span>{resume.location}</span>
+              <a
+                href={resume.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-accent"
+              >
+                {resume.links.github.replace("https://", "")}
+              </a>
+              <a
+                href={resume.links.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-accent"
+              >
+                {resume.links.linkedin.replace("https://", "")}
+              </a>
+            </div>
+          </div>
         </div>
       </header>
 
