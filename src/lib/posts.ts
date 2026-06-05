@@ -28,41 +28,54 @@ function mapReport(doc: TechnicalReport): Post {
   };
 }
 
-export async function getPublishedReports(limit = 100): Promise<Post[]> {
-  if (!isPayloadConfigured()) return [];
+async function queryPayload<T>(query: (payload: Awaited<ReturnType<typeof getPayload>>) => Promise<T>): Promise<T | null> {
+  if (!isPayloadConfigured()) return null;
 
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "technical-reports",
-    draft: false,
-    limit,
-    sort: "-publishedAt",
-    overrideAccess: false,
-    where: {
-      _status: { equals: "published" },
-    },
+  try {
+    const payload = await getPayload({ config });
+    return await query(payload);
+  } catch (error) {
+    console.error("Payload query failed:", error);
+    return null;
+  }
+}
+
+export async function getPublishedReports(limit = 100): Promise<Post[]> {
+  const docs = await queryPayload(async (payload) => {
+    const result = await payload.find({
+      collection: "technical-reports",
+      draft: false,
+      limit,
+      sort: "-publishedAt",
+      overrideAccess: false,
+      where: {
+        _status: { equals: "published" },
+      },
+    });
+    return result.docs;
   });
 
+  if (!docs) return [];
   return docs.map((doc) => mapReport(doc as TechnicalReport));
 }
 
 export async function getReportBySlug(slug: string): Promise<Post | null> {
-  if (!isPayloadConfigured()) return null;
-
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "technical-reports",
-    draft: false,
-    limit: 1,
-    overrideAccess: false,
-    where: {
-      and: [
-        { slug: { equals: slug } },
-        { _status: { equals: "published" } },
-      ],
-    },
+  const docs = await queryPayload(async (payload) => {
+    const result = await payload.find({
+      collection: "technical-reports",
+      draft: false,
+      limit: 1,
+      overrideAccess: false,
+      where: {
+        and: [
+          { slug: { equals: slug } },
+          { _status: { equals: "published" } },
+        ],
+      },
+    });
+    return result.docs;
   });
 
-  const doc = docs[0] as TechnicalReport | undefined;
+  const doc = docs?.[0] as TechnicalReport | undefined;
   return doc ? mapReport(doc) : null;
 }

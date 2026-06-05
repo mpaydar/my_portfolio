@@ -13,6 +13,7 @@
     "generate:types": "NODE_OPTIONS=--no-deprecation payload generate:types"
   },
   "dependencies": {
+    "@payloadcms/db-postgres": "^3.85.0",
     "@payloadcms/db-sqlite": "^3.85.0",
     "@payloadcms/next": "^3.85.0",
     "@payloadcms/richtext-lexical": "^3.85.0",

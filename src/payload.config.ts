@@ -1,4 +1,3 @@
-import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import path from "path";
 import { buildConfig } from "payload";
@@ -7,6 +6,7 @@ import sharp from "sharp";
 
 import { TechnicalReports } from "./collections/TechnicalReports";
 import { Users } from "./collections/Users";
+import { getDatabaseAdapter } from "./lib/database";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -24,10 +24,6 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
-  db: sqliteAdapter({
-    client: {
-      url: process.env.DATABASE_URL || "file:./payload.db",
-    },
-  }),
+  db: getDatabaseAdapter(),
   sharp,
 });
