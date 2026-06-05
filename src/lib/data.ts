@@ -74,48 +74,136 @@ export const projects: Project[] = [
 ];
 
 export const resume = {
+  name: "Moe Bayat",
+  title: "DevOps & Platform Engineer | Agentic AI Systems",
+  location: "New York, NY",
+  phone: "917-434-3777",
   summary:
-    "Systems engineer focused on designing highly scalable applications, agentic software, and distributed infrastructure — across both computation and storage layers.",
-  experience: [
+    "Systems Architect and DevOps/Platform Engineer with 4+ years of experience designing high-scale, fault-tolerant infrastructure and high-velocity data pipelines. Proven expertise in architecting resilient cloud infrastructure (Azure/AWS), building automated CI/CD deployment workflows, and implementing state-driven AI agents (LangGraph) to optimize internal operations and microservices. Expert in containerized environments, infrastructure as code, and performance optimization for mission-critical platform scaling.",
+  skills: [
     {
-      role: "Senior Software Engineer",
-      company: "Your Company",
-      period: "2023 — Present",
-      highlights: [
-        "Architected agentic microservice platform serving production workloads",
-        "Designed horizontally scalable storage layer with partition-aware routing",
-        "Led distributed computation pipeline handling high-throughput event streams",
+      category: "Languages",
+      items: ["Python", "Go (channels, goroutines, concurrency)", "SQL"],
+    },
+    {
+      category: "Backend & APIs",
+      items: [
+        "FastAPI",
+        "Node.js",
+        "Django",
+        "REST API Design",
+        "WebSocket",
+        "Next.js",
       ],
     },
     {
-      role: "Software Engineer",
-      company: "Previous Company",
-      period: "2020 — 2023",
-      highlights: [
-        "Built fault-tolerant services with emphasis on observability and SLOs",
-        "Contributed to internal frameworks for distributed task execution",
+      category: "Data & Analytics",
+      items: [
+        "PostgreSQL (index tuning, partitioning)",
+        "Snowflake",
+        "Delta Lake",
+        "Databricks",
+        "Airflow DAGs",
+      ],
+    },
+    {
+      category: "Cloud",
+      items: [
+        "AWS S3",
+        "AWS Lambda",
+        "AWS CloudWatch",
+        "Azure Blob/Container",
+        "Azure Synapse",
+        "Azure Databricks",
+        "Azure Data Factory",
+        "Azure Server",
+      ],
+    },
+    {
+      category: "ETL / Pipeline Migration",
+      items: [
+        "ELT/ETL workflow design",
+        "Alteryx-to-AWS migration",
+        "Event-driven pipelines",
+        "Azure Service Bus & Event Hubs",
+      ],
+    },
+    {
+      category: "Dashboards & Forecasting",
+      items: [
+        "Data modeling for incentive structures",
+        "KPI reporting",
+        "Sales channel analytics",
+        "Real-time visualization",
+      ],
+    },
+    {
+      category: "DevOps & IaC",
+      items: [
+        "CI/CD pipelines (GitHub Actions)",
+        "Docker",
+        "Kubernetes (AKS)",
+        "Terraform",
+        "Makefile",
+        "Prometheus",
+        "Grafana",
+      ],
+    },
+    {
+      category: "AI Tooling",
+      items: [
+        "LangGraph (agent workflows, DAG execution)",
+        "Cursor",
+        "Claude",
+        "ChatGPT",
       ],
     },
   ],
-  skills: [
-    "Distributed Systems",
-    "Agentic AI / LLM Orchestration",
-    "Microservices Architecture",
-    "System Design",
-    "Kubernetes / Cloud Native",
-    "Event-Driven Architecture",
-    "Database Internals",
-    "Go / TypeScript / Python",
+  experience: [
+    {
+      role: "Founder & Full-Stack/ML Infrastructure Engineer",
+      company: "CareerLens AI",
+      period: "Jan 2026 — Present",
+      highlights: [
+        "Built a high-performance NLP parsing microservice using FastAPI, SpaCy, and Redis to classify high-velocity text processing streams.",
+        "Containerized Python microservices using Docker and deployed to Azure Kubernetes Service (AKS) with Horizontal Pod Autoscaling (HPA) and Helm charts for traffic elasticity.",
+        "Provisioned the complete Azure stack (AKS, App Service, Key Vault, Container Registry) via Terraform with remote state management in Blob Storage across multi-stage environments.",
+        "Owned GitHub Actions workflows featuring automated lint, test, and Docker build gates on PRs; instrumented microservices with Prometheus metrics and Grafana sidecars to monitor real-time inference latency.",
+        "Enforced robust API gateway security and per-user AI call quotas using Upstash rate-limiting and Next.js middleware.",
+      ],
+    },
+    {
+      role: "Data Systems Researcher",
+      company: "NJIT — Secure Data Processing Lab",
+      period: "Sep 2023 — May 2025",
+      highlights: [
+        "Architected privacy-preserving pipelines with Fully Homomorphic Encryption (FHE) for secure computation on encrypted datasets.",
+        "Designed advanced partitioning and indexing algorithms for PostgreSQL, optimizing scan performance on billion-row datasets.",
+      ],
+    },
+  ],
+  technicalProjects: [
+    {
+      title: "Autonomous Documentation & UI Agent",
+      highlights: [
+        "Engineered a cross-platform AI Agent using LangGraph DAGs to navigate software interfaces, execute multi-step microservice tasks, and interpret ambiguous user intent using OpenAI LLMs.",
+        "Optimized token usage and compute efficiency via intelligent state-saving within LangGraph, achieving cost-effective and responsive agent execution.",
+      ],
+    },
   ],
   education: [
     {
-      degree: "B.S. Computer Science",
-      school: "Your University",
-      period: "2016 — 2020",
+      degree: "M.S. in Computer Science",
+      school: "New Jersey Institute of Technology",
+    },
+    {
+      degree: "B.A. in Computer Science",
+      school: "Queens College, CUNY",
     },
   ],
   links: {
-    github: "https://github.com/mohammadbayat",
-    email: "mailto:hello@mohammadbayat.dev",
+    github: "https://github.com/mpaydar",
+    linkedin: "https://linkedin.com/in/bayattheanalyst",
+    email: "mailto:mbny30@gmail.com",
   },
 };
