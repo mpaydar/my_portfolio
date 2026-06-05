@@ -3,6 +3,8 @@ import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import { getPublishedReports } from "@/lib/posts";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Technical Posts · Mohammad Bayat",
   description:

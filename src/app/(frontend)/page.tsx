@@ -4,6 +4,8 @@ import ProjectCard from "@/components/ProjectCard";
 import { expertise, projects, resume } from "@/lib/data";
 import { getPublishedReports } from "@/lib/posts";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const featuredProjects = projects.filter((p) => p.featured);
   const recentPosts = (await getPublishedReports()).slice(0, 3);

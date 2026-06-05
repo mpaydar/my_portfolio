@@ -2,14 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import RichText from "@/components/RichText";
-import { getPublishedSlugs, getReportBySlug } from "@/lib/posts";
+import { getReportBySlug } from "@/lib/posts";
+
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
-
-export async function generateStaticParams() {
-  const slugs = await getPublishedSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

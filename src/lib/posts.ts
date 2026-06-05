@@ -12,6 +12,10 @@ export type Post = {
   content?: TechnicalReport["content"];
 };
 
+function isPayloadConfigured() {
+  return Boolean(process.env.PAYLOAD_SECRET);
+}
+
 function mapReport(doc: TechnicalReport): Post {
   return {
     slug: doc.slug,
@@ -25,6 +29,8 @@ function mapReport(doc: TechnicalReport): Post {
 }
 
 export async function getPublishedReports(limit = 100): Promise<Post[]> {
+  if (!isPayloadConfigured()) return [];
+
   const payload = await getPayload({ config });
   const { docs } = await payload.find({
     collection: "technical-reports",
@@ -41,6 +47,8 @@ export async function getPublishedReports(limit = 100): Promise<Post[]> {
 }
 
 export async function getReportBySlug(slug: string): Promise<Post | null> {
+  if (!isPayloadConfigured()) return null;
+
   const payload = await getPayload({ config });
   const { docs } = await payload.find({
     collection: "technical-reports",
@@ -57,21 +65,4 @@ export async function getReportBySlug(slug: string): Promise<Post | null> {
 
   const doc = docs[0] as TechnicalReport | undefined;
   return doc ? mapReport(doc) : null;
-}
-
-export async function getPublishedSlugs(): Promise<string[]> {
-  const payload = await getPayload({ config });
-  const { docs } = await payload.find({
-    collection: "technical-reports",
-    draft: false,
-    limit: 1000,
-    pagination: false,
-    overrideAccess: false,
-    select: { slug: true },
-    where: {
-      _status: { equals: "published" },
-    },
-  });
-
-  return docs.map((doc) => doc.slug as string);
 }
