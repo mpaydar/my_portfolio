@@ -6,7 +6,7 @@ import { getPublishedReports } from "@/lib/posts";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Technical Posts · Mohammad Bayat",
+  title: "Technical Posts · Moe Bayat",
   description:
     "Daily technical writing on distributed systems, agentic applications, and scalable architecture.",
 };
@@ -17,21 +17,19 @@ export default async function PostsPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
       <header className="mb-12">
-        <h1 className="mb-3 text-3xl font-bold text-zinc-900 dark:text-zinc-50">
+        <p className="section-label mb-3">Blog</p>
+        <h1 className="mb-3 text-3xl font-bold text-foreground">
           Technical Posts
         </h1>
-        <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
+        <p className="max-w-2xl text-muted">
           Daily notes and deep dives on distributed systems, agentic
           microservices, and the engineering decisions behind scalable software.
         </p>
       </header>
       {posts.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900">
+        <p className="card rounded-xl border-dashed p-8 text-center text-sm text-muted">
           No posts yet. Create your first technical report in the{" "}
-          <Link
-            href="/admin"
-            className="text-emerald-600 underline dark:text-emerald-400"
-          >
+          <Link href="/admin" className="text-accent underline">
             Payload admin
           </Link>
           .

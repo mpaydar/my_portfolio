@@ -15,7 +15,7 @@ export default function FrontendLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-screen flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       <Nav />
       <main className="flex-1">{children}</main>
       <Footer />

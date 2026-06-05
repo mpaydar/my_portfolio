@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getReportBySlug(slug);
   if (!post) return { title: "Post Not Found" };
   return {
-    title: `${post.title} · Mohammad Bayat`,
+    title: `${post.title} · Moe Bayat`,
     description: post.excerpt,
   };
 }
@@ -27,13 +27,13 @@ export default async function PostPage({ params }: Props) {
     <article className="mx-auto max-w-3xl px-6 py-16">
       <Link
         href="/posts"
-        className="mb-8 inline-block font-mono text-sm text-emerald-600 transition hover:text-emerald-500 dark:text-emerald-400"
+        className="mb-8 inline-block font-mono text-sm text-accent transition hover:text-foreground"
       >
-        ← All posts
+        ← all posts
       </Link>
-      <header className="mb-10">
-        <div className="mb-4 flex flex-wrap items-center gap-3 text-sm text-zinc-500">
-          <time dateTime={post.date} className="font-mono">
+      <header className="mb-10 border-b border-border pb-10">
+        <div className="mb-4 flex flex-wrap items-center gap-3 font-mono text-sm text-muted">
+          <time dateTime={post.date}>
             {new Date(post.date).toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
@@ -42,19 +42,19 @@ export default async function PostPage({ params }: Props) {
           </time>
           {post.readTime && (
             <>
-              <span>·</span>
-              <span className="font-mono">{post.readTime}</span>
+              <span className="text-border">·</span>
+              <span>{post.readTime}</span>
             </>
           )}
         </div>
-        <h1 className="mb-4 text-3xl font-bold leading-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="mb-4 text-3xl font-bold leading-tight text-foreground">
           {post.title}
         </h1>
         <div className="flex flex-wrap gap-2">
           {post.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-emerald-50 px-2.5 py-0.5 font-mono text-xs text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400"
+              className="rounded-full border border-border bg-surface-hover px-2.5 py-0.5 font-mono text-xs text-accent"
             >
               {tag}
             </span>
@@ -64,9 +64,7 @@ export default async function PostPage({ params }: Props) {
       {post.content ? (
         <RichText data={post.content} />
       ) : (
-        <p className="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-          {post.excerpt}
-        </p>
+        <p className="text-lg leading-relaxed text-muted">{post.excerpt}</p>
       )}
     </article>
   );

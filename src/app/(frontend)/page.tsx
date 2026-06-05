@@ -13,37 +13,30 @@ export default async function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="border-b border-zinc-200 dark:border-zinc-800">
-        <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-          <p className="mb-4 font-mono text-sm text-emerald-600 dark:text-emerald-400">
-            Systems Engineer · Distributed Systems · Agentic AI
+      <section className="relative overflow-hidden border-b border-border">
+        <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
+        <div className="relative mx-auto max-w-5xl px-6 py-24 sm:py-32">
+          <p className="section-label mb-6">
+            DevOps · Distributed Systems · Agentic AI
           </p>
-          <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">
-            Building scalable systems and agentic software
+          <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            Building systems that{" "}
+            <span className="text-accent">scale</span> and agents that{" "}
+            <span className="text-accent">reason</span>
           </h1>
-          <p className="mb-10 max-w-2xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+          <p className="mb-10 max-w-2xl text-lg leading-relaxed text-muted">
             I design highly scalable applications, develop agentic microservices,
             and work on distributed systems — across both computation and
-            storage. This is where I share projects, live demos, and daily
-            technical writing.
+            storage. Projects, live demos, and daily technical writing live here.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/projects"
-              className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-500"
-            >
-              View Projects & Demos
+            <Link href="/projects" className="btn-primary rounded-lg px-5 py-2.5 text-sm">
+              Projects & Demos
             </Link>
-            <Link
-              href="/posts"
-              className="rounded-lg border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-700 transition hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
-            >
-              Read Technical Posts
+            <Link href="/posts" className="btn-ghost rounded-lg px-5 py-2.5 text-sm">
+              Technical Posts
             </Link>
-            <Link
-              href="/resume"
-              className="rounded-lg border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-700 transition hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
-            >
+            <Link href="/resume" className="btn-ghost rounded-lg px-5 py-2.5 text-sm">
               Resume
             </Link>
           </div>
@@ -51,27 +44,22 @@ export default async function Home() {
       </section>
 
       {/* Expertise */}
-      <section className="border-b border-zinc-200 dark:border-zinc-800">
+      <section className="border-b border-border">
         <div className="mx-auto max-w-5xl px-6 py-16">
-          <h2 className="mb-2 font-mono text-xs uppercase tracking-widest text-zinc-500">
-            Focus Areas
-          </h2>
-          <p className="mb-10 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+          <p className="section-label mb-2">Focus Areas</p>
+          <h2 className="mb-10 text-2xl font-semibold text-foreground">
             What I work on
-          </p>
+          </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {expertise.map((area) => (
-              <div
-                key={area.title}
-                className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-5 dark:border-zinc-800 dark:bg-zinc-900/50"
-              >
-                <span className="mb-3 block font-mono text-lg text-emerald-600 dark:text-emerald-400">
+              <div key={area.title} className="card rounded-xl p-5">
+                <span className="mb-3 block font-mono text-lg text-accent">
                   {area.icon}
                 </span>
-                <h3 className="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">
+                <h3 className="mb-2 font-semibold text-foreground">
                   {area.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="text-sm leading-relaxed text-muted">
                   {area.description}
                 </p>
               </div>
@@ -81,22 +69,20 @@ export default async function Home() {
       </section>
 
       {/* Featured Projects */}
-      <section className="border-b border-zinc-200 dark:border-zinc-800">
+      <section className="border-b border-border">
         <div className="mx-auto max-w-5xl px-6 py-16">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <h2 className="mb-2 font-mono text-xs uppercase tracking-widest text-zinc-500">
-                Open Source & Demos
+              <p className="section-label mb-2">Open Source & Demos</p>
+              <h2 className="text-2xl font-semibold text-foreground">
+                Projects
               </h2>
-              <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-                Projects with source & live demos
-              </p>
             </div>
             <Link
               href="/projects"
-              className="hidden font-mono text-sm text-emerald-600 transition hover:text-emerald-500 sm:block dark:text-emerald-400"
+              className="hidden font-mono text-sm text-accent transition hover:text-foreground sm:block"
             >
-              View all →
+              view all →
             </Link>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -104,32 +90,24 @@ export default async function Home() {
               <ProjectCard key={project.slug} project={project} />
             ))}
           </div>
-          <Link
-            href="/projects"
-            className="mt-6 block font-mono text-sm text-emerald-600 transition hover:text-emerald-500 sm:hidden dark:text-emerald-400"
-          >
-            View all projects →
-          </Link>
         </div>
       </section>
 
       {/* Recent Posts */}
-      <section className="border-b border-zinc-200 dark:border-zinc-800">
+      <section className="border-b border-border">
         <div className="mx-auto max-w-5xl px-6 py-16">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <h2 className="mb-2 font-mono text-xs uppercase tracking-widest text-zinc-500">
-                Technical Writing
-              </h2>
-              <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+              <p className="section-label mb-2">Technical Writing</p>
+              <h2 className="text-2xl font-semibold text-foreground">
                 Recent posts
-              </p>
+              </h2>
             </div>
             <Link
               href="/posts"
-              className="hidden font-mono text-sm text-emerald-600 transition hover:text-emerald-500 sm:block dark:text-emerald-400"
+              className="hidden font-mono text-sm text-accent transition hover:text-foreground sm:block"
             >
-              All posts →
+              all posts →
             </Link>
           </div>
           {recentPosts.length > 0 ? (
@@ -139,47 +117,40 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-zinc-500">
-              Posts will appear here once you publish technical reports in{" "}
-              <Link href="/admin" className="text-emerald-600 underline">
+            <p className="text-sm text-muted">
+              Posts will appear here once you publish in{" "}
+              <Link href="/admin" className="text-accent underline">
                 Payload admin
               </Link>
               .
             </p>
           )}
-          <Link
-            href="/posts"
-            className="mt-6 block font-mono text-sm text-emerald-600 transition hover:text-emerald-500 sm:hidden dark:text-emerald-400"
-          >
-            All posts →
-          </Link>
         </div>
       </section>
 
       {/* CTA */}
       <section>
         <div className="mx-auto max-w-5xl px-6 py-16">
-          <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-8 dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="mb-2 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="card rounded-xl p-8">
+            <h2 className="mb-2 text-xl font-semibold text-foreground">
               Connect
             </h2>
-            <p className="mb-6 max-w-lg text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <p className="mb-6 max-w-lg text-sm leading-relaxed text-muted">
               Interested in distributed systems, agentic architecture, or
-              collaborating on a project? Reach out or explore my work on
-              GitHub.
+              collaborating on a project? Reach out or explore my work on GitHub.
             </p>
             <div className="flex flex-wrap gap-3">
               <a
                 href={resume.links.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg bg-zinc-900 px-5 py-2.5 font-mono text-sm text-white transition hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+                className="btn-primary rounded-lg px-5 py-2.5 font-mono text-sm"
               >
                 GitHub
               </a>
               <a
                 href={resume.links.email}
-                className="rounded-lg border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-700 transition hover:bg-white dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                className="btn-ghost rounded-lg px-5 py-2.5 text-sm"
               >
                 Email
               </a>

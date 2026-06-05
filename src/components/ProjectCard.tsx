@@ -2,21 +2,21 @@ import type { Project } from "@/lib/data";
 
 export default function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className="group flex flex-col rounded-xl border border-zinc-200 bg-white p-6 transition hover:border-emerald-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-emerald-700">
+    <article className="card group flex flex-col rounded-xl p-6">
       <div className="mb-3 flex flex-wrap gap-2">
         {project.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-full bg-zinc-100 px-2.5 py-0.5 font-mono text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+            className="rounded-full border border-border px-2.5 py-0.5 font-mono text-xs text-muted"
           >
             {tag}
           </span>
         ))}
       </div>
-      <h3 className="mb-2 text-lg font-semibold text-zinc-900 group-hover:text-emerald-700 dark:text-zinc-100 dark:group-hover:text-emerald-400">
+      <h3 className="mb-2 text-lg font-semibold text-foreground transition group-hover:text-accent">
         {project.title}
       </h3>
-      <p className="mb-5 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+      <p className="mb-5 flex-1 text-sm leading-relaxed text-muted">
         {project.description}
       </p>
       <div className="flex flex-wrap gap-3">
@@ -24,7 +24,7 @@ export default function ProjectCard({ project }: { project: Project }) {
           href={project.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-3 py-1.5 font-mono text-xs text-zinc-700 transition hover:border-emerald-400 hover:text-emerald-700 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-emerald-600 dark:hover:text-emerald-400"
+          className="btn-ghost inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs"
         >
           <GitHubIcon />
           Source
@@ -34,7 +34,7 @@ export default function ProjectCard({ project }: { project: Project }) {
             href={project.demo}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md bg-emerald-600 px-3 py-1.5 font-mono text-xs text-white transition hover:bg-emerald-500"
+            className="btn-primary inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs"
           >
             <ExternalIcon />
             Live Demo
