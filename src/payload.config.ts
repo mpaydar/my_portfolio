@@ -8,12 +8,14 @@ import sharp from "sharp";
 import { Media } from "./collections/Media";
 import { TechnicalReports } from "./collections/TechnicalReports";
 import { Users } from "./collections/Users";
+import {
+  hasBlobReadWriteToken,
+  isBlobStorageEnabled,
+} from "./lib/blob-storage";
 import { getDatabaseAdapter } from "./lib/database";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
-
-const useBlobStorage = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 export default buildConfig({
   admin: {
@@ -31,12 +33,13 @@ export default buildConfig({
   db: getDatabaseAdapter(),
   plugins: [
     vercelBlobStorage({
-      enabled: useBlobStorage,
+      enabled: isBlobStorageEnabled(),
       collections: {
         media: true,
       },
       token: process.env.BLOB_READ_WRITE_TOKEN,
-      clientUploads: true,
+      // Client uploads require BLOB_READ_WRITE_TOKEN (not OIDC-only auth).
+      clientUploads: hasBlobReadWriteToken(),
     }),
   ],
   sharp,

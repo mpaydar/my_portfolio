@@ -2,6 +2,8 @@ import type { CollectionConfig } from "payload";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { shouldUseLocalMediaFilesystem } from "@/lib/blob-storage";
+
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
@@ -18,10 +20,10 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
-    // Local dev only — Vercel Blob plugin handles storage when BLOB_READ_WRITE_TOKEN is set
-    ...(process.env.BLOB_READ_WRITE_TOKEN
-      ? {}
-      : { staticDir: path.resolve(dirname, "../../public/media") }),
+    // Never write to disk on Vercel — use Blob when BLOB_READ_WRITE_TOKEN is set.
+    ...(shouldUseLocalMediaFilesystem()
+      ? { staticDir: path.resolve(dirname, "../../public/media") }
+      : { disableLocalStorage: true }),
     adminThumbnail: "thumbnail",
     imageSizes: [
       { name: "thumbnail", width: 400, height: 300, position: "centre" },
