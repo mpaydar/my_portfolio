@@ -9,7 +9,7 @@ export default function Footer() {
         </p>
         <div className="flex items-center gap-6">
           <a
-            href={resume.links.github}
+            href="https://github.com/mpaydar"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-muted transition hover:text-accent"

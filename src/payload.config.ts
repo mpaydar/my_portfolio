@@ -4,6 +4,7 @@ import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
 import sharp from "sharp";
 
+import { Media } from "./collections/Media";
 import { TechnicalReports } from "./collections/TechnicalReports";
 import { Users } from "./collections/Users";
 import { getDatabaseAdapter } from "./lib/database";
@@ -18,7 +19,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, TechnicalReports],
+  collections: [Users, Media, TechnicalReports],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

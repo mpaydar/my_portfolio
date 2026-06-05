@@ -2,8 +2,18 @@ import {
   type JSXConvertersFunction,
   LinkJSXConverter,
   RichText as SerializeRichText,
+  UploadJSXConverter,
 } from "@payloadcms/richtext-lexical/react";
-import type { TechnicalReport } from "@/payload-types";
+import type { Media, TechnicalReport } from "@/payload-types";
+
+function isMedia(value: unknown): value is Media {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "url" in value &&
+    typeof (value as Media).url === "string"
+  );
+}
 
 const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
@@ -17,6 +27,28 @@ const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
         : `/${slug}`;
     },
   }),
+  ...UploadJSXConverter,
+  upload: ({ node }) => {
+    if (!isMedia(node.value) || !node.value.url) return null;
+    const media = node.value;
+
+    return (
+      <figure className="my-8">
+        <img
+          src={media.url!}
+          alt={media.alt || ""}
+          width={media.width ?? undefined}
+          height={media.height ?? undefined}
+          className="w-full rounded-xl border border-border"
+        />
+        {media.alt && (
+          <figcaption className="mt-2 text-center font-mono text-xs text-muted">
+            {media.alt}
+          </figcaption>
+        )}
+      </figure>
+    );
+  },
 });
 
 export default function RichText({

@@ -2,6 +2,7 @@ import {
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
+  UploadFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
@@ -42,6 +43,13 @@ export const TechnicalReports: CollectionConfig = {
         features: ({ rootFeatures }) => [
           ...rootFeatures,
           HeadingFeature({ enabledHeadingSizes: ["h1", "h2", "h3", "h4"] }),
+          UploadFeature({
+            collections: {
+              media: {
+                fields: [{ name: "alt", type: "text", label: "Alt text" }],
+              },
+            },
+          }),
           FixedToolbarFeature(),
           InlineToolbarFeature(),
         ],

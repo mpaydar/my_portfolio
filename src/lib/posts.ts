@@ -45,6 +45,7 @@ export async function getPublishedReports(limit = 100): Promise<Post[]> {
     const result = await payload.find({
       collection: "technical-reports",
       draft: false,
+      depth: 2,
       limit,
       sort: "-publishedAt",
       overrideAccess: false,
@@ -64,6 +65,7 @@ export async function getReportBySlug(slug: string): Promise<Post | null> {
     const result = await payload.find({
       collection: "technical-reports",
       draft: false,
+      depth: 2,
       limit: 1,
       overrideAccess: false,
       where: {
