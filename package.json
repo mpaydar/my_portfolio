@@ -2,26 +2,36 @@
   "name": "my-portfolio",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "NODE_OPTIONS=--no-deprecation next dev",
+    "build": "NODE_OPTIONS=--no-deprecation next build",
+    "start": "NODE_OPTIONS=--no-deprecation next start",
+    "lint": "eslint",
+    "payload": "NODE_OPTIONS=--no-deprecation payload",
+    "generate:importmap": "NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "generate:types": "NODE_OPTIONS=--no-deprecation payload generate:types"
   },
   "dependencies": {
+    "@payloadcms/db-sqlite": "^3.85.0",
+    "@payloadcms/next": "^3.85.0",
+    "@payloadcms/richtext-lexical": "^3.85.0",
+    "graphql": "^16.14.1",
+    "next": "15.5.2",
+    "payload": "^3.85.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.2"
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
