@@ -30,6 +30,6 @@ export const Media: CollectionConfig = {
       { name: "card", width: 768, height: 512, position: "centre" },
       { name: "feature", width: 1200, height: 675, position: "centre" },
     ],
-    mimeTypes: ["image/*"],
+    mimeTypes: ["image/*", "video/mp4", "video/quicktime"],
   },
 };

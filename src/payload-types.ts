@@ -89,8 +89,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'linkedin-integration': LinkedinIntegration;
+  };
+  globalsSelect: {
+    'linkedin-integration': LinkedinIntegrationSelect<false> | LinkedinIntegrationSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -237,6 +241,20 @@ export interface TechnicalReport {
    */
   readTime?: string | null;
   publishedAt?: string | null;
+  /**
+   * Optional custom LinkedIn post text. Leave blank to auto-compose from title, excerpt, and blog URL.
+   */
+  linkedInCommentary?: string | null;
+  /**
+   * Optional image or MP4 video attached to the LinkedIn post.
+   */
+  linkedInAttachment?: (number | null) | Media;
+  /**
+   * LinkedIn post URN returned by the API.
+   */
+  linkedInPostId?: string | null;
+  linkedInPostUrl?: string | null;
+  linkedInSharedAt?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -412,6 +430,11 @@ export interface TechnicalReportsSelect<T extends boolean = true> {
       };
   readTime?: T;
   publishedAt?: T;
+  linkedInCommentary?: T;
+  linkedInAttachment?: T;
+  linkedInPostId?: T;
+  linkedInPostUrl?: T;
+  linkedInSharedAt?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -455,6 +478,39 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Connect your LinkedIn account once, then share technical reports from each post in the CMS.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "linkedin-integration".
+ */
+export interface LinkedinIntegration {
+  id: number;
+  /**
+   * LinkedIn member URN used as the post author.
+   */
+  memberUrn?: string | null;
+  connectedAt?: string | null;
+  expiresAt?: string | null;
+  accessToken?: string | null;
+  refreshToken?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "linkedin-integration_select".
+ */
+export interface LinkedinIntegrationSelect<T extends boolean = true> {
+  memberUrn?: T;
+  connectedAt?: T;
+  expiresAt?: T;
+  accessToken?: T;
+  refreshToken?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

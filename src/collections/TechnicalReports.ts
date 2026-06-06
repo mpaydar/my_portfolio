@@ -9,6 +9,7 @@ import type { CollectionConfig } from "payload";
 import { slugField } from "payload";
 
 import { POST_CATEGORY_OPTIONS } from "@/lib/post-categories";
+import { getSiteUrl } from "@/lib/linkedin/config";
 
 export const TechnicalReports: CollectionConfig = {
   slug: "technical-reports",
@@ -103,6 +104,104 @@ export const TechnicalReports: CollectionConfig = {
             return value;
           },
         ],
+      },
+    },
+    {
+      type: "collapsible",
+      label: "LinkedIn",
+      admin: {
+        initCollapsed: false,
+      },
+      fields: [
+        {
+          name: "linkedInSharePanel",
+          type: "ui",
+          admin: {
+            components: {
+              Field:
+                "@/components/admin/LinkedInConnectField#ShareToLinkedInField",
+            },
+          },
+        },
+        {
+          name: "linkedInCommentary",
+          type: "textarea",
+          admin: {
+            description:
+              "Optional custom LinkedIn post text. Leave blank to auto-compose from title, excerpt, and blog URL.",
+          },
+        },
+        {
+          name: "linkedInAttachment",
+          type: "upload",
+          relationTo: "media",
+          admin: {
+            description:
+              "Optional image or MP4 video attached to the LinkedIn post.",
+          },
+        },
+        {
+          name: "linkedInPostId",
+          type: "text",
+          admin: {
+            readOnly: true,
+            description: "LinkedIn post URN returned by the API.",
+          },
+        },
+        {
+          name: "linkedInPostUrl",
+          type: "text",
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: "linkedInSharedAt",
+          type: "date",
+          admin: {
+            readOnly: true,
+            date: { pickerAppearance: "dayAndTime" },
+          },
+        },
+      ],
+    },
+  ],
+  endpoints: [
+    {
+      path: "/:id/share-linkedin",
+      method: "post",
+      handler: async (req) => {
+        if (!req.user) {
+          return Response.json({ error: "Authentication required." }, { status: 401 });
+        }
+
+        const reportId = req.routeParams?.id;
+        if (!reportId || Array.isArray(reportId)) {
+          return Response.json({ error: "Post id is required." }, { status: 400 });
+        }
+
+        try {
+          const { shareTechnicalReportToLinkedIn } = await import(
+            "@/lib/linkedin/share"
+          );
+          const result = await shareTechnicalReportToLinkedIn(
+            req.payload,
+            reportId as string | number,
+            getSiteUrl(req.url ? new URL(req.url).origin : undefined),
+          );
+
+          return Response.json({
+            message: "Post shared to LinkedIn.",
+            postId: result.postId,
+            postUrl: result.postUrl,
+            sharedAt: result.sharedAt,
+          });
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : "Failed to share to LinkedIn.";
+
+          return Response.json({ error: message }, { status: 400 });
+        }
       },
     },
   ],

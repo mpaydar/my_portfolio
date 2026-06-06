@@ -8,6 +8,7 @@ import sharp from "sharp";
 import { Media } from "./collections/Media";
 import { TechnicalReports } from "./collections/TechnicalReports";
 import { Users } from "./collections/Users";
+import { LinkedInIntegration } from "./globals/LinkedInIntegration";
 import {
   hasBlobReadWriteToken,
   isBlobStorageEnabled,
@@ -25,6 +26,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, TechnicalReports],
+  globals: [LinkedInIntegration],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
