@@ -231,6 +231,11 @@ export const recruiter = {
   slotMinutes: 20,
   /** Weekday indices (0 = Sun) when intro calls are available */
   availableDays: [1, 2, 3, 4, 5],
-  hoursLabel: "9:00 AM – 6:00 PM ET",
-  slotHours: [10, 14, 16],
+  hoursLabel: "Weekdays · 4:00 PM – 5:00 PM ET",
+  /** 20-min slots within the 4–5 PM window */
+  slotTimes: [
+    { hour: 16, minute: 0 },
+    { hour: 16, minute: 20 },
+    { hour: 16, minute: 40 },
+  ],
 };

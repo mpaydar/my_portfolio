@@ -42,6 +42,10 @@ export default async function Home() {
               Resume
             </Link>
           </div>
+          <div className="mt-8 flex items-center gap-4">
+            <span className="font-mono text-xs text-muted">Find me</span>
+            <SocialIcons />
+          </div>
         </div>
       </section>
 

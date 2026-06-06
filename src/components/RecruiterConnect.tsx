@@ -11,45 +11,49 @@ type Slot = {
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
+function getNowInTimezone() {
+  return new Date(
+    new Date().toLocaleString("en-US", { timeZone: recruiter.timezone }),
+  );
+}
+
 function getNextSlots(count: number): Slot[] {
   const slots: Slot[] = [];
-  const cursor = new Date();
-  cursor.setMinutes(0, 0, 0);
-  cursor.setHours(cursor.getHours() + 1);
+  const now = getNowInTimezone();
+  const cursor = new Date(now);
+  cursor.setHours(0, 0, 0, 0);
 
   let safety = 0;
 
   while (slots.length < count && safety < 120) {
     safety += 1;
-    cursor.setDate(cursor.getDate() + 1);
-    cursor.setHours(recruiter.slotHours[0], 0, 0, 0);
 
-    if (!recruiter.availableDays.includes(cursor.getDay())) continue;
+    if (recruiter.availableDays.includes(cursor.getDay())) {
+      for (const { hour, minute } of recruiter.slotTimes) {
+        const candidate = new Date(cursor);
+        candidate.setHours(hour, minute, 0, 0);
 
-    for (const hour of recruiter.slotHours) {
-      const candidate = new Date(cursor);
-      candidate.setHours(hour, 0, 0, 0);
+        if (candidate <= now) continue;
 
-      if (candidate <= new Date()) continue;
+        slots.push({
+          id: candidate.toISOString(),
+          label: candidate.toLocaleString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            timeZone: recruiter.timezone,
+            timeZoneName: "short",
+          }),
+          iso: candidate.toISOString(),
+        });
 
-      const label = candidate.toLocaleString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        timeZone: recruiter.timezone,
-        timeZoneName: "short",
-      });
-
-      slots.push({
-        id: candidate.toISOString(),
-        label,
-        iso: candidate.toISOString(),
-      });
-
-      if (slots.length >= count) break;
+        if (slots.length >= count) break;
+      }
     }
+
+    cursor.setDate(cursor.getDate() + 1);
   }
 
   return slots;
@@ -107,8 +111,8 @@ export default function RecruiterConnect({ compact = false }: { compact?: boolea
       </div>
 
       <p className="mb-4 text-xs leading-relaxed text-muted">
-        {recruiter.slotMinutes}-minute intro slots for hiring conversations.
-        Pick a time below or open the scheduler.
+        {recruiter.slotMinutes}-minute intro calls on weekdays between 4:00 and
+        5:00 PM ET. Pick a slot below or open the scheduler.
       </p>
 
       <div className="mb-4">
