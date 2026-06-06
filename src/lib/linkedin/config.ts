@@ -5,7 +5,6 @@ export const LINKEDIN_SCOPES = [
   "profile",
   "email",
   "w_member_social",
-  "offline_access",
 ] as const;
 
 export const LINKEDIN_AUTH_URL =
