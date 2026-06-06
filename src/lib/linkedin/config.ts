@@ -26,12 +26,14 @@ export function getLinkedInClientSecret(): string {
 }
 
 export function getSiteUrl(origin?: string): string {
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
-  }
-
+  // Prefer the live request origin so OAuth redirect URIs match the domain
+  // the user is on (avoids localhost env vars breaking production OAuth).
   if (origin) {
     return origin.replace(/\/$/, "");
+  }
+
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
   }
 
   return "http://localhost:3000";
