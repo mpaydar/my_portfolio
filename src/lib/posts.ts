@@ -1,12 +1,18 @@
 import config from "@payload-config";
 import { getPayload } from "payload";
 import type { TechnicalReport } from "@/payload-types";
+import {
+  getPostCategoryLabel,
+  type PostCategory,
+} from "@/lib/post-categories";
 
 export type Post = {
   slug: string;
   title: string;
   excerpt: string;
   date: string;
+  category: PostCategory;
+  categoryLabel: string;
   tags: string[];
   readTime: string;
   content?: TechnicalReport["content"];
@@ -17,11 +23,15 @@ function isPayloadConfigured() {
 }
 
 function mapReport(doc: TechnicalReport): Post {
+  const category = (doc.category ?? "core-coding-intuition") as PostCategory;
+
   return {
     slug: doc.slug,
     title: doc.title,
     excerpt: doc.excerpt,
     date: doc.publishedAt || doc.createdAt,
+    category,
+    categoryLabel: getPostCategoryLabel(category) ?? category,
     tags: (doc.tags ?? []).map((t) => t.tag),
     readTime: doc.readTime || "",
     content: doc.content,

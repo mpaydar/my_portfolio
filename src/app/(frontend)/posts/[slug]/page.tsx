@@ -33,6 +33,13 @@ export default async function PostPage({ params }: Props) {
       </Link>
       <header className="mb-10 border-b border-border pb-10">
         <div className="mb-4 flex flex-wrap items-center gap-3 font-mono text-sm text-muted">
+          <Link
+            href={`/posts#${post.category}`}
+            className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs text-accent transition hover:border-accent"
+          >
+            {post.categoryLabel}
+          </Link>
+          <span className="text-border">·</span>
           <time dateTime={post.date}>
             {new Date(post.date).toLocaleDateString("en-US", {
               year: "numeric",

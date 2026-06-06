@@ -8,11 +8,13 @@ import {
 import type { CollectionConfig } from "payload";
 import { slugField } from "payload";
 
+import { POST_CATEGORY_OPTIONS } from "@/lib/post-categories";
+
 export const TechnicalReports: CollectionConfig = {
   slug: "technical-reports",
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "publishedAt", "updatedAt"],
+    defaultColumns: ["title", "category", "publishedAt", "updatedAt"],
     description:
       "Daily technical reports — distributed systems, agentic apps, and scalable architecture.",
     group: "Content",
@@ -33,6 +35,16 @@ export const TechnicalReports: CollectionConfig = {
       required: true,
       admin: {
         description: "Short summary shown on the posts listing and home page.",
+      },
+    },
+    {
+      name: "category",
+      type: "select",
+      required: true,
+      options: POST_CATEGORY_OPTIONS,
+      admin: {
+        position: "sidebar",
+        description: "Primary focus area for this post.",
       },
     },
     {

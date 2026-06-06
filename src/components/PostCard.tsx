@@ -5,6 +5,10 @@ export default function PostCard({ post }: { post: Post }) {
   return (
     <article className="card group rounded-xl p-6">
       <div className="mb-3 flex flex-wrap items-center gap-3 font-mono text-xs text-muted">
+        <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-accent">
+          {post.categoryLabel}
+        </span>
+        <span className="text-border">·</span>
         <time dateTime={post.date}>{formatDate(post.date)}</time>
         {post.readTime && (
           <>

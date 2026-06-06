@@ -207,6 +207,10 @@ export interface TechnicalReport {
    * Short summary shown on the posts listing and home page.
    */
   excerpt: string;
+  /**
+   * Primary focus area for this post.
+   */
+  category: 'linux-docker-kubernetes' | 'cloud-exploration' | 'agent-development-tools' | 'core-coding-intuition';
   content: {
     root: {
       type: string;
@@ -398,6 +402,7 @@ export interface TechnicalReportsSelect<T extends boolean = true> {
   generateSlug?: T;
   slug?: T;
   excerpt?: T;
+  category?: T;
   content?: T;
   tags?:
     | T
