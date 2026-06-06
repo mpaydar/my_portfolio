@@ -43,32 +43,33 @@ export const expertise = [
 
 export const projects: Project[] = [
   {
-    slug: "agent-orchestrator",
-    title: "Agent Orchestrator",
+    slug: "ui-navigator-agent",
+    title: "UI-Navigator Agent",
     description:
-      "A distributed runtime for coordinating autonomous agents across microservices with event-driven handoffs and state recovery.",
-    tags: ["Agents", "Microservices", "Event-Driven"],
-    github: "https://github.com/mohammadbayat/agent-orchestrator",
-    demo: "https://demo.example.com/agent-orchestrator",
+      "Autonomous browser agent that accepts a target platform, operational goal, and task intent, then plans and executes multi-step UI workflows end to end. Designed to translate natural-language objectives into reliable, platform-specific interaction sequences without manual navigation.",
+    tags: ["Agentic AI", "LangGraph", "Browser Automation", "LLM"],
+    github: "https://github.com/mpaydar/ui-navigator-agent-v2",
+    demo: "https://agent-ui-weld.vercel.app/",
     featured: true,
   },
   {
-    slug: "shard-store",
-    title: "ShardStore",
+    slug: "resumesnap",
+    title: "ResumeSnap",
     description:
-      "Experimental distributed key-value store exploring consistent hashing, replication, and partition-aware routing.",
-    tags: ["Distributed Storage", "Systems Design"],
-    github: "https://github.com/mohammadbayat/shard-store",
+      "Career intelligence platform with a companion browser extension. SpaCy NLP resolves contextual semantics from resume content, the Gemini REST API generates stack-aligned project outlines, and Azure Whisper handles voice-to-text ingestion for hands-free input.",
+    tags: ["NLP", "SpaCy", "Gemini", "FastAPI", "Azure"],
+    github: "https://github.com/mpaydar/CareerLensAI-v2",
+    demo: "https://career-lens-ai-v2.vercel.app/",
     featured: true,
   },
   {
-    slug: "compute-mesh",
-    title: "Compute Mesh",
+    slug: "gandom-bakery-platform",
+    title: "Gandom Bakery Platform",
     description:
-      "Fault-tolerant task execution framework for spreading computation across a cluster with automatic retry and backpressure.",
-    tags: ["Distributed Computation", "Go"],
-    github: "https://github.com/mohammadbayat/compute-mesh",
-    demo: "https://demo.example.com/compute-mesh",
+      "Production e-commerce system for a local bakery with real-time admin notifications, bidirectional inventory sync between back office and storefront, Stripe payment processing, and automated inventory ingestion workflows.",
+    tags: ["Next.js", "Stripe", "Real-time", "E-commerce"],
+    github: "https://github.com/mpaydar/Official_GandomBakeryPlatform",
+    demo: "https://official-gandom-bakery-platform.vercel.app/",
     featured: true,
   },
 ];
@@ -184,10 +185,23 @@ export const resume = {
   ],
   technicalProjects: [
     {
-      title: "Autonomous Documentation & UI Agent",
+      title: "UI-Navigator Agent",
       highlights: [
-        "Engineered a cross-platform AI Agent using LangGraph DAGs to navigate software interfaces, execute multi-step microservice tasks, and interpret ambiguous user intent using OpenAI LLMs.",
-        "Optimized token usage and compute efficiency via intelligent state-saving within LangGraph, achieving cost-effective and responsive agent execution.",
+        "Built an autonomous UI agent that maps user-defined platform targets and task goals into executable browser workflows using LangGraph-orchestrated reasoning and LLM-driven action planning.",
+        "Deployed as a production web application with live demo infrastructure on Vercel, enabling end-to-end task execution across target platforms from a single intent-based interface.",
+      ],
+    },
+    {
+      title: "ResumeSnap (CareerLens AI)",
+      highlights: [
+        "Architected a FastAPI microservice stack with SpaCy NLP for contextual resume parsing, Gemini API integration for stack-aware project generation, and Azure Whisper for voice input pipelines.",
+        "Shipped a browser companion extension and full-stack platform with containerized deployment, rate-limited API gateways, and observability across inference and ingestion paths.",
+      ],
+    },
+    {
+      title: "Gandom Bakery Platform",
+      highlights: [
+        "Delivered a production e-commerce platform with Stripe checkout, real-time admin notifications, automated inventory entry, and synchronized stock levels between admin tooling and the public storefront.",
       ],
     },
   ],
