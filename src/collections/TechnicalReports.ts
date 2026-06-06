@@ -19,11 +19,27 @@ export const TechnicalReports: CollectionConfig = {
     description:
       "Daily technical reports — distributed systems, agentic apps, and scalable architecture.",
     group: "Content",
+    components: {
+      edit: {
+        beforeDocumentControls: [
+          "@/components/admin/PostQuickActions#PostQuickActions",
+        ],
+      },
+    },
   },
   access: {
     read: () => true,
   },
   fields: [
+    {
+      name: "editorDashboard",
+      type: "ui",
+      admin: {
+        components: {
+          Field: "@/components/admin/PostEditorDashboard#PostEditorDashboard",
+        },
+      },
+    },
     {
       name: "title",
       type: "text",

@@ -1,0 +1,23 @@
+/* Payload admin polish for portfolio CMS panels */
+
+.template-default__wrap {
+  .collection-list__wrap,
+  .doc-controls {
+    scroll-margin-top: 1rem;
+  }
+}
+
+.collection-edit__form {
+  .field-type.ui {
+    margin-bottom: 0.75rem;
+  }
+}
+
+.collapsible-field__wrap {
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.collapsible-field__header {
+  font-weight: 700;
+}

@@ -1,7 +1,17 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import { useDocumentInfo } from "@payloadcms/ui";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useDocumentInfo,
+  useField,
+  useFormFields,
+} from "@payloadcms/ui";
+
+import styles from "./admin-ui.module.css";
+import {
+  buildLinkedInCommentary,
+  LINKEDIN_CHAR_LIMIT,
+} from "./post-editor-utils";
 
 type OAuthSetup = {
   clientIdConfigured: boolean;
@@ -18,6 +28,24 @@ type ConnectionStatus = {
   expiresAt?: string;
   setup?: OAuthSetup;
 };
+
+type MediaValue = {
+  url?: string;
+  mimeType?: string;
+  filename?: string;
+  alt?: string;
+};
+
+function LinkedInLogo() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 114.126 0 2.062 2.062 0 01-2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+      />
+    </svg>
+  );
+}
 
 export function LinkedInConnectField() {
   const [status, setStatus] = useState<ConnectionStatus | null>(null);
@@ -88,143 +116,123 @@ export function LinkedInConnectField() {
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid var(--theme-elevation-150)",
-        borderRadius: "8px",
-        padding: "1rem",
-        display: "grid",
-        gap: "0.75rem",
-      }}
-    >
-      <div>
-        <strong>LinkedIn account</strong>
-        <p style={{ margin: "0.35rem 0 0", color: "var(--theme-elevation-600)" }}>
-          Connect once with OAuth. Payload stores the access token securely in this
-          global and uses it when you share posts from Technical Reports.
-        </p>
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <div className={styles.heroTop}>
+          <div>
+            <h3 className={styles.panelTitle}>
+              <span style={{ display: "inline-flex", gap: "0.45rem", alignItems: "center" }}>
+                <LinkedInLogo /> LinkedIn account
+              </span>
+            </h3>
+            <p className={styles.panelSubtitle}>
+              Connect once with OAuth. Tokens stay in Payload and power one-click
+              sharing from Technical Reports.
+            </p>
+          </div>
+          {!loading && status ? (
+            <span
+              className={
+                status.connected ? styles.pillSuccess : styles.pillWarning
+              }
+            >
+              {status.connected ? "Connected" : "Not connected"}
+            </span>
+          ) : null}
+        </div>
       </div>
 
-      {loading ? <p>Checking connection…</p> : null}
-      {error ? <p style={{ color: "var(--theme-error-500)" }}>{error}</p> : null}
-      {oauthError ? (
-        <div
-          style={{
-            padding: "0.75rem",
-            borderRadius: "6px",
-            background: "var(--theme-error-50)",
-            color: "var(--theme-error-500)",
-          }}
-        >
-          <strong>LinkedIn rejected the connection</strong>
-          <p style={{ margin: "0.35rem 0 0" }}>{oauthError}</p>
-          {oauthError.toLowerCase().includes("openid") ? (
-            <p style={{ margin: "0.5rem 0 0" }}>
-              Add the product{" "}
-              <strong>Sign In with LinkedIn using OpenID Connect</strong> on your
-              app&apos;s Products tab, then try again.
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-
-      {!loading && status?.setup ? (
-        <div
-          style={{
-            padding: "0.75rem",
-            borderRadius: "6px",
-            background: "var(--theme-elevation-50)",
-            fontSize: "0.9rem",
-          }}
-        >
-          <strong>OAuth setup</strong>
-          <ul style={{ margin: "0.5rem 0 0", paddingLeft: "1.2rem" }}>
-            <li>
-              Client ID:{" "}
-              {status.setup.clientIdConfigured
-                ? status.setup.clientIdPreview
-                : "Missing LINKEDIN_CLIENT_ID env var"}
-            </li>
-            <li>
-              Redirect URI: <code>{status.setup.redirectUri}</code>
-            </li>
-            <li>Scopes: {status.setup.scopes.join(", ")}</li>
-          </ul>
-          <p style={{ margin: "0.75rem 0 0" }}>
-            Required Products tab entries:
-          </p>
-          <ul style={{ margin: "0.35rem 0 0", paddingLeft: "1.2rem" }}>
-            {status.setup.requiredProducts.map((product) => (
-              <li key={product}>{product}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      {!loading && status ? (
-        <>
-          <p>
-            Status:{" "}
-            <strong>{status.connected ? "Connected" : "Not connected"}</strong>
-          </p>
-          {status.memberUrn ? (
-            <p style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>
-              {status.memberUrn}
-            </p>
-          ) : null}
-          {status.connectedAt ? (
-            <p style={{ fontSize: "0.9rem" }}>
-              Connected: {new Date(status.connectedAt).toLocaleString()}
-            </p>
-          ) : null}
-
-          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-            {!status.connected ? (
-              <button
-                type="button"
-                onClick={() => {
-                  window.location.href = "/api/linkedin/auth";
-                }}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "0.55rem 0.9rem",
-                  borderRadius: "6px",
-                  border: "none",
-                  background: "var(--theme-elevation-900)",
-                  color: "var(--theme-elevation-0)",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                Connect LinkedIn
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => void handleDisconnect()}
-                disabled={disconnecting}
-                style={{
-                  padding: "0.55rem 0.9rem",
-                  borderRadius: "6px",
-                  border: "1px solid var(--theme-elevation-300)",
-                  background: "transparent",
-                  cursor: disconnecting ? "not-allowed" : "pointer",
-                }}
-              >
-                {disconnecting ? "Disconnecting…" : "Disconnect"}
-              </button>
-            )}
+      <div className={styles.panelBody}>
+        {loading ? <p>Checking connection…</p> : null}
+        {error ? <div className={styles.alertError}>{error}</div> : null}
+        {oauthError ? (
+          <div className={styles.alertError}>
+            <strong>LinkedIn rejected the connection</strong>
+            <p style={{ margin: "0.35rem 0 0" }}>{oauthError}</p>
+            {oauthError.toLowerCase().includes("openid") ? (
+              <p style={{ margin: "0.5rem 0 0" }}>
+                Add <strong>Sign In with LinkedIn using OpenID Connect</strong> on
+                your app&apos;s Products tab.
+              </p>
+            ) : null}
           </div>
+        ) : null}
 
-          <p style={{ fontSize: "0.85rem", color: "var(--theme-elevation-600)" }}>
-            Register this exact redirect URI in LinkedIn → Auth → Authorized redirect
-            URLs: <code>{status.setup?.redirectUri ?? `${window.location.origin}/api/linkedin/callback`}</code>
-          </p>
-        </>
-      ) : null}
-    </div>
+        {!loading && status?.setup ? (
+          <div className={styles.grid2}>
+            <div className={styles.statCard}>
+              <div className={styles.statLabel}>Client ID</div>
+              <div className={styles.statValue}>
+                {status.setup.clientIdConfigured
+                  ? status.setup.clientIdPreview
+                  : "Missing env var"}
+              </div>
+            </div>
+            <div className={styles.statCard}>
+              <div className={styles.statLabel}>Redirect URI</div>
+              <div className={styles.statValue} style={{ fontSize: "0.82rem" }}>
+                <code>{status.setup.redirectUri}</code>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {!loading && status?.setup ? (
+          <div>
+            <strong>Required LinkedIn products</strong>
+            <ul className={styles.checklist} style={{ marginTop: "0.75rem" }}>
+              {status.setup.requiredProducts.map((product) => (
+                <li key={product} className={styles.checkItem}>
+                  <span className={styles.checkTodo}>•</span>
+                  <span>{product}</span>
+                </li>
+              ))}
+            </ul>
+            <p className={styles.panelSubtitle} style={{ marginTop: "0.75rem" }}>
+              Scopes: {status.setup.scopes.join(", ")}
+            </p>
+          </div>
+        ) : null}
+
+        {!loading && status ? (
+          <>
+            {status.memberUrn ? (
+              <p style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>
+                {status.memberUrn}
+              </p>
+            ) : null}
+            {status.connectedAt ? (
+              <p className={styles.panelSubtitle}>
+                Connected {new Date(status.connectedAt).toLocaleString()}
+              </p>
+            ) : null}
+
+            <div className={styles.actionsRow}>
+              {!status.connected ? (
+                <button
+                  type="button"
+                  className={styles.btnPrimary}
+                  onClick={() => {
+                    window.location.href = "/api/linkedin/auth";
+                  }}
+                >
+                  <LinkedInLogo /> Connect LinkedIn
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.btnSecondary}
+                  onClick={() => void handleDisconnect()}
+                  disabled={disconnecting}
+                >
+                  {disconnecting ? "Disconnecting…" : "Disconnect"}
+                </button>
+              )}
+            </div>
+          </>
+        ) : null}
+      </div>
+    </section>
   );
 }
 
@@ -239,6 +247,24 @@ export function ShareToLinkedInField() {
     sharedAt?: string;
   }>({});
 
+  const { value: commentary, setValue: setCommentary } = useField<string>({
+    path: "linkedInCommentary",
+  });
+
+  const form = useFormFields(([fields]) => ({
+    title: fields.title?.value as string | undefined,
+    excerpt: fields.excerpt?.value as string | undefined,
+    slug: fields.slug?.value as string | undefined,
+    status: fields._status?.value as string | undefined,
+    attachment: fields.linkedInAttachment?.value as
+      | number
+      | MediaValue
+      | null
+      | undefined,
+    linkedInPostUrl: fields.linkedInPostUrl?.value as string | undefined,
+    linkedInSharedAt: fields.linkedInSharedAt?.value as string | undefined,
+  }));
+
   useEffect(() => {
     void fetch("/api/linkedin/status", { credentials: "include" })
       .then((response) => response.json())
@@ -246,9 +272,51 @@ export function ShareToLinkedInField() {
       .catch(() => setStatus({ connected: false }));
   }, []);
 
+  const siteOrigin =
+    typeof window !== "undefined" ? window.location.origin : "";
+  const previewText = useMemo(
+    () =>
+      buildLinkedInCommentary({
+        title: form.title,
+        excerpt: form.excerpt,
+        slug: form.slug,
+        customCommentary: commentary,
+        siteOrigin,
+      }),
+    [commentary, form.excerpt, form.slug, form.title, siteOrigin],
+  );
+
+  const charCount = previewText.length;
+  const charPercent = Math.min((charCount / LINKEDIN_CHAR_LIMIT) * 100, 100);
+  const attachment =
+    form.attachment && typeof form.attachment === "object"
+      ? form.attachment
+      : null;
+
+  const canShare =
+    Boolean(id) &&
+    Boolean(status?.connected) &&
+    form.status === "published" &&
+    !sharing;
+
+  const handleGenerateCommentary = () => {
+    const generated = buildLinkedInCommentary({
+      title: form.title,
+      excerpt: form.excerpt,
+      slug: form.slug,
+      siteOrigin,
+    });
+    setCommentary(generated);
+  };
+
   const handleShare = async () => {
     if (!id || collectionSlug !== "technical-reports") {
       setError("Save the post before sharing to LinkedIn.");
+      return;
+    }
+
+    if (form.status !== "published") {
+      setError("Publish the post before sharing it to LinkedIn.");
       return;
     }
 
@@ -289,76 +357,164 @@ export function ShareToLinkedInField() {
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid var(--theme-elevation-150)",
-        borderRadius: "8px",
-        padding: "1rem",
-        display: "grid",
-        gap: "0.75rem",
-      }}
-    >
-      <div>
-        <strong>Share to LinkedIn</strong>
-        <p style={{ margin: "0.35rem 0 0", color: "var(--theme-elevation-600)" }}>
-          Uses the commentary and optional attachment below. Images and MP4 videos
-          are uploaded through LinkedIn&apos;s initialize → upload → post flow.
-        </p>
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <div className={styles.heroTop}>
+          <div>
+            <h3 className={styles.panelTitle}>
+              <span style={{ display: "inline-flex", gap: "0.45rem", alignItems: "center" }}>
+                <LinkedInLogo /> Share to LinkedIn
+              </span>
+            </h3>
+            <p className={styles.panelSubtitle}>
+              Preview your post, attach media, and publish through LinkedIn&apos;s
+              initialize → upload → post pipeline.
+            </p>
+          </div>
+          <span
+            className={
+              status?.connected ? styles.pillLinkedIn : styles.pillWarning
+            }
+          >
+            {status?.connected ? "Account connected" : "Connect account first"}
+          </span>
+        </div>
       </div>
 
-      {status && !status.connected ? (
-        <p style={{ color: "var(--theme-warning-500)" }}>
-          LinkedIn is not connected. Open{" "}
-          <button
-            type="button"
-            onClick={() => {
-              window.location.href = "/admin/globals/linkedin-integration";
-            }}
-            style={{
-              border: "none",
-              background: "transparent",
-              color: "inherit",
-              cursor: "pointer",
-              textDecoration: "underline",
-              padding: 0,
-              font: "inherit",
-            }}
-          >
-            LinkedIn Integration
-          </button>{" "}
-          first.
-        </p>
-      ) : null}
+      <div className={styles.panelBody}>
+        <div className={styles.flowSteps}>
+          <div className={styles.flowStep}>
+            <div className={styles.flowStepNumber}>1</div>
+            <div className={styles.flowStepTitle}>Initialize upload</div>
+            <div className={styles.flowStepText}>
+              Request a secure upload URL from LinkedIn for optional media.
+            </div>
+          </div>
+          <div className={styles.flowStep}>
+            <div className={styles.flowStepNumber}>2</div>
+            <div className={styles.flowStepTitle}>Upload binary</div>
+            <div className={styles.flowStepText}>
+              PUT your image or MP4 to LinkedIn&apos;s signed upload URL.
+            </div>
+          </div>
+          <div className={styles.flowStep}>
+            <div className={styles.flowStepNumber}>3</div>
+            <div className={styles.flowStepTitle}>Create post</div>
+            <div className={styles.flowStepText}>
+              POST to /rest/posts with your commentary and media URN.
+            </div>
+          </div>
+        </div>
 
-      <button
-        type="button"
-        onClick={() => void handleShare()}
-        disabled={sharing || !status?.connected || !id}
-        style={{
-          width: "fit-content",
-          padding: "0.55rem 0.9rem",
-          borderRadius: "6px",
-          border: "none",
-          background: "var(--theme-elevation-900)",
-          color: "var(--theme-elevation-0)",
-          cursor: sharing ? "not-allowed" : "pointer",
-          fontWeight: 600,
-        }}
-      >
-        {sharing ? "Sharing…" : "Share to LinkedIn"}
-      </button>
+        {!status?.connected ? (
+          <div className={styles.alertWarning}>
+            LinkedIn is not connected. Open{" "}
+            <button
+              type="button"
+              className={styles.btnGhost}
+              onClick={() => {
+                window.location.href = "/admin/globals/linkedin-integration";
+              }}
+            >
+              LinkedIn Integration
+            </button>{" "}
+            to connect your account.
+          </div>
+        ) : null}
 
-      {message ? <p style={{ color: "var(--theme-success-500)" }}>{message}</p> : null}
-      {error ? <p style={{ color: "var(--theme-error-500)" }}>{error}</p> : null}
+        {form.status !== "published" ? (
+          <div className={styles.alertWarning}>
+            Publish this report before sharing it to your LinkedIn feed.
+          </div>
+        ) : null}
 
-      {lastShare.postUrl ? (
-        <p>
-          View post:{" "}
-          <a href={lastShare.postUrl} target="_blank" rel="noreferrer">
-            {lastShare.postUrl}
-          </a>
-        </p>
-      ) : null}
-    </div>
+        <div className={styles.split}>
+          <div>
+            <div className={styles.actionsRow}>
+              <button
+                type="button"
+                className={styles.btnSecondary}
+                onClick={handleGenerateCommentary}
+              >
+                Auto-generate commentary
+              </button>
+              <button
+                type="button"
+                className={styles.btnPrimary}
+                onClick={() => void handleShare()}
+                disabled={!canShare}
+              >
+                {sharing ? "Sharing…" : "Share to LinkedIn"}
+              </button>
+            </div>
+
+            <div style={{ marginTop: "0.85rem" }}>
+              <div className={styles.heroTop}>
+                <span className={styles.panelSubtitle}>
+                  {charCount} / {LINKEDIN_CHAR_LIMIT} characters
+                </span>
+                <span
+                  className={
+                    charCount > LINKEDIN_CHAR_LIMIT * 0.9
+                      ? styles.pillWarning
+                      : styles.pillNeutral
+                  }
+                >
+                  {charCount > LINKEDIN_CHAR_LIMIT * 0.9
+                    ? "Near limit"
+                    : "Good length"}
+                </span>
+              </div>
+              <div className={styles.charMeter} style={{ marginTop: "0.5rem" }}>
+                <div
+                  className={
+                    charCount > LINKEDIN_CHAR_LIMIT * 0.9
+                      ? styles.charMeterFillWarn
+                      : styles.charMeterFill
+                  }
+                  style={{ width: `${charPercent}%` }}
+                />
+              </div>
+            </div>
+
+            {message ? <div className={styles.alertSuccess}>{message}</div> : null}
+            {error ? <div className={styles.alertError}>{error}</div> : null}
+
+            {lastShare.postUrl || form.linkedInPostUrl ? (
+              <p className={styles.panelSubtitle}>
+                <a
+                  href={lastShare.postUrl ?? form.linkedInPostUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View latest LinkedIn post ↗
+                </a>
+              </p>
+            ) : null}
+          </div>
+
+          <div className={styles.previewCard}>
+            <div className={styles.previewHeader}>
+              <div className={styles.previewAvatar}>MB</div>
+              <div>
+                <div className={styles.previewName}>Moe Bayat</div>
+                <div className={styles.previewMeta}>Just now · 🌐</div>
+              </div>
+            </div>
+            <div className={styles.previewBody}>{previewText}</div>
+            {attachment?.url ? (
+              <div className={styles.previewMedia}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={attachment.url} alt={attachment.alt ?? "LinkedIn attachment"} />
+              </div>
+            ) : attachment ? (
+              <div className={styles.previewMedia}>Media attached</div>
+            ) : (
+              <div className={styles.previewMedia}>Optional image or MP4 preview</div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
