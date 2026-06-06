@@ -17,6 +17,7 @@ type OAuthSetup = {
   clientIdConfigured: boolean;
   clientIdPreview: string | null;
   redirectUri: string;
+  apiVersion?: string;
   scopes: string[];
   requiredProducts: string[];
 };
@@ -189,7 +190,8 @@ export function LinkedInConnectField() {
               ))}
             </ul>
             <p className={styles.panelSubtitle} style={{ marginTop: "0.75rem" }}>
-              Scopes: {status.setup.scopes.join(", ")}
+              API version: {status.setup.apiVersion ?? "unknown"} · Scopes:{" "}
+              {status.setup.scopes.join(", ")}
             </p>
           </div>
         ) : null}

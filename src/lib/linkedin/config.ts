@@ -1,4 +1,5 @@
-export const LINKEDIN_API_VERSION = "202501";
+export const LINKEDIN_API_VERSION =
+  process.env.LINKEDIN_API_VERSION ?? "202604";
 export const LINKEDIN_RESTLI_VERSION = "2.0.0";
 export const LINKEDIN_SCOPES = [
   "openid",
@@ -65,6 +66,7 @@ export function getLinkedInOAuthSetup(origin?: string) {
       ? `${clientId.slice(0, 4)}…${clientId.slice(-4)}`
       : null,
     redirectUri: getLinkedInRedirectUri(origin),
+    apiVersion: LINKEDIN_API_VERSION,
     scopes: [...LINKEDIN_SCOPES],
     requiredProducts: [
       "Sign In with LinkedIn using OpenID Connect",

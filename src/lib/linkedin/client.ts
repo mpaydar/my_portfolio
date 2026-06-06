@@ -24,6 +24,32 @@ export class LinkedInApiError extends Error {
   }
 }
 
+function formatLinkedInError(
+  method: string,
+  path: string,
+  status: number,
+  body: string,
+): string {
+  let detail = body;
+
+  try {
+    const parsed = JSON.parse(body) as {
+      message?: string;
+      error?: string;
+      status?: number;
+    };
+    detail = parsed.message ?? parsed.error ?? body;
+  } catch {
+    // keep raw body
+  }
+
+  if (status === 426) {
+    return `LinkedIn API version is outdated (426). Set LINKEDIN_API_VERSION to a current YYYYMM value (e.g. 202604) in your environment. ${detail}`;
+  }
+
+  return `LinkedIn API ${method} ${path} failed (${status}): ${detail}`;
+}
+
 export async function linkedInRequest<T>({
   accessToken,
   path,
@@ -51,7 +77,7 @@ export async function linkedInRequest<T>({
 
   if (!response.ok) {
     throw new LinkedInApiError(
-      `LinkedIn API ${method} ${path} failed (${response.status})`,
+      formatLinkedInError(method, path, response.status, text),
       response.status,
       text,
     );
