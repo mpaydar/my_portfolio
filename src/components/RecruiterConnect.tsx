@@ -6,6 +6,7 @@ import { recruiter, resume } from "@/lib/data";
 type Slot = {
   id: string;
   label: string;
+  timeLabel: string;
   iso: string;
 };
 
@@ -17,46 +18,78 @@ function getNowInTimezone() {
   );
 }
 
-function getNextSlots(count: number): Slot[] {
-  const slots: Slot[] = [];
-  const now = getNowInTimezone();
-  const cursor = new Date(now);
-  cursor.setHours(0, 0, 0, 0);
+function getTodayInTimezone() {
+  return getNowInTimezone().getDay();
+}
 
-  let safety = 0;
+function getNextDateForDay(dayIndex: number, from: Date): Date {
+  const date = new Date(from);
+  date.setHours(0, 0, 0, 0);
 
-  while (slots.length < count && safety < 120) {
-    safety += 1;
+  let delta = dayIndex - date.getDay();
+  if (delta < 0) delta += 7;
 
-    if (recruiter.availableDays.includes(cursor.getDay())) {
-      for (const { hour, minute } of recruiter.slotTimes) {
-        const candidate = new Date(cursor);
-        candidate.setHours(hour, minute, 0, 0);
-
-        if (candidate <= now) continue;
-
-        slots.push({
-          id: candidate.toISOString(),
-          label: candidate.toLocaleString("en-US", {
-            weekday: "short",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "2-digit",
-            timeZone: recruiter.timezone,
-            timeZoneName: "short",
-          }),
-          iso: candidate.toISOString(),
-        });
-
-        if (slots.length >= count) break;
-      }
-    }
-
-    cursor.setDate(cursor.getDate() + 1);
+  if (delta === 0) {
+    const hasUpcomingSlot = recruiter.slotTimes.some(({ hour, minute }) => {
+      const slot = new Date(date);
+      slot.setHours(hour, minute, 0, 0);
+      return slot > from;
+    });
+    if (!hasUpcomingSlot) delta = 7;
   }
 
-  return slots;
+  date.setDate(date.getDate() + delta);
+  return date;
+}
+
+function getDefaultDay(now: Date) {
+  const today = now.getDay();
+
+  if (recruiter.availableDays.includes(today)) {
+    const hasUpcomingSlot = recruiter.slotTimes.some(({ hour, minute }) => {
+      const slot = new Date(now);
+      slot.setHours(hour, minute, 0, 0);
+      return slot > now;
+    });
+    if (hasUpcomingSlot) return today;
+  }
+
+  for (let offset = 1; offset <= 7; offset += 1) {
+    const day = (today + offset) % 7;
+    if (recruiter.availableDays.includes(day)) return day;
+  }
+
+  return recruiter.availableDays[0];
+}
+
+function getSlotsForDay(dayIndex: number, now = getNowInTimezone()): Slot[] {
+  const date = getNextDateForDay(dayIndex, now);
+
+  return recruiter.slotTimes
+    .map(({ hour, minute }) => {
+      const candidate = new Date(date);
+      candidate.setHours(hour, minute, 0, 0);
+
+      if (candidate <= now) return null;
+
+      return {
+        id: candidate.toISOString(),
+        label: candidate.toLocaleString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          timeZone: recruiter.timezone,
+        }),
+        timeLabel: candidate.toLocaleString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone: recruiter.timezone,
+          timeZoneName: "short",
+        }),
+        iso: candidate.toISOString(),
+      };
+    })
+    .filter((slot): slot is Slot => slot !== null);
 }
 
 function buildScheduleHref(slot?: Slot) {
@@ -64,10 +97,11 @@ function buildScheduleHref(slot?: Slot) {
     return resume.links.schedule;
   }
 
+  const slotText = slot ? `${slot.label} · ${slot.timeLabel}` : undefined;
   const subject = encodeURIComponent("Intro call — Moe Bayat");
-  const body = slot
+  const body = slotText
     ? encodeURIComponent(
-        `Hi Moe,\n\nI'd like to schedule a ${recruiter.slotMinutes}-minute intro call.\n\nPreferred time: ${slot.label}\n\nThanks,`,
+        `Hi Moe,\n\nI'd like to schedule a ${recruiter.slotMinutes}-minute intro call.\n\nPreferred time: ${slotText}\n\nThanks,`,
       )
     : encodeURIComponent(
         `Hi Moe,\n\nI'd like to schedule a ${recruiter.slotMinutes}-minute intro call.\n\nThanks,`,
@@ -77,11 +111,29 @@ function buildScheduleHref(slot?: Slot) {
 }
 
 export default function RecruiterConnect({ compact = false }: { compact?: boolean }) {
-  const slots = useMemo(() => getNextSlots(3), []);
-  const [selectedId, setSelectedId] = useState(slots[0]?.id ?? "");
-  const selected = slots.find((slot) => slot.id === selectedId);
+  const now = useMemo(() => getNowInTimezone(), []);
+  const defaultDay = useMemo(() => getDefaultDay(now), [now]);
+  const [selectedDay, setSelectedDay] = useState(defaultDay);
 
-  const today = new Date().getDay();
+  const slots = useMemo(
+    () => getSlotsForDay(selectedDay, now),
+    [selectedDay, now],
+  );
+
+  const [selectedId, setSelectedId] = useState(() => slots[0]?.id ?? "");
+
+  const selected =
+    slots.find((slot) => slot.id === selectedId) ?? slots[0] ?? undefined;
+
+  const today = getTodayInTimezone();
+
+  function handleDaySelect(dayIndex: number) {
+    if (!recruiter.availableDays.includes(dayIndex)) return;
+
+    setSelectedDay(dayIndex);
+    const daySlots = getSlotsForDay(dayIndex, getNowInTimezone());
+    setSelectedId(daySlots[0]?.id ?? "");
+  }
 
   return (
     <aside
@@ -112,34 +164,50 @@ export default function RecruiterConnect({ compact = false }: { compact?: boolea
 
       <p className="mb-4 text-xs leading-relaxed text-muted">
         {recruiter.slotMinutes}-minute intro calls on weekdays between 4:00 and
-        5:00 PM ET. Pick a slot below or open the scheduler.
+        5:00 PM ET. Select a day, then pick a time.
       </p>
 
       <div className="mb-4">
         <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted">
-          Weekly availability
+          Select a day
         </p>
-        <div className="flex justify-between gap-1">
+        <div className="flex justify-between gap-1" role="group" aria-label="Available weekdays">
           {DAY_LABELS.map((label, index) => {
             const available = recruiter.availableDays.includes(index);
             const isToday = today === index;
+            const isSelected = selectedDay === index;
 
             return (
-              <div
+              <button
                 key={`${label}-${index}`}
+                type="button"
+                disabled={!available}
+                onClick={() => handleDaySelect(index)}
+                aria-pressed={isSelected}
+                aria-label={
+                  available
+                    ? `${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][index]}${isToday ? ", today" : ""}`
+                    : `${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][index]}, unavailable`
+                }
                 className={`flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-2 transition ${
                   available
-                    ? "bg-accent/10 text-accent"
-                    : "bg-surface-hover/50 text-muted/40"
-                } ${isToday && available ? "ring-1 ring-accent/40" : ""}`}
+                    ? isSelected
+                      ? "bg-accent text-background shadow-[0_0_12px_var(--glow)] ring-1 ring-accent"
+                      : "cursor-pointer bg-accent/10 text-accent hover:bg-accent/20 hover:ring-1 hover:ring-accent/40"
+                    : "cursor-not-allowed bg-surface-hover/50 text-muted/40"
+                } ${isToday && available && !isSelected ? "ring-1 ring-accent/40" : ""}`}
               >
                 <span className="font-mono text-[11px] font-medium">{label}</span>
                 <span
                   className={`h-1 w-1 rounded-full ${
-                    available ? "bg-accent" : "bg-border"
+                    available
+                      ? isSelected
+                        ? "bg-background"
+                        : "bg-accent"
+                      : "bg-border"
                   }`}
                 />
-              </div>
+              </button>
             );
           })}
         </div>
@@ -150,34 +218,46 @@ export default function RecruiterConnect({ compact = false }: { compact?: boolea
 
       <div className="mb-4">
         <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted">
-          Next open slots
+          {slots.length > 0
+            ? `Pick a time · ${slots[0]?.label}`
+            : "No open slots for this day"}
         </p>
-        <div className="flex flex-col gap-2">
-          {slots.map((slot) => {
-            const active = slot.id === selectedId;
-            return (
-              <button
-                key={slot.id}
-                type="button"
-                onClick={() => setSelectedId(slot.id)}
-                className={`rounded-lg border px-3 py-2 text-left font-mono text-[11px] transition ${
-                  active
-                    ? "border-accent bg-accent/10 text-accent shadow-[0_0_12px_var(--glow)]"
-                    : "border-border bg-background text-muted hover:border-accent/40 hover:text-foreground"
-                }`}
-              >
-                {slot.label}
-              </button>
-            );
-          })}
-        </div>
+        {slots.length > 0 ? (
+          <div className="grid grid-cols-3 gap-2">
+            {slots.map((slot) => {
+              const active = slot.id === (selected?.id ?? selectedId);
+              return (
+                <button
+                  key={slot.id}
+                  type="button"
+                  onClick={() => setSelectedId(slot.id)}
+                  aria-pressed={active}
+                  className={`rounded-lg border px-2 py-2 text-center font-mono text-[10px] leading-tight transition ${
+                    active
+                      ? "border-accent bg-accent/10 text-accent shadow-[0_0_12px_var(--glow)]"
+                      : "cursor-pointer border-border bg-background text-muted hover:border-accent/40 hover:text-foreground"
+                  }`}
+                >
+                  {slot.timeLabel.replace(/ ET| EDT| EST/, "")}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="rounded-lg border border-dashed border-border px-3 py-2 text-center font-mono text-[11px] text-muted">
+            Try another weekday
+          </p>
+        )}
       </div>
 
       <a
         href={buildScheduleHref(selected)}
         target={resume.links.schedule ? "_blank" : undefined}
         rel={resume.links.schedule ? "noopener noreferrer" : undefined}
-        className="btn-primary flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium"
+        aria-disabled={!selected}
+        className={`btn-primary flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium ${
+          !selected ? "pointer-events-none opacity-50" : ""
+        }`}
       >
         {resume.links.schedule ? "Open scheduler" : "Request this time"}
         <ArrowIcon />
