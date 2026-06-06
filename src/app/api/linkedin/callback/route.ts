@@ -12,12 +12,16 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
+  const oauthErrorCode = url.searchParams.get("error");
   const oauthError = url.searchParams.get("error_description");
 
   const redirectBase = new URL(getAdminLinkedInUrl(), request.url);
 
-  if (oauthError) {
-    redirectBase.searchParams.set("linkedin_error", oauthError);
+  if (oauthErrorCode || oauthError) {
+    const message = oauthError
+      ? decodeURIComponent(oauthError.replace(/\+/g, " "))
+      : oauthErrorCode ?? "LinkedIn authorization failed.";
+    redirectBase.searchParams.set("linkedin_error", message);
     return NextResponse.redirect(redirectBase);
   }
 

@@ -1,6 +1,12 @@
 export const LINKEDIN_API_VERSION = "202501";
 export const LINKEDIN_RESTLI_VERSION = "2.0.0";
-export const LINKEDIN_SCOPES = ["openid", "profile", "w_member_social"] as const;
+export const LINKEDIN_SCOPES = [
+  "openid",
+  "profile",
+  "email",
+  "w_member_social",
+  "offline_access",
+] as const;
 
 export const LINKEDIN_AUTH_URL =
   "https://www.linkedin.com/oauth/v2/authorization";
@@ -41,6 +47,31 @@ export function getSiteUrl(origin?: string): string {
 
 export function getLinkedInRedirectUri(origin?: string): string {
   return `${getSiteUrl(origin)}/api/linkedin/callback`;
+}
+
+export function getLinkedInOAuthSetup(origin?: string) {
+  let clientId = "";
+  let clientIdConfigured = false;
+
+  try {
+    clientId = getLinkedInClientId();
+    clientIdConfigured = true;
+  } catch {
+    clientIdConfigured = false;
+  }
+
+  return {
+    clientIdConfigured,
+    clientIdPreview: clientIdConfigured
+      ? `${clientId.slice(0, 4)}…${clientId.slice(-4)}`
+      : null,
+    redirectUri: getLinkedInRedirectUri(origin),
+    scopes: [...LINKEDIN_SCOPES],
+    requiredProducts: [
+      "Sign In with LinkedIn using OpenID Connect",
+      "Share on LinkedIn",
+    ],
+  };
 }
 
 export function getAdminLinkedInUrl(): string {

@@ -3,11 +3,20 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDocumentInfo } from "@payloadcms/ui";
 
+type OAuthSetup = {
+  clientIdConfigured: boolean;
+  clientIdPreview: string | null;
+  redirectUri: string;
+  scopes: string[];
+  requiredProducts: string[];
+};
+
 type ConnectionStatus = {
   connected: boolean;
   memberUrn?: string;
   connectedAt?: string;
   expiresAt?: string;
+  setup?: OAuthSetup;
 };
 
 export function LinkedInConnectField() {
@@ -15,6 +24,19 @@ export function LinkedInConnectField() {
   const [loading, setLoading] = useState(true);
   const [disconnecting, setDisconnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [oauthError, setOauthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const linkedinError = params.get("linkedin_error");
+    if (linkedinError) {
+      setOauthError(linkedinError);
+      params.delete("linkedin_error");
+      params.delete("linkedin_connected");
+      const next = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+      window.history.replaceState({}, "", next);
+    }
+  }, []);
 
   const loadStatus = useCallback(async () => {
     setLoading(true);
@@ -85,6 +107,59 @@ export function LinkedInConnectField() {
 
       {loading ? <p>Checking connection…</p> : null}
       {error ? <p style={{ color: "var(--theme-error-500)" }}>{error}</p> : null}
+      {oauthError ? (
+        <div
+          style={{
+            padding: "0.75rem",
+            borderRadius: "6px",
+            background: "var(--theme-error-50)",
+            color: "var(--theme-error-500)",
+          }}
+        >
+          <strong>LinkedIn rejected the connection</strong>
+          <p style={{ margin: "0.35rem 0 0" }}>{oauthError}</p>
+          {oauthError.toLowerCase().includes("openid") ? (
+            <p style={{ margin: "0.5rem 0 0" }}>
+              Add the product{" "}
+              <strong>Sign In with LinkedIn using OpenID Connect</strong> on your
+              app&apos;s Products tab, then try again.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {!loading && status?.setup ? (
+        <div
+          style={{
+            padding: "0.75rem",
+            borderRadius: "6px",
+            background: "var(--theme-elevation-50)",
+            fontSize: "0.9rem",
+          }}
+        >
+          <strong>OAuth setup</strong>
+          <ul style={{ margin: "0.5rem 0 0", paddingLeft: "1.2rem" }}>
+            <li>
+              Client ID:{" "}
+              {status.setup.clientIdConfigured
+                ? status.setup.clientIdPreview
+                : "Missing LINKEDIN_CLIENT_ID env var"}
+            </li>
+            <li>
+              Redirect URI: <code>{status.setup.redirectUri}</code>
+            </li>
+            <li>Scopes: {status.setup.scopes.join(", ")}</li>
+          </ul>
+          <p style={{ margin: "0.75rem 0 0" }}>
+            Required Products tab entries:
+          </p>
+          <ul style={{ margin: "0.35rem 0 0", paddingLeft: "1.2rem" }}>
+            {status.setup.requiredProducts.map((product) => (
+              <li key={product}>{product}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {!loading && status ? (
         <>
@@ -144,8 +219,8 @@ export function LinkedInConnectField() {
           </div>
 
           <p style={{ fontSize: "0.85rem", color: "var(--theme-elevation-600)" }}>
-            Add your redirect URI in the LinkedIn Developer Portal:{" "}
-            <code>{`${window.location.origin}/api/linkedin/callback`}</code>
+            Register this exact redirect URI in LinkedIn → Auth → Authorized redirect
+            URLs: <code>{status.setup?.redirectUri ?? `${window.location.origin}/api/linkedin/callback`}</code>
           </p>
         </>
       ) : null}
