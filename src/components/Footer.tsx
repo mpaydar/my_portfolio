@@ -1,4 +1,4 @@
-import { resume } from "@/lib/data";
+import SocialIcons from "@/components/SocialIcons";
 
 export default function Footer() {
   return (
@@ -7,30 +7,7 @@ export default function Footer() {
         <p className="font-mono text-xs text-muted">
           © {new Date().getFullYear()} Moe Bayat
         </p>
-        <div className="flex items-center gap-6">
-          <a
-            href="https://github.com/mpaydar"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-muted transition hover:text-accent"
-          >
-            GitHub
-          </a>
-          <a
-            href={resume.links.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-muted transition hover:text-accent"
-          >
-            LinkedIn
-          </a>
-          <a
-            href={resume.links.email}
-            className="text-sm text-muted transition hover:text-accent"
-          >
-            Contact
-          </a>
-        </div>
+        <SocialIcons size="sm" />
       </div>
     </footer>
   );

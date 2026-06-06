@@ -218,6 +218,19 @@ export const resume = {
   links: {
     github: "https://github.com/mpaydar",
     linkedin: "https://linkedin.com/in/bayattheanalyst",
+    notebooklm:
+      process.env.NEXT_PUBLIC_NOTEBOOKLM_URL ?? "https://notebooklm.google.com/",
     email: "mailto:mbny30@gmail.com",
+    schedule: process.env.NEXT_PUBLIC_SCHEDULE_URL ?? "",
   },
+};
+
+export const recruiter = {
+  timezone: "America/New_York",
+  timezoneLabel: "Eastern Time (ET)",
+  slotMinutes: 20,
+  /** Weekday indices (0 = Sun) when intro calls are available */
+  availableDays: [1, 2, 3, 4, 5],
+  hoursLabel: "9:00 AM – 6:00 PM ET",
+  slotHours: [10, 14, 16],
 };

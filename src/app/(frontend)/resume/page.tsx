@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import RecruiterConnect from "@/components/RecruiterConnect";
+import SocialIcons from "@/components/SocialIcons";
 import { resume } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -10,7 +12,9 @@ export const metadata: Metadata = {
 
 export default function ResumePage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
+    <div className="mx-auto max-w-5xl px-6 py-16">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
+        <div className="min-w-0">
       <header className="mb-12 border-b border-border pb-10">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10">
           <div className="relative mx-auto shrink-0 sm:mx-0">
@@ -41,7 +45,7 @@ export default function ResumePage() {
             <p className="mb-6 text-lg leading-relaxed text-muted">
               {resume.summary}
             </p>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 font-mono text-sm text-muted sm:justify-start">
+            <div className="mb-6 flex flex-wrap justify-center gap-x-4 gap-y-2 font-mono text-sm text-muted sm:justify-start">
               <a
                 href={resume.links.email}
                 className="transition hover:text-accent"
@@ -50,26 +54,15 @@ export default function ResumePage() {
               </a>
               <span>{resume.phone}</span>
               <span>{resume.location}</span>
-              <a
-                href={resume.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-accent"
-              >
-                {resume.links.github.replace("https://", "")}
-              </a>
-              <a
-                href={resume.links.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-accent"
-              >
-                {resume.links.linkedin.replace("https://", "")}
-              </a>
             </div>
+            <SocialIcons className="justify-center sm:justify-start" />
           </div>
         </div>
       </header>
+
+      <div className="mb-10 lg:hidden">
+        <RecruiterConnect compact />
+      </div>
 
       <section className="mb-12">
         <h2 className="section-label mb-6">Experience</h2>
@@ -155,6 +148,12 @@ export default function ResumePage() {
           ))}
         </div>
       </section>
+        </div>
+
+        <aside className="hidden lg:block lg:sticky lg:top-24">
+          <RecruiterConnect />
+        </aside>
+      </div>
     </div>
   );
 }

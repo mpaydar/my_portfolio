@@ -1,6 +1,8 @@
 import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import ProjectCard from "@/components/ProjectCard";
+import RecruiterConnect from "@/components/RecruiterConnect";
+import SocialIcons from "@/components/SocialIcons";
 import { expertise, projects, resume } from "@/lib/data";
 import { getPublishedReports } from "@/lib/posts";
 
@@ -131,30 +133,33 @@ export default async function Home() {
       {/* CTA */}
       <section>
         <div className="mx-auto max-w-5xl px-6 py-16">
-          <div className="card rounded-xl p-8">
-            <h2 className="mb-2 text-xl font-semibold text-foreground">
-              Connect
-            </h2>
-            <p className="mb-6 max-w-lg text-sm leading-relaxed text-muted">
-              Interested in distributed systems, agentic architecture, or
-              collaborating on a project? Reach out or explore my work on GitHub.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href={resume.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary rounded-lg px-5 py-2.5 font-mono text-sm"
-              >
-                GitHub
-              </a>
-              <a
-                href={resume.links.email}
-                className="btn-ghost rounded-lg px-5 py-2.5 text-sm"
-              >
-                Email
-              </a>
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
+            <div className="card rounded-xl p-8">
+              <h2 className="mb-2 text-xl font-semibold text-foreground">
+                Connect
+              </h2>
+              <p className="mb-6 max-w-lg text-sm leading-relaxed text-muted">
+                Interested in distributed systems, agentic architecture, or
+                collaborating on a project? Find me on GitHub, LinkedIn, or
+                NotebookLM — or book a quick intro call.
+              </p>
+              <SocialIcons className="mb-6" />
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={resume.links.email}
+                  className="btn-ghost rounded-lg px-5 py-2.5 text-sm"
+                >
+                  Email
+                </a>
+                <Link
+                  href="/resume"
+                  className="btn-primary rounded-lg px-5 py-2.5 text-sm"
+                >
+                  View resume
+                </Link>
+              </div>
             </div>
+            <RecruiterConnect compact />
           </div>
         </div>
       </section>
