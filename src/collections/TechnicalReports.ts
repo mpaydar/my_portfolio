@@ -54,6 +54,18 @@ export const TechnicalReports: CollectionConfig = {
       },
     },
     {
+      name: "coverImage",
+      type: "upload",
+      relationTo: "media",
+      filterOptions: {
+        mimeType: { contains: "image" },
+      },
+      admin: {
+        description:
+          "Cover image shown on post listings and at the top of the post page.",
+      },
+    },
+    {
       name: "category",
       type: "relationship",
       relationTo: "post-categories",

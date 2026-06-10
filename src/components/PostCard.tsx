@@ -3,7 +3,22 @@ import type { Post } from "@/lib/posts";
 
 export default function PostCard({ post }: { post: Post }) {
   return (
-    <article className="card group rounded-xl p-6">
+    <article className="card group overflow-hidden rounded-xl">
+      {post.coverImage ? (
+        <Link
+          href={`/posts/${post.slug}`}
+          className="block overflow-hidden border-b border-border"
+        >
+          <img
+            src={post.coverImage.url}
+            alt={post.coverImage.alt || post.title}
+            width={post.coverImage.width ?? undefined}
+            height={post.coverImage.height ?? undefined}
+            className="aspect-[16/9] w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+          />
+        </Link>
+      ) : null}
+      <div className="p-6">
       <div className="mb-3 flex flex-wrap items-center gap-3 font-mono text-xs text-muted">
         <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-accent">
           {post.categoryLabel}
@@ -30,6 +45,7 @@ export default function PostCard({ post }: { post: Post }) {
             {tag}
           </span>
         ))}
+      </div>
       </div>
     </article>
   );

@@ -235,6 +235,10 @@ export interface TechnicalReport {
    */
   excerpt: string;
   /**
+   * Cover image shown on post listings and at the top of the post page.
+   */
+  coverImage?: (number | null) | Media;
+  /**
    * Primary focus area for this post. Create a new category if none of the existing categories fit.
    */
   category: number | PostCategory;
@@ -459,6 +463,7 @@ export interface TechnicalReportsSelect<T extends boolean = true> {
   generateSlug?: T;
   slug?: T;
   excerpt?: T;
+  coverImage?: T;
   category?: T;
   content?: T;
   tags?:

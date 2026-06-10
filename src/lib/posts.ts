@@ -1,10 +1,17 @@
 import config from "@payload-config";
 import { getPayload } from "payload";
-import type { TechnicalReport } from "@/payload-types";
+import type { Media, TechnicalReport } from "@/payload-types";
 import {
   getPostCategoryDescription,
   getPostCategoryLabel,
 } from "@/lib/post-categories";
+
+export type PostCoverImage = {
+  url: string;
+  alt: string;
+  width?: number | null;
+  height?: number | null;
+};
 
 export type Post = {
   slug: string;
@@ -14,6 +21,7 @@ export type Post = {
   category: string;
   categoryLabel: string;
   categoryDescription: string;
+  coverImage: PostCoverImage | null;
   tags: string[];
   readTime: string;
   content?: TechnicalReport["content"];
@@ -41,6 +49,28 @@ function toCategorySlug(value: string) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "") || "uncategorized"
   );
+}
+
+function resolveCoverImage(
+  coverImage: TechnicalReport["coverImage"],
+): PostCoverImage | null {
+  if (!coverImage || typeof coverImage === "number") {
+    return null;
+  }
+
+  const media = coverImage as Media;
+  const url = media.url;
+
+  if (!url) {
+    return null;
+  }
+
+  return {
+    url,
+    alt: media.alt || "",
+    width: media.width,
+    height: media.height,
+  };
 }
 
 function resolveCategory(category: CategoryValue) {
@@ -82,6 +112,7 @@ function mapReport(doc: TechnicalReport): Post {
     category: category.slug,
     categoryLabel: category.label,
     categoryDescription: category.description,
+    coverImage: resolveCoverImage(doc.coverImage),
     tags: (doc.tags ?? []).map((t) => t.tag),
     readTime: doc.readTime || "",
     content: doc.content,

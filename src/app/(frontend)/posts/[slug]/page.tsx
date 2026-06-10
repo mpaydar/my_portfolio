@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import RichText from "@/components/RichText";
+import { getSiteUrl } from "@/lib/linkedin/config";
 import { getReportBySlug } from "@/lib/posts";
 
 export const dynamic = "force-dynamic";
@@ -12,9 +13,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getReportBySlug(slug);
   if (!post) return { title: "Post Not Found" };
+
+  const coverUrl = post.coverImage
+    ? post.coverImage.url.startsWith("http")
+      ? post.coverImage.url
+      : `${getSiteUrl()}${post.coverImage.url}`
+    : undefined;
+
   return {
     title: `${post.title} · Moe Bayat`,
     description: post.excerpt,
+    openGraph: coverUrl
+      ? {
+          images: [
+            {
+              url: coverUrl,
+              alt: post.coverImage?.alt || post.title,
+            },
+          ],
+        }
+      : undefined,
   };
 }
 
@@ -57,6 +75,17 @@ export default async function PostPage({ params }: Props) {
         <h1 className="mb-4 text-3xl font-bold leading-tight text-foreground">
           {post.title}
         </h1>
+        {post.coverImage ? (
+          <div className="mb-6 overflow-hidden rounded-xl border border-border">
+            <img
+              src={post.coverImage.url}
+              alt={post.coverImage.alt || post.title}
+              width={post.coverImage.width ?? undefined}
+              height={post.coverImage.height ?? undefined}
+              className="aspect-[16/9] w-full object-cover"
+            />
+          </div>
+        ) : null}
         <div className="flex flex-wrap gap-2">
           {post.tags.map((tag) => (
             <span
