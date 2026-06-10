@@ -62,7 +62,7 @@ export const TechnicalReports: CollectionConfig = {
       },
       admin: {
         description:
-          "Cover image shown on post listings and at the top of the post page.",
+          "Hero image for cards and the post header. To place images inside the article body, use the upload button in the Content editor below.",
       },
     },
     {
@@ -80,6 +80,10 @@ export const TechnicalReports: CollectionConfig = {
       name: "content",
       type: "richText",
       required: true,
+      admin: {
+        description:
+          "Use the toolbar upload button to insert images between paragraphs inside the post body.",
+      },
       editor: lexicalEditor({
         features: ({ rootFeatures }) => [
           ...rootFeatures,

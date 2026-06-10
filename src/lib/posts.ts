@@ -5,6 +5,7 @@ import {
   getPostCategoryDescription,
   getPostCategoryLabel,
 } from "@/lib/post-categories";
+import { populateUploadNodesInContent } from "@/lib/populate-rich-text";
 
 export type PostCoverImage = {
   url: string;
@@ -101,7 +102,10 @@ function resolveCategory(category: CategoryValue) {
   };
 }
 
-function mapReport(doc: TechnicalReport): Post {
+function mapReport(
+  doc: TechnicalReport,
+  content: TechnicalReport["content"] | undefined,
+): Post {
   const category = resolveCategory(doc.category);
 
   return {
@@ -115,7 +119,7 @@ function mapReport(doc: TechnicalReport): Post {
     coverImage: resolveCoverImage(doc.coverImage),
     tags: (doc.tags ?? []).map((t) => t.tag),
     readTime: doc.readTime || "",
-    content: doc.content,
+    content,
   };
 }
 
@@ -131,8 +135,16 @@ async function queryPayload<T>(query: (payload: Awaited<ReturnType<typeof getPay
   }
 }
 
+async function mapReportWithContent(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  doc: TechnicalReport,
+): Promise<Post> {
+  const content = await populateUploadNodesInContent(payload, doc.content);
+  return mapReport(doc, content);
+}
+
 export async function getPublishedReports(limit = 100): Promise<Post[]> {
-  const docs = await queryPayload(async (payload) => {
+  const posts = await queryPayload(async (payload) => {
     const result = await payload.find({
       collection: "technical-reports",
       draft: false,
@@ -144,15 +156,17 @@ export async function getPublishedReports(limit = 100): Promise<Post[]> {
         _status: { equals: "published" },
       },
     });
-    return result.docs;
+
+    return Promise.all(
+      result.docs.map((doc) => mapReportWithContent(payload, doc as TechnicalReport)),
+    );
   });
 
-  if (!docs) return [];
-  return docs.map((doc) => mapReport(doc as TechnicalReport));
+  return posts ?? [];
 }
 
 export async function getReportBySlug(slug: string): Promise<Post | null> {
-  const docs = await queryPayload(async (payload) => {
+  return queryPayload(async (payload) => {
     const result = await payload.find({
       collection: "technical-reports",
       draft: false,
@@ -166,9 +180,8 @@ export async function getReportBySlug(slug: string): Promise<Post | null> {
         ],
       },
     });
-    return result.docs;
-  });
 
-  const doc = docs?.[0] as TechnicalReport | undefined;
-  return doc ? mapReport(doc) : null;
+    const doc = result.docs[0] as TechnicalReport | undefined;
+    return doc ? mapReportWithContent(payload, doc) : null;
+  });
 }

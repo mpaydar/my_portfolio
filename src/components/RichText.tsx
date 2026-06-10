@@ -4,15 +4,11 @@ import {
   RichText as SerializeRichText,
   UploadJSXConverter,
 } from "@payloadcms/richtext-lexical/react";
+import { resolveMediaUrl } from "@/lib/media-url";
 import type { Media, TechnicalReport } from "@/payload-types";
 
 function isMedia(value: unknown): value is Media {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "url" in value &&
-    typeof (value as Media).url === "string"
-  );
+  return typeof value === "object" && value !== null && "url" in value;
 }
 
 const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
@@ -29,23 +25,31 @@ const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
   }),
   ...UploadJSXConverter,
   upload: ({ node }) => {
-    if (!isMedia(node.value) || !node.value.url) return null;
+    if (!isMedia(node.value)) return null;
+
     const media = node.value;
+    const src = resolveMediaUrl(media.url);
+    if (!src) return null;
+
+    const alt =
+      (typeof node.fields?.alt === "string" ? node.fields.alt : "") ||
+      media.alt ||
+      "";
 
     return (
       <figure className="my-8">
         <img
-          src={media.url!}
-          alt={media.alt || ""}
+          src={src}
+          alt={alt}
           width={media.width ?? undefined}
           height={media.height ?? undefined}
           className="w-full rounded-xl border border-border"
         />
-        {media.alt && (
+        {alt ? (
           <figcaption className="mt-2 text-center font-mono text-xs text-muted">
-            {media.alt}
+            {alt}
           </figcaption>
-        )}
+        ) : null}
       </figure>
     );
   },
