@@ -8,7 +8,6 @@ import {
 import type { CollectionConfig } from "payload";
 import { slugField } from "payload";
 
-import { POST_CATEGORY_OPTIONS } from "@/lib/post-categories";
 import { getSiteUrl } from "@/lib/linkedin/config";
 
 export const TechnicalReports: CollectionConfig = {
@@ -56,12 +55,13 @@ export const TechnicalReports: CollectionConfig = {
     },
     {
       name: "category",
-      type: "select",
+      type: "relationship",
+      relationTo: "post-categories",
       required: true,
-      options: POST_CATEGORY_OPTIONS,
       admin: {
         position: "sidebar",
-        description: "Primary focus area for this post.",
+        description:
+          "Primary focus area for this post. Create a new category if none of the existing categories fit.",
       },
     },
     {

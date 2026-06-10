@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    'post-categories': PostCategory;
     'technical-reports': TechnicalReport;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -79,6 +80,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'post-categories': PostCategoriesSelect<false> | PostCategoriesSelect<true>;
     'technical-reports': TechnicalReportsSelect<false> | TechnicalReportsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -194,6 +196,27 @@ export interface Media {
   };
 }
 /**
+ * Reusable focus areas for technical reports. Add a new category here when the existing ones do not fit.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "post-categories".
+ */
+export interface PostCategory {
+  id: number;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * Optional text shown under the category heading on the posts page.
+   */
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Daily technical reports — distributed systems, agentic apps, and scalable architecture.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -212,9 +235,9 @@ export interface TechnicalReport {
    */
   excerpt: string;
   /**
-   * Primary focus area for this post.
+   * Primary focus area for this post. Create a new category if none of the existing categories fit.
    */
-  category: 'linux-docker-kubernetes' | 'cloud-exploration' | 'agent-development-tools' | 'core-coding-intuition';
+  category: number | PostCategory;
   content: {
     root: {
       type: string;
@@ -290,6 +313,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'post-categories';
+        value: number | PostCategory;
       } | null)
     | ({
         relationTo: 'technical-reports';
@@ -410,6 +437,18 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "post-categories_select".
+ */
+export interface PostCategoriesSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

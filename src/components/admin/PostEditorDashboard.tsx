@@ -18,7 +18,7 @@ export function PostEditorDashboard() {
     title: formFields.title?.value as string | undefined,
     excerpt: formFields.excerpt?.value as string | undefined,
     slug: formFields.slug?.value as string | undefined,
-    category: formFields.category?.value as string | undefined,
+    category: formFields.category?.value as string | number | undefined,
     status: formFields._status?.value as string | undefined,
     linkedInPostUrl: formFields.linkedInPostUrl?.value as string | undefined,
     linkedInSharedAt: formFields.linkedInSharedAt?.value as string | undefined,

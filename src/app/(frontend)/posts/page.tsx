@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PostCard from "@/components/PostCard";
-import { POST_CATEGORIES } from "@/lib/post-categories";
-import { getPublishedReports } from "@/lib/posts";
+import { getPublishedReports, type Post } from "@/lib/posts";
 
 export const dynamic = "force-dynamic";
 
@@ -12,13 +11,39 @@ export const metadata: Metadata = {
     "Daily technical writing on Linux, cloud platforms, agent development, and core engineering intuition.",
 };
 
+function groupPostsByCategory(posts: Post[]) {
+  const sections = new Map<
+    string,
+    {
+      value: string;
+      label: string;
+      description: string;
+      posts: Post[];
+    }
+  >();
+
+  for (const post of posts) {
+    const existing = sections.get(post.category);
+
+    if (existing) {
+      existing.posts.push(post);
+      continue;
+    }
+
+    sections.set(post.category, {
+      value: post.category,
+      label: post.categoryLabel,
+      description: post.categoryDescription,
+      posts: [post],
+    });
+  }
+
+  return Array.from(sections.values());
+}
+
 export default async function PostsPage() {
   const posts = await getPublishedReports();
-
-  const postsByCategory = POST_CATEGORIES.map((category) => ({
-    ...category,
-    posts: posts.filter((post) => post.category === category.value),
-  })).filter((section) => section.posts.length > 0);
+  const postsByCategory = groupPostsByCategory(posts);
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
@@ -50,9 +75,11 @@ export default async function PostsPage() {
                 <h2 className="text-xl font-semibold text-foreground">
                   {section.label}
                 </h2>
-                <p className="mt-1 max-w-2xl text-sm text-muted">
-                  {section.description}
-                </p>
+                {section.description ? (
+                  <p className="mt-1 max-w-2xl text-sm text-muted">
+                    {section.description}
+                  </p>
+                ) : null}
               </div>
               <div className="grid gap-6 md:grid-cols-2">
                 {section.posts.map((post) => (

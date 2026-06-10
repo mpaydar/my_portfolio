@@ -1,12 +1,12 @@
 import {
   getPostCategoryLabel,
-  type PostCategory,
+  type KnownPostCategory,
 } from "@/lib/post-categories";
 
 export const LINKEDIN_CHAR_LIMIT = 3000;
 
 export const CATEGORY_META: Record<
-  PostCategory,
+  KnownPostCategory,
   { icon: string; accent: string }
 > = {
   "linux-docker-kubernetes": { icon: "🐳", accent: "#0891b2" },
@@ -46,21 +46,25 @@ export function buildLinkedInCommentary({
   return text.slice(0, LINKEDIN_CHAR_LIMIT);
 }
 
-export function getCategoryMeta(category?: string | null) {
+export function getCategoryMeta(category?: string | number | null) {
+  if (typeof category === "number") {
+    return { icon: "📝", accent: "#64748b", label: "Category selected" };
+  }
+
   if (!category || !(category in CATEGORY_META)) {
     return { icon: "📝", accent: "#64748b", label: "Uncategorized" };
   }
 
   return {
-    ...CATEGORY_META[category as PostCategory],
-    label: getPostCategoryLabel(category as PostCategory) ?? category,
+    ...CATEGORY_META[category as KnownPostCategory],
+    label: getPostCategoryLabel(category as KnownPostCategory) ?? category,
   };
 }
 
 export function getReadinessChecks(fields: {
   title?: string;
   excerpt?: string;
-  category?: string;
+  category?: string | number;
   slug?: string;
   published?: boolean;
   linkedInConnected?: boolean;

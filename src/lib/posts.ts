@@ -2,8 +2,8 @@ import config from "@payload-config";
 import { getPayload } from "payload";
 import type { TechnicalReport } from "@/payload-types";
 import {
+  getPostCategoryDescription,
   getPostCategoryLabel,
-  type PostCategory,
 } from "@/lib/post-categories";
 
 export type Post = {
@@ -11,27 +11,77 @@ export type Post = {
   title: string;
   excerpt: string;
   date: string;
-  category: PostCategory;
+  category: string;
   categoryLabel: string;
+  categoryDescription: string;
   tags: string[];
   readTime: string;
   content?: TechnicalReport["content"];
 };
 
+type CategoryValue =
+  | TechnicalReport["category"]
+  | {
+      title?: string | null;
+      slug?: string | null;
+      description?: string | null;
+    }
+  | null
+  | undefined;
+
 function isPayloadConfigured() {
   return Boolean(process.env.PAYLOAD_SECRET);
 }
 
+function toCategorySlug(value: string) {
+  return (
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "uncategorized"
+  );
+}
+
+function resolveCategory(category: CategoryValue) {
+  if (category && typeof category === "object") {
+    const slug = category.slug || toCategorySlug(category.title || "");
+    const label = category.title || getPostCategoryLabel(slug) || slug;
+
+    return {
+      slug,
+      label,
+      description:
+        category.description || getPostCategoryDescription(slug) || "",
+    };
+  }
+
+  if (typeof category === "string") {
+    return {
+      slug: category,
+      label: getPostCategoryLabel(category) ?? category,
+      description: getPostCategoryDescription(category) ?? "",
+    };
+  }
+
+  return {
+    slug: "uncategorized",
+    label: "Uncategorized",
+    description: "",
+  };
+}
+
 function mapReport(doc: TechnicalReport): Post {
-  const category = (doc.category ?? "core-coding-intuition") as PostCategory;
+  const category = resolveCategory(doc.category);
 
   return {
     slug: doc.slug,
     title: doc.title,
     excerpt: doc.excerpt,
     date: doc.publishedAt || doc.createdAt,
-    category,
-    categoryLabel: getPostCategoryLabel(category) ?? category,
+    category: category.slug,
+    categoryLabel: category.label,
+    categoryDescription: category.description,
     tags: (doc.tags ?? []).map((t) => t.tag),
     readTime: doc.readTime || "",
     content: doc.content,

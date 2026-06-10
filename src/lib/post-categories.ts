@@ -25,17 +25,14 @@ export const POST_CATEGORIES = [
   },
 ] as const;
 
-export type PostCategory = (typeof POST_CATEGORIES)[number]["value"];
+export type KnownPostCategory = (typeof POST_CATEGORIES)[number]["value"];
 
-export const POST_CATEGORY_OPTIONS = POST_CATEGORIES.map(({ value, label }) => ({
-  label,
-  value,
-}));
-
-export function getPostCategoryLabel(value: PostCategory | string | null | undefined) {
+export function getPostCategoryLabel(value: KnownPostCategory | string | null | undefined) {
   return POST_CATEGORIES.find((c) => c.value === value)?.label ?? null;
 }
 
-export function getPostCategoryDescription(value: PostCategory | string | null | undefined) {
+export function getPostCategoryDescription(
+  value: KnownPostCategory | string | null | undefined,
+) {
   return POST_CATEGORIES.find((c) => c.value === value)?.description ?? null;
 }

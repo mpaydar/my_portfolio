@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import sharp from "sharp";
 
 import { Media } from "./collections/Media";
+import { PostCategories } from "./collections/PostCategories";
 import { TechnicalReports } from "./collections/TechnicalReports";
 import { Users } from "./collections/Users";
 import { LinkedInIntegration } from "./globals/LinkedInIntegration";
@@ -25,7 +26,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, TechnicalReports],
+  collections: [Users, Media, PostCategories, TechnicalReports],
   globals: [LinkedInIntegration],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
