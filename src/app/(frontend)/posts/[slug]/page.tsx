@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import RichText from "@/components/RichText";
 import { getSiteUrl } from "@/lib/linkedin/config";
+import { resolveMediaUrl } from "@/lib/media-url";
 import { getReportBySlug } from "@/lib/posts";
+import { hasRichTextBody } from "@/lib/rich-text";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +43,11 @@ export default async function PostPage({ params }: Props) {
   const post = await getReportBySlug(slug);
   if (!post) notFound();
 
+  const coverSrc = post.coverImage
+    ? resolveMediaUrl(post.coverImage.url)
+    : null;
+  const showRichText = post.content && hasRichTextBody(post.content);
+
   return (
     <article className="mx-auto max-w-3xl px-6 py-16">
       <Link
@@ -49,6 +56,17 @@ export default async function PostPage({ params }: Props) {
       >
         ← all posts
       </Link>
+      {coverSrc ? (
+        <div className="mb-8 overflow-hidden rounded-xl border border-border">
+          <img
+            src={coverSrc}
+            alt={post.coverImage?.alt || post.title}
+            width={post.coverImage?.width ?? undefined}
+            height={post.coverImage?.height ?? undefined}
+            className="aspect-[16/9] w-full object-cover"
+          />
+        </div>
+      ) : null}
       <header className="mb-10 border-b border-border pb-10">
         <div className="mb-4 flex flex-wrap items-center gap-3 font-mono text-sm text-muted">
           <Link
@@ -75,32 +93,28 @@ export default async function PostPage({ params }: Props) {
         <h1 className="mb-4 text-3xl font-bold leading-tight text-foreground">
           {post.title}
         </h1>
-        {post.coverImage ? (
-          <div className="mb-6 overflow-hidden rounded-xl border border-border">
-            <img
-              src={post.coverImage.url}
-              alt={post.coverImage.alt || post.title}
-              width={post.coverImage.width ?? undefined}
-              height={post.coverImage.height ?? undefined}
-              className="aspect-[16/9] w-full object-cover"
-            />
+        {post.excerpt ? (
+          <p className="mb-6 text-lg leading-relaxed text-muted">
+            {post.excerpt}
+          </p>
+        ) : null}
+        {post.tags.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-border bg-surface-hover px-2.5 py-0.5 font-mono text-xs text-accent"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
         ) : null}
-        <div className="flex flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-border bg-surface-hover px-2.5 py-0.5 font-mono text-xs text-accent"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
       </header>
-      {post.content ? (
-        <RichText data={post.content} />
-      ) : (
-        <p className="text-lg leading-relaxed text-muted">{post.excerpt}</p>
+      {showRichText ? (
+        <RichText data={post.content!} />
+      ) : post.excerpt ? null : (
+        <p className="text-lg leading-relaxed text-muted">No content yet.</p>
       )}
     </article>
   );

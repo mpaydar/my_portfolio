@@ -5,6 +5,7 @@ import {
   getPostCategoryDescription,
   getPostCategoryLabel,
 } from "@/lib/post-categories";
+import { resolveMediaUrl } from "@/lib/media-url";
 import { populateUploadNodesInContent } from "@/lib/populate-rich-text";
 
 export type PostCoverImage = {
@@ -60,7 +61,7 @@ function resolveCoverImage(
   }
 
   const media = coverImage as Media;
-  const url = media.url;
+  const url = resolveMediaUrl(media.url);
 
   if (!url) {
     return null;
