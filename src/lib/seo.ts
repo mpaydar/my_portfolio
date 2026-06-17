@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSiteUrl } from "@/lib/linkedin/config";
+import { getConfiguredSiteUrl } from "@/lib/site-url";
 import { resume } from "@/lib/data";
 import type { Post } from "@/lib/posts";
 
@@ -30,11 +30,15 @@ export type PostCategorySection = {
 };
 
 export function getMetadataBase(): URL {
-  return new URL(getSiteUrl());
+  return new URL(getConfiguredSiteUrl());
 }
 
 export function absoluteUrl(path = "/"): string {
-  const base = getSiteUrl();
+  return joinSiteUrlFromConfigured(path);
+}
+
+function joinSiteUrlFromConfigured(path = "/"): string {
+  const base = getConfiguredSiteUrl();
   if (path === "/" || path === "") return base;
   return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }

@@ -1,3 +1,5 @@
+import { getConfiguredSiteUrl } from "@/lib/site-url";
+
 export const LINKEDIN_API_VERSION =
   process.env.LINKEDIN_API_VERSION ?? "202604";
 export const LINKEDIN_RESTLI_VERSION = "2.0.0";
@@ -38,11 +40,7 @@ export function getSiteUrl(origin?: string): string {
     return origin.replace(/\/$/, "");
   }
 
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
-  }
-
-  return "http://localhost:3000";
+  return getConfiguredSiteUrl();
 }
 
 export function getLinkedInRedirectUri(origin?: string): string {
