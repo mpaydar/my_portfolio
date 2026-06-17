@@ -1,12 +1,22 @@
 import type { Metadata } from "next";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/lib/data";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Projects · Moe Bayat",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Projects",
   description:
-    "Open source projects with GitHub source code and live demos — distributed systems, agentic applications, and scalable infrastructure.",
-};
+    "Open source projects with GitHub source code and live demos — distributed systems, agentic applications, serverless ML, and scalable infrastructure.",
+  path: "/projects",
+  keywords: [
+    "open source projects",
+    "distributed systems",
+    "agentic applications",
+    "serverless ML",
+    "scalable infrastructure",
+    "portfolio projects",
+  ],
+});
 
 export default function ProjectsPage() {
   return (

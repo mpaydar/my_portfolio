@@ -1,45 +1,27 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PostCard from "@/components/PostCard";
-import { getPublishedReports, type Post } from "@/lib/posts";
+import { getPublishedReports } from "@/lib/posts";
+import { buildPageMetadata, groupPostsByCategory } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Technical Posts · Moe Bayat",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Technical Posts",
   description:
-    "Daily technical writing on Linux, cloud platforms, agent development, and core engineering intuition.",
-};
-
-function groupPostsByCategory(posts: Post[]) {
-  const sections = new Map<
-    string,
-    {
-      value: string;
-      label: string;
-      description: string;
-      posts: Post[];
-    }
-  >();
-
-  for (const post of posts) {
-    const existing = sections.get(post.category);
-
-    if (existing) {
-      existing.posts.push(post);
-      continue;
-    }
-
-    sections.set(post.category, {
-      value: post.category,
-      label: post.categoryLabel,
-      description: post.categoryDescription,
-      posts: [post],
-    });
-  }
-
-  return Array.from(sections.values());
-}
+    "Technical writing on serverless ML, distributed systems, Kubernetes, cloud infrastructure, agent development, and core engineering intuition.",
+  path: "/posts",
+  keywords: [
+    "technical blog",
+    "serverless machine learning",
+    "distributed systems",
+    "Kubernetes",
+    "cloud infrastructure",
+    "agent development",
+    "DevOps",
+    "systems engineering",
+  ],
+});
 
 export default async function PostsPage() {
   const posts = await getPublishedReports();
@@ -57,6 +39,22 @@ export default async function PostsPage() {
           and cloud infrastructure to agent tooling and core engineering
           intuition.
         </p>
+        {postsByCategory.length > 0 ? (
+          <nav
+            aria-label="Post categories"
+            className="mt-6 flex flex-wrap gap-2"
+          >
+            {postsByCategory.map((section) => (
+              <Link
+                key={section.value}
+                href={`/posts/category/${section.value}`}
+                className="rounded-full border border-border bg-surface-hover px-3 py-1 font-mono text-xs text-accent transition hover:border-accent"
+              >
+                {section.label}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
       </header>
 
       {posts.length === 0 ? (
@@ -73,7 +71,12 @@ export default async function PostsPage() {
             <section key={section.value} id={section.value}>
               <div className="mb-6 border-b border-border pb-4">
                 <h2 className="text-xl font-semibold text-foreground">
-                  {section.label}
+                  <Link
+                    href={`/posts/category/${section.value}`}
+                    className="transition hover:text-accent"
+                  >
+                    {section.label}
+                  </Link>
                 </h2>
                 {section.description ? (
                   <p className="mt-1 max-w-2xl text-sm text-muted">

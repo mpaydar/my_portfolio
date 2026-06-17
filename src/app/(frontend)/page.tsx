@@ -2,11 +2,29 @@ import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import ProjectCard from "@/components/ProjectCard";
 import RecruiterConnect from "@/components/RecruiterConnect";
+import JsonLd from "@/components/JsonLd";
 import SocialIcons from "@/components/SocialIcons";
 import { expertise, projects, resume } from "@/lib/data";
 import { getPublishedReports } from "@/lib/posts";
+import { buildPageMetadata, buildPersonJsonLd, buildWebSiteJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = buildPageMetadata({
+  useLayoutTitle: true,
+  description:
+    "Systems engineer building scalable applications, serverless ML, agentic microservices, and distributed infrastructure. Projects, demos, resume, and technical posts.",
+  path: "/",
+  keywords: [
+    "Mohammad Bayat",
+    "systems engineer",
+    "serverless machine learning",
+    "agentic AI",
+    "distributed systems",
+    "DevOps",
+    "technical portfolio",
+  ],
+});
 
 export default async function Home() {
   const featuredProjects = projects.filter((p) => p.featured);
@@ -14,6 +32,7 @@ export default async function Home() {
 
   return (
     <div>
+      <JsonLd data={[buildWebSiteJsonLd(), buildPersonJsonLd()]} />
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border">
         <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />

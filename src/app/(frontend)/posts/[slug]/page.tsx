@@ -2,10 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import RichText from "@/components/RichText";
-import { getSiteUrl } from "@/lib/linkedin/config";
+import JsonLd from "@/components/JsonLd";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { getReportBySlug } from "@/lib/posts";
 import { hasRichTextBody } from "@/lib/rich-text";
+import {
+  buildBlogPostingJsonLd,
+  buildBreadcrumbJsonLd,
+  buildPostMetadata,
+} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -15,27 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getReportBySlug(slug);
   if (!post) return { title: "Post Not Found" };
-
-  const coverUrl = post.coverImage
-    ? post.coverImage.url.startsWith("http")
-      ? post.coverImage.url
-      : `${getSiteUrl()}${post.coverImage.url}`
-    : undefined;
-
-  return {
-    title: `${post.title} · Moe Bayat`,
-    description: post.excerpt,
-    openGraph: coverUrl
-      ? {
-          images: [
-            {
-              url: coverUrl,
-              alt: post.coverImage?.alt || post.title,
-            },
-          ],
-        }
-      : undefined,
-  };
+  return buildPostMetadata(post);
 }
 
 export default async function PostPage({ params }: Props) {
@@ -50,6 +35,20 @@ export default async function PostPage({ params }: Props) {
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-16">
+      <JsonLd
+        data={[
+          buildBlogPostingJsonLd(post),
+          buildBreadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Posts", path: "/posts" },
+            {
+              name: post.categoryLabel,
+              path: `/posts/category/${post.category}`,
+            },
+            { name: post.title, path: `/posts/${post.slug}` },
+          ]),
+        ]}
+      />
       <Link
         href="/posts"
         className="mb-8 inline-block font-mono text-sm text-accent transition hover:text-foreground"
@@ -70,7 +69,7 @@ export default async function PostPage({ params }: Props) {
       <header className="mb-10 border-b border-border pb-10">
         <div className="mb-4 flex flex-wrap items-center gap-3 font-mono text-sm text-muted">
           <Link
-            href={`/posts#${post.category}`}
+            href={`/posts/category/${post.category}`}
             className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs text-accent transition hover:border-accent"
           >
             {post.categoryLabel}

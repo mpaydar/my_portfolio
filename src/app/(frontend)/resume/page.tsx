@@ -1,18 +1,31 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import RecruiterConnect from "@/components/RecruiterConnect";
+import JsonLd from "@/components/JsonLd";
 import SocialIcons from "@/components/SocialIcons";
 import { resume } from "@/lib/data";
+import { buildPageMetadata, buildPersonJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Resume · Moe Bayat",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Resume",
   description:
-    "DevOps & Platform Engineer specializing in agentic AI systems, scalable infrastructure, and distributed systems.",
-};
+    "DevOps and platform engineer specializing in agentic AI systems, serverless machine learning, scalable infrastructure, and distributed systems.",
+  path: "/resume",
+  keywords: [
+    "resume",
+    "DevOps engineer",
+    "platform engineer",
+    "agentic AI",
+    "serverless machine learning",
+    "distributed systems",
+    "Mohammad Bayat",
+  ],
+});
 
 export default function ResumePage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
+      <JsonLd data={buildPersonJsonLd()} />
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
         <div className="min-w-0">
       <header className="mb-12 border-b border-border pb-10">

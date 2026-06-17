@@ -19,33 +19,36 @@ export default function PostCard({ post }: { post: Post }) {
         </Link>
       ) : null}
       <div className="p-6">
-      <div className="mb-3 flex flex-wrap items-center gap-3 font-mono text-xs text-muted">
-        <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-accent">
-          {post.categoryLabel}
-        </span>
-        <span className="text-border">·</span>
-        <time dateTime={post.date}>{formatDate(post.date)}</time>
-        {post.readTime && (
-          <>
-            <span className="text-border">·</span>
-            <span>{post.readTime}</span>
-          </>
-        )}
-      </div>
-      <h3 className="mb-2 text-lg font-semibold text-foreground transition group-hover:text-accent">
-        <Link href={`/posts/${post.slug}`}>{post.title}</Link>
-      </h3>
-      <p className="mb-4 text-sm leading-relaxed text-muted">{post.excerpt}</p>
-      <div className="flex flex-wrap gap-2">
-        {post.tags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded-full border border-border bg-surface-hover px-2.5 py-0.5 font-mono text-xs text-accent"
+        <div className="mb-3 flex flex-wrap items-center gap-3 font-mono text-xs text-muted">
+          <Link
+            href={`/posts/category/${post.category}`}
+            className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-accent transition hover:border-accent"
           >
-            {tag}
-          </span>
-        ))}
-      </div>
+            {post.categoryLabel}
+          </Link>
+          <span className="text-border">·</span>
+          <time dateTime={post.date}>{formatDate(post.date)}</time>
+          {post.readTime && (
+            <>
+              <span className="text-border">·</span>
+              <span>{post.readTime}</span>
+            </>
+          )}
+        </div>
+        <h3 className="mb-2 text-lg font-semibold text-foreground transition group-hover:text-accent">
+          <Link href={`/posts/${post.slug}`}>{post.title}</Link>
+        </h3>
+        <p className="mb-4 text-sm leading-relaxed text-muted">{post.excerpt}</p>
+        <div className="flex flex-wrap gap-2">
+          {post.tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-border bg-surface-hover px-2.5 py-0.5 font-mono text-xs text-accent"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
     </article>
   );
