@@ -39,8 +39,7 @@ export default async function PostPage({ params }: Props) {
         data={[
           buildBlogPostingJsonLd(post),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
-            { name: "Posts", path: "/posts" },
+            { name: "Articles", path: "/" },
             {
               name: post.categoryLabel,
               path: `/posts/category/${post.category}`,
@@ -50,10 +49,10 @@ export default async function PostPage({ params }: Props) {
         ]}
       />
       <Link
-        href="/posts"
+        href="/"
         className="mb-8 inline-block font-mono text-sm text-accent transition hover:text-foreground"
       >
-        ← all posts
+        ← all articles
       </Link>
       {coverSrc ? (
         <div className="mb-8 overflow-hidden rounded-xl border border-border">

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import RecruiterConnect from "@/components/RecruiterConnect";
 import JsonLd from "@/components/JsonLd";
 import SocialIcons from "@/components/SocialIcons";
@@ -26,6 +27,12 @@ export default function ResumePage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
       <JsonLd data={buildPersonJsonLd()} />
+      <Link
+        href="/"
+        className="mb-8 inline-block font-mono text-sm text-accent transition hover:text-foreground"
+      >
+        ← articles
+      </Link>
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
         <div className="min-w-0">
       <header className="mb-12 border-b border-border pb-10">

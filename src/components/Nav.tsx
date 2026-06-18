@@ -2,10 +2,8 @@ import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/posts", label: "Posts" },
-  { href: "/projects", label: "Projects" },
-  { href: "/resume", label: "Resume" },
+  { href: "/", label: "Articles" },
+  { href: "/about", label: "About" },
 ];
 
 export default function Nav() {
@@ -16,7 +14,7 @@ export default function Nav() {
           href="/"
           className="font-mono text-sm font-semibold tracking-tight text-foreground transition hover:text-accent"
         >
-          <span className="text-accent">~/</span>moe-bayat
+          Moe Bayat
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
           <ul className="flex items-center gap-0.5 sm:gap-1">

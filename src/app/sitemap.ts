@@ -10,10 +10,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: joinSiteUrl(siteUrl, "/"), lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: joinSiteUrl(siteUrl, "/posts"), lastModified: now, changeFrequency: "daily", priority: 0.9 },
-    { url: joinSiteUrl(siteUrl, "/projects"), lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: joinSiteUrl(siteUrl, "/resume"), lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: joinSiteUrl(siteUrl, "/"), lastModified: now, changeFrequency: "daily", priority: 1 },
+    { url: joinSiteUrl(siteUrl, "/about"), lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: joinSiteUrl(siteUrl, "/projects"), lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: joinSiteUrl(siteUrl, "/resume"), lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 
   const categoryRoutes: MetadataRoute.Sitemap = categories.map((section) => ({

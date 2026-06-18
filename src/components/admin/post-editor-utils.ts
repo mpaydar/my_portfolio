@@ -38,7 +38,7 @@ export function buildLinkedInCommentary({
     return "Your LinkedIn post preview will appear here once you add a title and excerpt.";
   }
 
-  const postUrl = slug ? `${siteOrigin}/posts/${slug}` : `${siteOrigin}/posts`;
+  const postUrl = slug ? `${siteOrigin}/posts/${slug}` : siteOrigin;
   const text = [title.trim(), "", excerpt?.trim() || "", "", `Read more: ${postUrl}`]
     .filter((line, index, arr) => !(line === "" && arr[index - 1] === ""))
     .join("\n");

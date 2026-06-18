@@ -5,21 +5,21 @@ import type { Post } from "@/lib/posts";
 
 export const SITE_NAME = "Mohammad Bayat";
 export const SITE_SHORT_NAME = "Moe Bayat";
-export const SITE_TITLE = `${SITE_NAME} · Systems Engineer`;
+export const SITE_TITLE = `${SITE_SHORT_NAME} · Technical Writing`;
 export const SITE_DESCRIPTION =
-  "Personal blog and portfolio on scalable systems, serverless ML, agentic applications, distributed infrastructure, and cloud engineering.";
+  "In-depth technical articles on distributed systems, cloud infrastructure, Kubernetes, agentic software, and core engineering intuition.";
 export const SITE_KEYWORDS = [
   "Mohammad Bayat",
   "Moe Bayat",
-  "systems engineer",
-  "DevOps",
+  "technical blog",
+  "systems engineering",
   "distributed systems",
   "serverless",
   "machine learning",
   "agentic AI",
   "cloud infrastructure",
   "Kubernetes",
-  "technical blog",
+  "DevOps",
 ];
 
 export type PostCategorySection = {

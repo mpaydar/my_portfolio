@@ -37,16 +37,15 @@ export default async function CategoryPostsPage({ params }: Props) {
     <div className="mx-auto max-w-5xl px-6 py-16">
       <JsonLd
         data={buildBreadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "Posts", path: "/posts" },
+          { name: "Articles", path: "/" },
           { name: section.label, path: `/posts/category/${section.value}` },
         ])}
       />
       <Link
-        href="/posts"
+        href="/"
         className="mb-8 inline-block font-mono text-sm text-accent transition hover:text-foreground"
       >
-        ← all posts
+        ← all articles
       </Link>
       <header className="mb-12">
         <p className="section-label mb-3">Category</p>

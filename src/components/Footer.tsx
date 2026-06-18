@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SocialIcons from "@/components/SocialIcons";
 
 export default function Footer() {
@@ -7,7 +8,20 @@ export default function Footer() {
         <p className="font-mono text-xs text-muted">
           © {new Date().getFullYear()} Moe Bayat
         </p>
-        <SocialIcons size="sm" />
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+          <nav aria-label="Footer" className="flex flex-wrap gap-4 font-mono text-xs">
+            <Link href="/about" className="text-muted transition hover:text-foreground">
+              About
+            </Link>
+            <Link href="/resume" className="text-muted transition hover:text-foreground">
+              Resume
+            </Link>
+            <Link href="/projects" className="text-muted transition hover:text-foreground">
+              Projects
+            </Link>
+          </nav>
+          <SocialIcons size="sm" />
+        </div>
       </div>
     </footer>
   );

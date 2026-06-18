@@ -1,190 +1,124 @@
 import Link from "next/link";
 import PostCard from "@/components/PostCard";
-import ProjectCard from "@/components/ProjectCard";
-import RecruiterConnect from "@/components/RecruiterConnect";
 import JsonLd from "@/components/JsonLd";
 import SocialIcons from "@/components/SocialIcons";
-import { expertise, projects, resume } from "@/lib/data";
 import { getPublishedReports } from "@/lib/posts";
-import { buildPageMetadata, buildPersonJsonLd, buildWebSiteJsonLd } from "@/lib/seo";
+import {
+  buildPageMetadata,
+  buildPersonJsonLd,
+  buildWebSiteJsonLd,
+  groupPostsByCategory,
+} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = buildPageMetadata({
   useLayoutTitle: true,
   description:
-    "Systems engineer building scalable applications, serverless ML, agentic microservices, and distributed infrastructure. Projects, demos, resume, and technical posts.",
+    "In-depth technical articles on distributed systems, cloud infrastructure, Kubernetes, agentic software, and core engineering intuition.",
   path: "/",
   keywords: [
+    "technical blog",
     "Mohammad Bayat",
-    "systems engineer",
+    "distributed systems",
     "serverless machine learning",
     "agentic AI",
-    "distributed systems",
+    "Kubernetes",
+    "cloud infrastructure",
+    "systems engineering",
     "DevOps",
-    "technical portfolio",
   ],
 });
 
 export default async function Home() {
-  const featuredProjects = projects.filter((p) => p.featured);
-  const recentPosts = (await getPublishedReports()).slice(0, 3);
+  const posts = await getPublishedReports();
+  const postsByCategory = groupPostsByCategory(posts);
 
   return (
     <div>
       <JsonLd data={[buildWebSiteJsonLd(), buildPersonJsonLd()]} />
-      {/* Hero */}
+
       <section className="relative overflow-hidden border-b border-border">
         <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
-        <div className="relative mx-auto max-w-5xl px-6 py-24 sm:py-32">
-          <p className="section-label mb-6">
-            DevOps · Distributed Systems · Agentic AI
-          </p>
-          <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Building systems that{" "}
-            <span className="text-accent">scale</span> and agents that{" "}
-            <span className="text-accent">reason</span>
+        <div className="relative mx-auto max-w-5xl px-6 py-20 sm:py-28">
+          <p className="section-label mb-6">Technical Writing</p>
+          <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl">
+            Deep dives on{" "}
+            <span className="text-accent">systems</span>,{" "}
+            <span className="text-accent">infrastructure</span>, and{" "}
+            <span className="text-accent">agentic software</span>
           </h1>
-          <p className="mb-10 max-w-2xl text-lg leading-relaxed text-muted">
-            I design highly scalable applications, develop agentic microservices,
-            and work on distributed systems — across both computation and
-            storage. Projects, live demos, and daily technical writing live here.
+          <p className="mb-8 max-w-2xl text-lg leading-relaxed text-muted">
+            Long-form notes on distributed systems, cloud platforms, containers,
+            and building with LLMs — written by Mohammad (Moe) Bayat, a systems
+            engineer based in New York.
           </p>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/projects" className="btn-primary rounded-lg px-5 py-2.5 text-sm">
-              Projects & Demos
-            </Link>
-            <Link href="/posts" className="btn-ghost rounded-lg px-5 py-2.5 text-sm">
-              Technical Posts
-            </Link>
-            <Link href="/resume" className="btn-ghost rounded-lg px-5 py-2.5 text-sm">
-              Resume
-            </Link>
-          </div>
-          <div className="mt-8 flex items-center gap-4">
-            <span className="font-mono text-xs text-muted">Find me</span>
-            <SocialIcons />
-          </div>
-        </div>
-      </section>
-
-      {/* Expertise */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-5xl px-6 py-16">
-          <p className="section-label mb-2">Focus Areas</p>
-          <h2 className="mb-10 text-2xl font-semibold text-foreground">
-            What I work on
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {expertise.map((area) => (
-              <div key={area.title} className="card rounded-xl p-5">
-                <span className="mb-3 block font-mono text-lg text-accent">
-                  {area.icon}
-                </span>
-                <h3 className="mb-2 font-semibold text-foreground">
-                  {area.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-muted">
-                  {area.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Projects */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-5xl px-6 py-16">
-          <div className="mb-10 flex items-end justify-between">
-            <div>
-              <p className="section-label mb-2">Open Source & Demos</p>
-              <h2 className="text-2xl font-semibold text-foreground">
-                Projects
-              </h2>
-            </div>
-            <Link
-              href="/projects"
-              className="hidden font-mono text-sm text-accent transition hover:text-foreground sm:block"
+          {postsByCategory.length > 0 ? (
+            <nav
+              aria-label="Article categories"
+              className="mb-8 flex flex-wrap gap-2"
             >
-              view all →
-            </Link>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {featuredProjects.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Recent Posts */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-5xl px-6 py-16">
-          <div className="mb-10 flex items-end justify-between">
-            <div>
-              <p className="section-label mb-2">Technical Writing</p>
-              <h2 className="text-2xl font-semibold text-foreground">
-                Recent posts
-              </h2>
-            </div>
-            <Link
-              href="/posts"
-              className="hidden font-mono text-sm text-accent transition hover:text-foreground sm:block"
-            >
-              all posts →
-            </Link>
-          </div>
-          {recentPosts.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {recentPosts.map((post) => (
-                <PostCard key={post.slug} post={post} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted">
-              Posts will appear here once you publish in{" "}
-              <Link href="/admin" className="text-accent underline">
-                Payload admin
-              </Link>
-              .
-            </p>
-          )}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section>
-        <div className="mx-auto max-w-5xl px-6 py-16">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
-            <div className="card rounded-xl p-8">
-              <h2 className="mb-2 text-xl font-semibold text-foreground">
-                Connect
-              </h2>
-              <p className="mb-6 max-w-lg text-sm leading-relaxed text-muted">
-                Interested in distributed systems, agentic architecture, or
-                collaborating on a project? Find me on GitHub, LinkedIn, or
-                NotebookLM — or book a quick intro call.
-              </p>
-              <SocialIcons className="mb-6" />
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href={resume.links.email}
-                  className="btn-ghost rounded-lg px-5 py-2.5 text-sm"
-                >
-                  Email
-                </a>
+              {postsByCategory.map((section) => (
                 <Link
-                  href="/resume"
-                  className="btn-primary rounded-lg px-5 py-2.5 text-sm"
+                  key={section.value}
+                  href={`/posts/category/${section.value}`}
+                  className="rounded-full border border-border bg-surface-hover px-3 py-1 font-mono text-xs text-accent transition hover:border-accent"
                 >
-                  View resume
+                  {section.label}
                 </Link>
-              </div>
-            </div>
-            <RecruiterConnect compact />
+              ))}
+            </nav>
+          ) : null}
+          <div className="flex items-center gap-4">
+            <span className="font-mono text-xs text-muted">Author</span>
+            <SocialIcons />
+            <Link
+              href="/about"
+              className="font-mono text-xs text-accent transition hover:text-foreground"
+            >
+              about →
+            </Link>
           </div>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-6 py-16">
+        {posts.length === 0 ? (
+          <p className="card rounded-xl border-dashed p-8 text-center text-sm text-muted">
+            Articles will appear here once you publish in{" "}
+            <Link href="/admin" className="text-accent underline">
+              Payload admin
+            </Link>
+            .
+          </p>
+        ) : (
+          <div className="space-y-16">
+            {postsByCategory.map((section) => (
+              <section key={section.value} id={section.value}>
+                <div className="mb-6 border-b border-border pb-4">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    <Link
+                      href={`/posts/category/${section.value}`}
+                      className="transition hover:text-accent"
+                    >
+                      {section.label}
+                    </Link>
+                  </h2>
+                  {section.description ? (
+                    <p className="mt-1 max-w-2xl text-sm text-muted">
+                      {section.description}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {section.posts.map((post) => (
+                    <PostCard key={post.slug} post={post} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
