@@ -114,19 +114,6 @@ export default async function PostPage({ params }: Props) {
                 </>
               ) : null}
             </div>
-
-            {post.tags.length > 0 ? (
-              <div className="mt-6 flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-xs text-muted"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            ) : null}
           </div>
         </header>
 
@@ -156,6 +143,18 @@ export default async function PostPage({ params }: Props) {
           )}
 
           <footer className="mt-16 border-t border-border pt-10">
+            {post.tags.length > 0 ? (
+              <div className="mb-8 flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-xs text-muted"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            ) : null}
             <p className="mb-1 font-mono text-xs uppercase tracking-widest text-accent">
               Written by
             </p>
