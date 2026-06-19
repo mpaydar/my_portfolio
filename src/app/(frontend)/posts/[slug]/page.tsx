@@ -3,7 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReadingProgress from "@/components/ReadingProgress";
 import RichText from "@/components/RichText";
-import PostViewSwitcher from "@/components/PostViewSwitcher";
+import {
+  PostViewPanel,
+  PostViewProvider,
+  PostViewToggle,
+} from "@/components/PostViewSwitcher";
 import JsonLd from "@/components/JsonLd";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { getPresentationProxyUrl, getReportBySlug } from "@/lib/posts";
@@ -47,11 +51,17 @@ export default async function PostPage({ params }: Props) {
   return (
     <>
       <ReadingProgress />
-      <article
-        className={`mx-auto min-w-0 overflow-x-clip px-4 pb-16 pt-6 sm:px-6 sm:pb-24 sm:pt-10 ${
-          post.presentation ? "max-w-5xl" : "max-w-2xl"
-        }`}
+      <PostViewProvider
+        presentation={post.presentation}
+        presentationProxyUrl={getPresentationProxyUrl(slug)}
+        title={post.title}
+        hasArticle={Boolean(showRichText)}
       >
+        <article
+          className={`mx-auto min-w-0 overflow-x-clip px-4 pb-16 pt-6 sm:px-6 sm:pb-24 sm:pt-10 ${
+            post.presentation ? "max-w-5xl" : "max-w-2xl"
+          }`}
+        >
         <JsonLd
           data={[
             buildBlogPostingJsonLd(post),
@@ -114,6 +124,8 @@ export default async function PostPage({ params }: Props) {
               </>
             ) : null}
           </div>
+
+          <PostViewToggle />
         </header>
 
         {coverSrc ? (
@@ -132,11 +144,7 @@ export default async function PostPage({ params }: Props) {
           </figure>
         ) : null}
 
-        <PostViewSwitcher
-          presentation={post.presentation}
-          presentationProxyUrl={getPresentationProxyUrl(slug)}
-          title={post.title}
-          hasArticle={Boolean(showRichText)}
+        <PostViewPanel
           article={showRichText ? <RichText data={post.content!} /> : null}
         />
 
@@ -178,7 +186,8 @@ export default async function PostPage({ params }: Props) {
             </Link>
           </div>
         </footer>
-      </article>
+        </article>
+      </PostViewProvider>
     </>
   );
 }

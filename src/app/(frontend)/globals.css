@@ -311,6 +311,25 @@ body {
   box-shadow: 0 4px 24px var(--glow);
 }
 
+.view-toggle-shell--header {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 0.5rem 0.625rem 0.5rem 0.875rem;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.view-toggle-shell--header .view-toggle-label {
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.view-toggle-shell--header .view-toggle {
+  width: min(100%, 19rem);
+}
+
 .view-toggle-label {
   margin: 0;
   font-family: var(--font-geist-mono), monospace;
