@@ -3,12 +3,14 @@ import type { Post } from "@/lib/posts";
 
 export default function PostCard({ post }: { post: Post }) {
   return (
-    <article className="card group overflow-hidden rounded-xl">
+    <article className="card group relative overflow-hidden rounded-xl">
+      <Link
+        href={`/posts/${post.slug}`}
+        className="absolute inset-0 z-[1]"
+        aria-label={`Read ${post.title}`}
+      />
       {post.coverImage ? (
-        <Link
-          href={`/posts/${post.slug}`}
-          className="block overflow-hidden border-b border-border"
-        >
+        <div className="overflow-hidden border-b border-border">
           <img
             src={post.coverImage.url}
             alt={post.coverImage.alt || post.title}
@@ -16,13 +18,13 @@ export default function PostCard({ post }: { post: Post }) {
             height={post.coverImage.height ?? undefined}
             className="aspect-[16/9] w-full object-cover transition duration-300 group-hover:scale-[1.02]"
           />
-        </Link>
+        </div>
       ) : null}
-      <div className="p-6">
-        <div className="mb-3 flex flex-wrap items-center gap-3 font-mono text-xs text-muted">
+      <div className="relative p-5 sm:p-6">
+        <div className="mb-3 flex flex-wrap items-center gap-2 font-mono text-xs text-muted sm:gap-3">
           <Link
             href={`/posts/category/${post.category}`}
-            className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-accent transition hover:border-accent"
+            className="relative z-[2] rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-accent transition hover:border-accent"
           >
             {post.categoryLabel}
           </Link>
@@ -36,19 +38,23 @@ export default function PostCard({ post }: { post: Post }) {
           )}
         </div>
         <h3 className="mb-2 text-lg font-semibold text-foreground transition group-hover:text-accent">
-          <Link href={`/posts/${post.slug}`}>{post.title}</Link>
+          {post.title}
         </h3>
-        <p className="mb-4 text-sm leading-relaxed text-muted">{post.excerpt}</p>
-        <div className="flex flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-border bg-surface-hover px-2.5 py-0.5 font-mono text-xs text-accent"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-muted">
+          {post.excerpt}
+        </p>
+        {post.tags.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {post.tags.slice(0, 4).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-border bg-surface-hover px-2.5 py-0.5 font-mono text-xs text-accent"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
     </article>
   );

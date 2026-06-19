@@ -46,7 +46,7 @@ export default async function PostPage({ params }: Props) {
   return (
     <>
       <ReadingProgress />
-      <article className="mx-auto max-w-2xl px-6 pb-20 pt-8 sm:pb-24 sm:pt-10">
+      <article className="mx-auto min-w-0 max-w-2xl overflow-x-clip px-4 pb-16 pt-6 sm:px-6 sm:pb-24 sm:pt-10">
         <JsonLd
           data={[
             buildBlogPostingJsonLd(post),
@@ -90,7 +90,7 @@ export default async function PostPage({ params }: Props) {
             {post.categoryLabel}
           </Link>
 
-          <h1 className="mb-4 text-3xl font-bold leading-[1.12] tracking-tight text-foreground sm:text-4xl">
+          <h1 className="mb-4 text-2xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-3xl md:text-4xl">
             {post.title}
           </h1>
 

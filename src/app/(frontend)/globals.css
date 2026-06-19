@@ -52,6 +52,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  overflow-x: clip;
 }
 
 .dark body {
@@ -118,9 +119,18 @@ body {
 
 /* Long-form article reading experience */
 .article-prose {
-  font-size: 1.125rem;
-  line-height: 1.85;
+  font-size: 1.0625rem;
+  line-height: 1.8;
   color: color-mix(in srgb, var(--fg) 90%, transparent);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+@media (min-width: 640px) {
+  .article-prose {
+    font-size: 1.125rem;
+    line-height: 1.85;
+  }
 }
 
 .article-prose > *:first-child {
@@ -226,15 +236,24 @@ body {
 
 .article-prose pre {
   margin: 2em 0;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.125rem;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: 0.75rem;
   border: 1px solid var(--border);
   background: var(--surface);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
   line-height: 1.6;
   color: var(--fg);
+}
+
+@media (min-width: 640px) {
+  .article-prose pre {
+    padding: 1.25rem 1.5rem;
+    font-size: 0.9rem;
+  }
 }
 
 .article-prose pre code {
@@ -263,7 +282,9 @@ body {
 }
 
 .article-figure img {
-  width: 100%;
+  display: block;
+  max-width: 100%;
+  height: auto;
   border-radius: 0.5rem;
   border: 1px solid var(--border);
 }
