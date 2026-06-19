@@ -2,7 +2,9 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
+  useEffect,
   useState,
   type ReactNode,
 } from "react";
@@ -18,6 +20,9 @@ type PostViewContextValue = {
   hasArticle: boolean;
   view: ViewMode;
   setView: (view: ViewMode) => void;
+  enterSlidesMode: () => void;
+  slidesFocus: boolean;
+  exitSlidesFocus: () => void;
   slidesLabel: string;
 };
 
@@ -39,6 +44,17 @@ export function PostViewProvider({
   children,
 }: PostViewProviderProps) {
   const [view, setView] = useState<ViewMode>(hasArticle ? "article" : "slides");
+  const [slidesFocus, setSlidesFocus] = useState(false);
+  const [slidesFocusRequest, setSlidesFocusRequest] = useState(0);
+
+  const enterSlidesMode = useCallback(() => {
+    setView("slides");
+    setSlidesFocusRequest((count) => count + 1);
+  }, []);
+
+  const exitSlidesFocus = useCallback(() => {
+    setSlidesFocus(false);
+  }, []);
 
   if (!presentation) {
     return <>{children}</>;
@@ -54,20 +70,58 @@ export function PostViewProvider({
         title,
         hasArticle,
         view,
-        setView,
+        setView: (nextView) => {
+          setView(nextView);
+          if (nextView === "article") {
+            setSlidesFocus(false);
+          }
+        },
+        enterSlidesMode,
+        slidesFocus,
+        exitSlidesFocus,
         slidesLabel,
       }}
     >
+      <SlidesFocusRequestHandler
+        requestId={slidesFocusRequest}
+        view={view}
+        onFocus={() => setSlidesFocus(true)}
+      />
       {children}
     </PostViewContext.Provider>
   );
+}
+
+function SlidesFocusRequestHandler({
+  requestId,
+  view,
+  onFocus,
+}: {
+  requestId: number;
+  view: ViewMode;
+  onFocus: () => void;
+}) {
+  useEffect(() => {
+    if (view !== "slides" || requestId === 0) return;
+
+    const panel = document.getElementById("post-slides-panel");
+    panel?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    const timer = window.setTimeout(() => {
+      onFocus();
+    }, 320);
+
+    return () => window.clearTimeout(timer);
+  }, [requestId, view, onFocus]);
+
+  return null;
 }
 
 export function PostViewToggle() {
   const context = useContext(PostViewContext);
   if (!context) return null;
 
-  const { hasArticle, view, setView, slidesLabel } = context;
+  const { hasArticle, view, setView, enterSlidesMode, slidesLabel } = context;
   const showSlides = view === "slides";
 
   return (
@@ -89,7 +143,7 @@ export function PostViewToggle() {
           type="button"
           role="tab"
           aria-selected={showSlides}
-          onClick={() => setView("slides")}
+          onClick={() => enterSlidesMode()}
           className={`view-toggle-btn ${showSlides ? "is-active" : ""}`}
         >
           <SlidesIcon />
@@ -122,13 +176,16 @@ export function PostViewPanel({ article }: PostViewPanelProps) {
     title,
     hasArticle,
     view,
+    slidesFocus,
+    exitSlidesFocus,
     slidesLabel,
   } = context;
   const showSlides = view === "slides";
 
   return (
     <div
-      className={`view-panel ${showSlides ? "is-slides" : "is-article"}`}
+      id="post-slides-panel"
+      className={`view-panel scroll-mt-24 ${showSlides ? "is-slides" : "is-article"}`}
       role="tabpanel"
     >
       {showSlides ? (
@@ -136,6 +193,8 @@ export function PostViewPanel({ article }: PostViewPanelProps) {
           presentation={presentation}
           presentationProxyUrl={presentationProxyUrl}
           title={title}
+          focusMode={slidesFocus}
+          onExitFocus={exitSlidesFocus}
         />
       ) : hasArticle ? (
         article

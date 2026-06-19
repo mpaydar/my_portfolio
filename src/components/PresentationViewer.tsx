@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { PostPresentation } from "@/lib/posts";
 import dynamic from "next/dynamic";
+import SlidesFocusFrame from "@/components/SlidesFocusFrame";
 
 const PdfSlideViewer = dynamic(() => import("@/components/PdfSlideViewer"), {
   ssr: false,
@@ -17,6 +18,8 @@ type PresentationViewerProps = {
   presentation: PostPresentation;
   presentationProxyUrl: string;
   title: string;
+  focusMode?: boolean;
+  onExitFocus?: () => void;
 };
 
 function getOfficeEmbedUrl(fileUrl: string) {
@@ -36,6 +39,8 @@ export default function PresentationViewer({
   presentation,
   presentationProxyUrl,
   title,
+  focusMode = false,
+  onExitFocus,
 }: PresentationViewerProps) {
   if (presentation.kind === "pdf") {
     return (
@@ -43,6 +48,8 @@ export default function PresentationViewer({
         fileUrl={presentationProxyUrl}
         downloadUrl={presentation.url}
         title={title}
+        focusMode={focusMode}
+        onExitFocus={onExitFocus}
       />
     );
   }
@@ -52,6 +59,8 @@ export default function PresentationViewer({
       presentation={presentation}
       presentationProxyUrl={presentationProxyUrl}
       title={title}
+      focusMode={focusMode}
+      onExitFocus={onExitFocus}
     />
   );
 }
@@ -60,6 +69,8 @@ function PptxSlideViewer({
   presentation,
   presentationProxyUrl,
   title,
+  focusMode = false,
+  onExitFocus,
 }: PresentationViewerProps) {
   const [embedFailed, setEmbedFailed] = useState(false);
   const embedSource = useMemo(() => {
@@ -109,30 +120,34 @@ function PptxSlideViewer({
     );
   }
 
-  return (
-    <div className="flex flex-col">
-      <div className="slide-stage mb-4 overflow-hidden rounded-xl border border-border bg-surface">
-        <iframe
-          src={embedUrl}
-          title={`${title} slides`}
-          className="aspect-video w-full min-h-[420px] bg-white"
-          allowFullScreen
-          onError={() => setEmbedFailed(true)}
-        />
-      </div>
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface px-3 py-2.5 sm:px-4">
-        <p className="font-mono text-xs text-muted sm:text-sm">
-          PowerPoint presentation
-        </p>
-        <a
-          href={presentation.url}
-          download={presentation.filename}
-          className="rounded-md border border-border px-2.5 py-1.5 font-mono text-xs text-muted transition hover:border-accent-dim hover:text-accent"
-        >
-          Download
-        </a>
-      </div>
+  const footer = (
+    <div className="slide-controls flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface px-3 py-2.5 sm:px-4">
+      <p className="font-mono text-xs text-muted sm:text-sm">
+        PowerPoint presentation
+      </p>
+      <p className="font-mono text-[11px] text-muted">
+        Use the viewer controls inside the deck to move between slides
+      </p>
     </div>
+  );
+
+  return (
+    <SlidesFocusFrame
+      active={focusMode}
+      title={title}
+      downloadUrl={presentation.url}
+      downloadFilename={presentation.filename}
+      onExit={onExitFocus ?? (() => undefined)}
+      footer={footer}
+    >
+      <iframe
+        src={embedUrl}
+        title={`${title} slides`}
+        className={`w-full bg-white ${focusMode ? "slides-focus-iframe" : "aspect-video min-h-[420px]"}`}
+        allowFullScreen
+        onError={() => setEmbedFailed(true)}
+      />
+    </SlidesFocusFrame>
   );
 }
 
