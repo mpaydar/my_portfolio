@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import SlidesNavigationCoach from "@/components/SlidesNavigationCoach";
 
 type SlidesFocusFrameProps = {
   active: boolean;
@@ -21,23 +23,45 @@ export default function SlidesFocusFrame({
   children,
   footer,
 }: SlidesFocusFrameProps) {
+  const [mounted, setMounted] = useState(false);
+  const [showCoach, setShowCoach] = useState(false);
+  const showCoachRef = useRef(false);
+
   useEffect(() => {
-    if (!active) return;
+    showCoachRef.current = showCoach;
+  }, [showCoach]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!active) {
+      setShowCoach(false);
+      return;
+    }
+
+    setShowCoach(true);
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
+        event.stopPropagation();
+        if (showCoachRef.current) {
+          setShowCoach(false);
+          return;
+        }
         onExit();
       }
     }
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKeyDown, true);
 
     return () => {
       document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", onKeyDown, true);
     };
   }, [active, onExit]);
 
@@ -50,7 +74,11 @@ export default function SlidesFocusFrame({
     );
   }
 
-  return (
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(
     <div
       className="slides-focus-overlay"
       role="dialog"
@@ -71,15 +99,42 @@ export default function SlidesFocusFrame({
             Download
           </a>
           <button type="button" onClick={onExit} className="slides-focus-exit">
-            Exit focus
+            Exit presentation
           </button>
         </div>
       </div>
 
       <div className="slides-focus-body">
-        <div className="slides-focus-stage">{children}</div>
-        {footer ? <div className="slides-focus-footer">{footer}</div> : null}
+        <div className="slides-focus-stage">
+          {children}
+          {showCoach ? (
+            <SlidesNavigationCoach onDismiss={() => setShowCoach(false)} />
+          ) : null}
+        </div>
+
+        <div className="slides-focus-footer">
+          {footer}
+          <div className="slides-focus-footer-actions">
+            <p className="slides-focus-footer-hint">
+              <kbd>←</kbd> <kbd>→</kbd> or <kbd>Space</kbd> · slide navigation
+            </p>
+            <button type="button" onClick={onExit} className="slides-focus-exit-prominent">
+              <CloseIcon />
+              Exit presentation
+              <span className="slides-focus-exit-key">Esc</span>
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body,
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M18 6L6 18M6 6l12 12" />
+    </svg>
   );
 }

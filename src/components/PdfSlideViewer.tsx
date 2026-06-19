@@ -39,6 +39,8 @@ export default function PdfSlideViewer({
   }, [numPages]);
 
   useEffect(() => {
+    if (!focusMode) return;
+
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") return;
 
@@ -54,7 +56,7 @@ export default function PdfSlideViewer({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [goToNext, goToPrevious]);
+  }, [focusMode, goToNext, goToPrevious]);
 
   useEffect(() => {
     function updateWidth() {
@@ -77,17 +79,19 @@ export default function PdfSlideViewer({
           onClick={goToPrevious}
           disabled={pageNumber <= 1}
           aria-label="Previous slide"
-          className="slide-nav-btn"
+          className="slide-nav-btn slide-nav-btn--labeled"
         >
           <ChevronLeftIcon />
+          <span>Prev</span>
         </button>
         <button
           type="button"
           onClick={goToNext}
           disabled={!numPages || pageNumber >= numPages}
           aria-label="Next slide"
-          className="slide-nav-btn"
+          className="slide-nav-btn slide-nav-btn--labeled"
         >
+          <span>Next</span>
           <ChevronRightIcon />
         </button>
       </div>
@@ -101,10 +105,6 @@ export default function PdfSlideViewer({
             of <span className="text-foreground">{numPages}</span>
           </>
         ) : null}
-      </p>
-
-      <p className="font-mono text-[11px] text-muted">
-        Arrow keys or space to navigate
       </p>
     </div>
   );
