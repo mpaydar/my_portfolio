@@ -22,6 +22,10 @@ export type PostPresentation = {
   kind: "pdf" | "pptx";
 };
 
+export function getPresentationProxyUrl(slug: string) {
+  return `/api/posts/${encodeURIComponent(slug)}/presentation`;
+}
+
 export type Post = {
   slug: string;
   title: string;

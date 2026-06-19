@@ -15,6 +15,7 @@ const PdfSlideViewer = dynamic(() => import("@/components/PdfSlideViewer"), {
 
 type PresentationViewerProps = {
   presentation: PostPresentation;
+  presentationProxyUrl: string;
   title: string;
 };
 
@@ -33,29 +34,52 @@ function isPubliclyEmbeddable(url: string) {
 
 export default function PresentationViewer({
   presentation,
+  presentationProxyUrl,
   title,
 }: PresentationViewerProps) {
   if (presentation.kind === "pdf") {
-    return <PdfSlideViewer url={presentation.url} title={title} />;
+    return (
+      <PdfSlideViewer
+        fileUrl={presentationProxyUrl}
+        downloadUrl={presentation.url}
+        title={title}
+      />
+    );
   }
 
   return (
-    <PptxSlideViewer presentation={presentation} title={title} />
+    <PptxSlideViewer
+      presentation={presentation}
+      presentationProxyUrl={presentationProxyUrl}
+      title={title}
+    />
   );
 }
 
 function PptxSlideViewer({
   presentation,
+  presentationProxyUrl,
   title,
 }: PresentationViewerProps) {
   const [embedFailed, setEmbedFailed] = useState(false);
+  const embedSource = useMemo(() => {
+    if (typeof window === "undefined") {
+      return presentation.url;
+    }
+
+    try {
+      return new URL(presentationProxyUrl, window.location.origin).toString();
+    } catch {
+      return presentation.url;
+    }
+  }, [presentation.url, presentationProxyUrl]);
   const canEmbed = useMemo(
-    () => isPubliclyEmbeddable(presentation.url),
-    [presentation.url],
+    () => isPubliclyEmbeddable(embedSource),
+    [embedSource],
   );
   const embedUrl = useMemo(
-    () => getOfficeEmbedUrl(presentation.url),
-    [presentation.url],
+    () => getOfficeEmbedUrl(embedSource),
+    [embedSource],
   );
 
   if (!canEmbed || embedFailed) {

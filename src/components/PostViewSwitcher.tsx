@@ -8,6 +8,7 @@ type ViewMode = "article" | "slides";
 
 type PostViewSwitcherProps = {
   presentation: PostPresentation | null;
+  presentationProxyUrl: string;
   title: string;
   article: ReactNode;
   hasArticle: boolean;
@@ -15,6 +16,7 @@ type PostViewSwitcherProps = {
 
 export default function PostViewSwitcher({
   presentation,
+  presentationProxyUrl,
   title,
   article,
   hasArticle,
@@ -71,7 +73,11 @@ export default function PostViewSwitcher({
         role="tabpanel"
       >
         {showSlides ? (
-          <PresentationViewer presentation={presentation} title={title} />
+          <PresentationViewer
+            presentation={presentation}
+            presentationProxyUrl={presentationProxyUrl}
+            title={title}
+          />
         ) : hasArticle ? (
           article
         ) : (

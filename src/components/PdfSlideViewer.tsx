@@ -5,17 +5,21 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 type PdfSlideViewerProps = {
-  url: string;
+  /** Same-origin proxy URL used by pdf.js (avoids cross-origin fetch issues). */
+  fileUrl: string;
+  /** Direct URL for downloads. */
+  downloadUrl: string;
   title: string;
 };
 
-export default function PdfSlideViewer({ url, title }: PdfSlideViewerProps) {
+export default function PdfSlideViewer({
+  fileUrl,
+  downloadUrl,
+  title,
+}: PdfSlideViewerProps) {
   const [numPages, setNumPages] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -83,7 +87,7 @@ export default function PdfSlideViewer({ url, title }: PdfSlideViewerProps) {
             <div className="px-6 text-center">
               <p className="mb-3 text-sm text-muted">{loadError}</p>
               <a
-                href={url}
+                href={downloadUrl}
                 download
                 className="font-mono text-sm text-accent transition hover:text-foreground"
               >
@@ -92,13 +96,14 @@ export default function PdfSlideViewer({ url, title }: PdfSlideViewerProps) {
             </div>
           ) : (
             <Document
-              file={url}
+              file={fileUrl}
               onLoadSuccess={({ numPages: total }) => {
                 setNumPages(total);
                 setPageNumber(1);
                 setLoadError(null);
               }}
-              onLoadError={() => {
+              onLoadError={(error) => {
+                console.error("PDF slide viewer failed to load:", error);
                 setLoadError("Could not load this PDF in the browser.");
               }}
               loading={
@@ -107,18 +112,22 @@ export default function PdfSlideViewer({ url, title }: PdfSlideViewerProps) {
                 </div>
               }
             >
-              <Page
-                pageNumber={pageNumber}
-                width={containerWidth ? Math.min(containerWidth - 32, 960) : undefined}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-                className="shadow-lg"
-                loading={
-                  <div className="flex h-64 items-center justify-center font-mono text-sm text-muted">
-                    Rendering slide…
-                  </div>
-                }
-              />
+              {numPages > 0 ? (
+                <Page
+                  pageNumber={pageNumber}
+                  width={
+                    containerWidth ? Math.min(containerWidth - 32, 960) : undefined
+                  }
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  className="shadow-lg"
+                  loading={
+                    <div className="flex h-64 items-center justify-center font-mono text-sm text-muted">
+                      Rendering slide…
+                    </div>
+                  }
+                />
+              ) : null}
             </Document>
           )}
         </div>
@@ -158,7 +167,7 @@ export default function PdfSlideViewer({ url, title }: PdfSlideViewerProps) {
 
           <div className="flex items-center gap-2">
             <a
-              href={url}
+              href={downloadUrl}
               download
               className="rounded-md border border-border px-2.5 py-1.5 font-mono text-xs text-muted transition hover:border-accent-dim hover:text-accent"
             >

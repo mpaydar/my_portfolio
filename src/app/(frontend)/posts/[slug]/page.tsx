@@ -6,7 +6,7 @@ import RichText from "@/components/RichText";
 import PostViewSwitcher from "@/components/PostViewSwitcher";
 import JsonLd from "@/components/JsonLd";
 import { resolveMediaUrl } from "@/lib/media-url";
-import { getReportBySlug } from "@/lib/posts";
+import { getPresentationProxyUrl, getReportBySlug } from "@/lib/posts";
 import { hasRichTextBody } from "@/lib/rich-text";
 import {
   buildBlogPostingJsonLd,
@@ -134,6 +134,7 @@ export default async function PostPage({ params }: Props) {
 
         <PostViewSwitcher
           presentation={post.presentation}
+          presentationProxyUrl={getPresentationProxyUrl(slug)}
           title={post.title}
           hasArticle={Boolean(showRichText)}
           article={showRichText ? <RichText data={post.content!} /> : null}
