@@ -52,9 +52,16 @@ export function PostViewProvider({
     setSlidesFocusRequest((count) => count + 1);
   }, []);
 
+  const activateSlidesFocus = useCallback(() => {
+    setSlidesFocus(true);
+  }, []);
+
   const exitSlidesFocus = useCallback(() => {
     setSlidesFocus(false);
-  }, []);
+    if (hasArticle) {
+      setView("article");
+    }
+  }, [hasArticle]);
 
   if (!presentation) {
     return <>{children}</>;
@@ -85,7 +92,7 @@ export function PostViewProvider({
       <SlidesFocusRequestHandler
         requestId={slidesFocusRequest}
         view={view}
-        onFocus={() => setSlidesFocus(true)}
+        onActivateFocus={activateSlidesFocus}
       />
       {children}
     </PostViewContext.Provider>
@@ -95,11 +102,11 @@ export function PostViewProvider({
 function SlidesFocusRequestHandler({
   requestId,
   view,
-  onFocus,
+  onActivateFocus,
 }: {
   requestId: number;
   view: ViewMode;
-  onFocus: () => void;
+  onActivateFocus: () => void;
 }) {
   useEffect(() => {
     if (view !== "slides" || requestId === 0) return;
@@ -108,11 +115,11 @@ function SlidesFocusRequestHandler({
     panel?.scrollIntoView({ behavior: "smooth", block: "start" });
 
     const timer = window.setTimeout(() => {
-      onFocus();
+      onActivateFocus();
     }, 320);
 
     return () => window.clearTimeout(timer);
-  }, [requestId, view, onFocus]);
+  }, [requestId, view, onActivateFocus]);
 
   return null;
 }

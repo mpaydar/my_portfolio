@@ -44,26 +44,32 @@ export default function SlidesFocusFrame({
     setShowCoach(true);
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        if (showCoachRef.current) {
-          setShowCoach(false);
-          return;
-        }
-        onExit();
+      if (event.key !== "Escape") return;
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      if (showCoachRef.current) {
+        setShowCoach(false);
+        return;
       }
+
+      onExit();
     }
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    document.addEventListener("keydown", onKeyDown, true);
+    window.addEventListener("keydown", onKeyDown, true);
 
     return () => {
       document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", onKeyDown, true);
+      window.removeEventListener("keydown", onKeyDown, true);
     };
   }, [active, onExit]);
+
+  function handleExit() {
+    onExit();
+  }
 
   if (!active) {
     return (
@@ -98,7 +104,7 @@ export default function SlidesFocusFrame({
           >
             Download
           </a>
-          <button type="button" onClick={onExit} className="slides-focus-exit">
+          <button type="button" onClick={handleExit} className="slides-focus-exit">
             Exit presentation
           </button>
         </div>
@@ -118,7 +124,7 @@ export default function SlidesFocusFrame({
             <p className="slides-focus-footer-hint">
               <kbd>←</kbd> <kbd>→</kbd> or <kbd>Space</kbd> · slide navigation
             </p>
-            <button type="button" onClick={onExit} className="slides-focus-exit-prominent">
+            <button type="button" onClick={handleExit} className="slides-focus-exit-prominent">
               <CloseIcon />
               Exit presentation
               <span className="slides-focus-exit-key">Esc</span>

@@ -141,6 +141,7 @@ function PptxSlideViewer({
       footer={footer}
     >
       <iframe
+        key={focusMode ? "pptx-focus" : "pptx-inline"}
         src={embedUrl}
         title={`${title} slides`}
         className={`w-full bg-white ${focusMode ? "slides-focus-iframe" : "aspect-video min-h-[420px]"}`}

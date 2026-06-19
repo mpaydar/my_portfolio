@@ -18,12 +18,10 @@ export default function SlidesNavigationCoach({
     }
 
     window.addEventListener("keydown", dismissOnKeyDown);
-    window.addEventListener("pointerdown", onDismiss);
 
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener("keydown", dismissOnKeyDown);
-      window.removeEventListener("pointerdown", onDismiss);
     };
   }, [onDismiss]);
 
