@@ -34,11 +34,13 @@ export default function PostViewSwitcher({
   return (
     <div className="post-view-switcher">
       <div className="mb-8 flex justify-center">
-        <div
-          className="view-toggle"
-          role="tablist"
-          aria-label="Reading mode"
-        >
+        <div className="view-toggle-shell">
+          <p className="view-toggle-label">View as</p>
+          <div
+            className="view-toggle"
+            role="tablist"
+            aria-label="Reading mode"
+          >
           <button
             type="button"
             role="tab"
@@ -65,6 +67,7 @@ export default function PostViewSwitcher({
             data-active={showSlides ? "slides" : "article"}
             aria-hidden
           />
+          </div>
         </div>
       </div>
 
