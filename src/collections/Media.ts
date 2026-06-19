@@ -30,6 +30,13 @@ export const Media: CollectionConfig = {
       { name: "card", width: 768, height: 512, position: "centre" },
       { name: "feature", width: 1200, height: 675, position: "centre" },
     ],
-    mimeTypes: ["image/*", "video/mp4", "video/quicktime"],
+    mimeTypes: [
+      "image/*",
+      "video/mp4",
+      "video/quicktime",
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "application/vnd.ms-powerpoint",
+    ],
   },
 };

@@ -68,6 +68,7 @@ export function getReadinessChecks(fields: {
   slug?: string;
   published?: boolean;
   linkedInConnected?: boolean;
+  presentation?: string | number | null;
 }) {
   return [
     {
@@ -89,6 +90,12 @@ export function getReadinessChecks(fields: {
       id: "slug",
       label: "URL slug ready",
       done: Boolean(fields.slug?.trim()),
+    },
+    {
+      id: "presentation",
+      label: "Slide deck attached (optional)",
+      done: Boolean(fields.presentation),
+      optional: true,
     },
     {
       id: "published",

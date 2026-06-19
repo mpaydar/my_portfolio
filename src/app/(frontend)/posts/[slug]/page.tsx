@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReadingProgress from "@/components/ReadingProgress";
 import RichText from "@/components/RichText";
+import PostViewSwitcher from "@/components/PostViewSwitcher";
 import JsonLd from "@/components/JsonLd";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { getReportBySlug } from "@/lib/posts";
@@ -46,7 +47,11 @@ export default async function PostPage({ params }: Props) {
   return (
     <>
       <ReadingProgress />
-      <article className="mx-auto min-w-0 max-w-2xl overflow-x-clip px-4 pb-16 pt-6 sm:px-6 sm:pb-24 sm:pt-10">
+      <article
+        className={`mx-auto min-w-0 overflow-x-clip px-4 pb-16 pt-6 sm:px-6 sm:pb-24 sm:pt-10 ${
+          post.presentation ? "max-w-5xl" : "max-w-2xl"
+        }`}
+      >
         <JsonLd
           data={[
             buildBlogPostingJsonLd(post),
@@ -127,11 +132,16 @@ export default async function PostPage({ params }: Props) {
           </figure>
         ) : null}
 
-        {showRichText ? (
-          <RichText data={post.content!} />
-        ) : post.excerpt ? null : (
+        <PostViewSwitcher
+          presentation={post.presentation}
+          title={post.title}
+          hasArticle={Boolean(showRichText)}
+          article={showRichText ? <RichText data={post.content!} /> : null}
+        />
+
+        {!post.presentation && !showRichText && !post.excerpt ? (
           <p className="article-prose text-muted">No content yet.</p>
-        )}
+        ) : null}
 
         <footer className="mt-12 border-t border-border pt-8">
           {post.tags.length > 0 ? (

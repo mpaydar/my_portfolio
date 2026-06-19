@@ -66,6 +66,24 @@ export const TechnicalReports: CollectionConfig = {
       },
     },
     {
+      name: "presentation",
+      type: "upload",
+      relationTo: "media",
+      filterOptions: {
+        mimeType: {
+          in: [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "application/vnd.ms-powerpoint",
+          ],
+        },
+      },
+      admin: {
+        description:
+          "Optional slide deck (PDF or PowerPoint). Readers get an Article / Slides toggle on the published post. PDF gives the best in-browser experience.",
+      },
+    },
+    {
       name: "category",
       type: "relationship",
       relationTo: "post-categories",

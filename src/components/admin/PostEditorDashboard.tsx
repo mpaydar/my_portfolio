@@ -19,6 +19,7 @@ export function PostEditorDashboard() {
     excerpt: formFields.excerpt?.value as string | undefined,
     slug: formFields.slug?.value as string | undefined,
     category: formFields.category?.value as string | number | undefined,
+    presentation: formFields.presentation?.value as string | number | undefined,
     status: formFields._status?.value as string | undefined,
     linkedInPostUrl: formFields.linkedInPostUrl?.value as string | undefined,
     linkedInSharedAt: formFields.linkedInSharedAt?.value as string | undefined,
@@ -41,12 +42,16 @@ export function PostEditorDashboard() {
         slug: fields.slug,
         published: fields.status === "published",
         linkedInConnected,
+        presentation: fields.presentation,
       }),
     [fields, linkedInConnected],
   );
 
-  const completed = checks.filter((item) => item.done).length;
-  const progress = Math.round((completed / checks.length) * 100);
+  const requiredChecks = checks.filter(
+    (item) => !("optional" in item && item.optional),
+  );
+  const completed = requiredChecks.filter((item) => item.done).length;
+  const progress = Math.round((completed / requiredChecks.length) * 100);
   const siteOrigin =
     typeof window !== "undefined" ? window.location.origin : "";
   const previewUrl = fields.slug ? `${siteOrigin}/posts/${fields.slug}` : null;

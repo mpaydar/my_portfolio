@@ -15,6 +15,13 @@ export type PostCoverImage = {
   height?: number | null;
 };
 
+export type PostPresentation = {
+  url: string;
+  filename: string;
+  mimeType: string;
+  kind: "pdf" | "pptx";
+};
+
 export type Post = {
   slug: string;
   title: string;
@@ -24,6 +31,7 @@ export type Post = {
   categoryLabel: string;
   categoryDescription: string;
   coverImage: PostCoverImage | null;
+  presentation: PostPresentation | null;
   tags: string[];
   readTime: string;
   content?: TechnicalReport["content"];
@@ -75,6 +83,43 @@ function resolveCoverImage(
   };
 }
 
+const PPTX_MIME_TYPES = new Set([
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.ms-powerpoint",
+]);
+
+function resolvePresentation(
+  presentation: TechnicalReport["presentation"],
+): PostPresentation | null {
+  if (!presentation || typeof presentation === "number") {
+    return null;
+  }
+
+  const media = presentation as Media;
+  const url = resolveMediaUrl(media.url);
+
+  if (!url || !media.mimeType) {
+    return null;
+  }
+
+  const kind = media.mimeType === "application/pdf"
+    ? "pdf"
+    : PPTX_MIME_TYPES.has(media.mimeType)
+      ? "pptx"
+      : null;
+
+  if (!kind) {
+    return null;
+  }
+
+  return {
+    url,
+    filename: media.filename || "presentation",
+    mimeType: media.mimeType,
+    kind,
+  };
+}
+
 function resolveCategory(category: CategoryValue) {
   if (category && typeof category === "object") {
     const slug = category.slug || toCategorySlug(category.title || "");
@@ -118,6 +163,7 @@ function mapReport(
     categoryLabel: category.label,
     categoryDescription: category.description,
     coverImage: resolveCoverImage(doc.coverImage),
+    presentation: resolvePresentation(doc.presentation),
     tags: (doc.tags ?? []).map((t) => t.tag),
     readTime: doc.readTime || "",
     content,

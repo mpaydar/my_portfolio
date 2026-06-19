@@ -235,13 +235,20 @@ export interface TechnicalReport {
    */
   excerpt: string;
   /**
-   * Cover image shown on post listings and at the top of the post page.
+   * Hero image for cards and the post header. To place images inside the article body, use the upload button in the Content editor below.
    */
   coverImage?: (number | null) | Media;
+  /**
+   * Optional slide deck (PDF or PowerPoint). Readers get an Article / Slides toggle on the published post. PDF gives the best in-browser experience.
+   */
+  presentation?: (number | null) | Media;
   /**
    * Primary focus area for this post. Create a new category if none of the existing categories fit.
    */
   category: number | PostCategory;
+  /**
+   * Use the toolbar upload button to insert images between paragraphs inside the post body.
+   */
   content: {
     root: {
       type: string;
@@ -464,6 +471,7 @@ export interface TechnicalReportsSelect<T extends boolean = true> {
   slug?: T;
   excerpt?: T;
   coverImage?: T;
+  presentation?: T;
   category?: T;
   content?: T;
   tags?:
