@@ -110,7 +110,7 @@ export default function CertificationShowcase() {
   const earnedCount = certifications.filter((c) => c.status === "earned").length;
 
   return (
-    <section className="cert-showcase" aria-labelledby="certifications-heading">
+    <section className="cert-showcase" id="certifications" aria-labelledby="certifications-heading">
       <div className="cert-track-banner">
         <div className="cert-track-copy">
           <p className="section-label mb-2">Current focus</p>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PostCard from "@/components/PostCard";
+import CertificationTeaser from "@/components/CertificationTeaser";
 import JsonLd from "@/components/JsonLd";
 import SocialIcons from "@/components/SocialIcons";
 import { getPublishedReports } from "@/lib/posts";
@@ -81,6 +82,12 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <div className="border-b border-border">
+        <div className="mx-auto max-w-5xl px-6 py-5">
+          <CertificationTeaser />
+        </div>
+      </div>
 
       <section className="mx-auto max-w-5xl px-6 py-16">
         {posts.length === 0 ? (
