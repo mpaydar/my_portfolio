@@ -239,3 +239,49 @@ export const recruiter = {
     { hour: 16, minute: 40 },
   ],
 };
+
+export type CertificationStatus = "earned" | "in-progress" | "planned";
+
+export type Certification = {
+  id: string;
+  title: string;
+  issuer: string;
+  status: CertificationStatus;
+  earnedDate?: string;
+  image?: string;
+  imageAlt?: string;
+  credentialUrl?: string;
+  skills: string[];
+  accent: string;
+};
+
+export const certificationTrack = {
+  title: "Azure Databricks Data Engineer Associate",
+  subtitle: "Databricks Certified Data Engineer Associate",
+  description:
+    "Documenting the certifications and badges I earn while preparing for the associate exam — Azure data services, lakehouse patterns, and production-grade pipeline engineering.",
+  status: "in-progress" as const,
+};
+
+export const certifications: Certification[] = [
+  {
+    id: "azure-adls-gen2",
+    title: "Introduction to Azure Data Lake Storage Gen2",
+    issuer: "Microsoft",
+    status: "earned",
+    earnedDate: "2026-06-24",
+    image: "/images/certifications/azure-adls-gen2.png",
+    imageAlt:
+      "Microsoft certificate of completion for Introduction to Azure Data Lake Storage Gen2, awarded to M Bayat",
+    skills: ["Azure Storage", "Data Lake Gen2", "Hierarchical namespace"],
+    accent: "#0078d4",
+  },
+  {
+    id: "databricks-de-associate",
+    title: "Databricks Certified Data Engineer Associate",
+    issuer: "Databricks",
+    status: "in-progress",
+    skills: ["Delta Lake", "Apache Spark", "Lakehouse", "Medallion architecture"],
+    accent: "#ff3621",
+  },
+];

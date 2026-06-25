@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import SocialIcons from "@/components/SocialIcons";
+import CertificationShowcase from "@/components/CertificationShowcase";
 import { expertise, resume } from "@/lib/data";
 import { buildPageMetadata, buildPersonJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "About",
   description:
-    "Mohammad (Moe) Bayat writes about distributed systems, cloud infrastructure, and agentic software. Systems engineer based in New York.",
+    "Mohammad (Moe) Bayat writes about distributed systems, cloud infrastructure, and agentic software. Tracking Azure and Databricks certifications on the path to Data Engineer Associate.",
   path: "/about",
   keywords: [
     "Mohammad Bayat",
@@ -22,7 +23,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
+    <div className="mx-auto max-w-4xl px-6 py-16">
       <JsonLd data={buildPersonJsonLd()} />
 
       <header className="mb-12 border-b border-border pb-10">
@@ -61,6 +62,8 @@ export default function AboutPage() {
             ))}
           </div>
         </section>
+
+        <CertificationShowcase />
 
         <section>
           <h2 className="mb-4 text-lg font-semibold text-foreground">
