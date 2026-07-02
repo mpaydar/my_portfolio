@@ -5,6 +5,7 @@ import {
   getPostCategoryDescription,
   getPostCategoryLabel,
 } from "@/lib/post-categories";
+import { getSourceDocumentKind } from "@/lib/document-types";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { populateUploadNodesInContent } from "@/lib/populate-rich-text";
 
@@ -22,8 +23,19 @@ export type PostPresentation = {
   kind: "pdf" | "pptx";
 };
 
+export type PostSourceDocument = {
+  url: string;
+  filename: string;
+  mimeType: string;
+  kind: "pdf" | "docx";
+};
+
 export function getPresentationProxyUrl(slug: string) {
   return `/api/posts/${encodeURIComponent(slug)}/presentation`;
+}
+
+export function getDocumentProxyUrl(slug: string) {
+  return `/api/posts/${encodeURIComponent(slug)}/document`;
 }
 
 export type Post = {
@@ -36,6 +48,7 @@ export type Post = {
   categoryDescription: string;
   coverImage: PostCoverImage | null;
   presentation: PostPresentation | null;
+  sourceDocument: PostSourceDocument | null;
   tags: string[];
   readTime: string;
   content?: TechnicalReport["content"];
@@ -91,6 +104,33 @@ const PPTX_MIME_TYPES = new Set([
   "application/vnd.openxmlformats-officedocument.presentationml.presentation",
   "application/vnd.ms-powerpoint",
 ]);
+
+function resolveSourceDocument(
+  sourceDocument: TechnicalReport["sourceDocument"],
+): PostSourceDocument | null {
+  if (!sourceDocument || typeof sourceDocument === "number") {
+    return null;
+  }
+
+  const media = sourceDocument as Media;
+  const url = resolveMediaUrl(media.url);
+
+  if (!url || !media.mimeType) {
+    return null;
+  }
+
+  const kind = getSourceDocumentKind(media.mimeType);
+  if (!kind) {
+    return null;
+  }
+
+  return {
+    url,
+    filename: media.filename || "document",
+    mimeType: media.mimeType,
+    kind,
+  };
+}
 
 function resolvePresentation(
   presentation: TechnicalReport["presentation"],
@@ -168,6 +208,7 @@ function mapReport(
     categoryDescription: category.description,
     coverImage: resolveCoverImage(doc.coverImage),
     presentation: resolvePresentation(doc.presentation),
+    sourceDocument: resolveSourceDocument(doc.sourceDocument),
     tags: (doc.tags ?? []).map((t) => t.tag),
     readTime: doc.readTime || "",
     content,

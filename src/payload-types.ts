@@ -239,6 +239,13 @@ export interface TechnicalReport {
    */
   coverImage?: (number | null) | Media;
   /**
+   * Upload a PDF or Word document to publish as a technical report. Word files are imported into the article body automatically; PDFs are shown in a professional document reader.
+   */
+  sourceDocument?: (number | null) | Media;
+  documentImportStatus?: ('idle' | 'imported' | 'failed') | null;
+  documentImportError?: string | null;
+  lastImportedDocumentId?: number | null;
+  /**
    * Optional slide deck (PDF or PowerPoint). Readers get an Article / Slides toggle on the published post. PDF gives the best in-browser experience.
    */
   presentation?: (number | null) | Media;
@@ -247,9 +254,9 @@ export interface TechnicalReport {
    */
   category: number | PostCategory;
   /**
-   * Use the toolbar upload button to insert images between paragraphs inside the post body.
+   * Write directly or upload a Word document above — content is imported automatically. PDF reports use the document viewer instead.
    */
-  content: {
+  content?: {
     root: {
       type: string;
       children: {
@@ -263,7 +270,7 @@ export interface TechnicalReport {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
   tags?:
     | {
         tag: string;
@@ -471,6 +478,10 @@ export interface TechnicalReportsSelect<T extends boolean = true> {
   slug?: T;
   excerpt?: T;
   coverImage?: T;
+  sourceDocument?: T;
+  documentImportStatus?: T;
+  documentImportError?: T;
+  lastImportedDocumentId?: T;
   presentation?: T;
   category?: T;
   content?: T;

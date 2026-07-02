@@ -9,6 +9,8 @@ import type { CollectionConfig } from "payload";
 import { slugField } from "payload";
 
 import { getSiteUrl } from "@/lib/linkedin/config";
+import { hasRichTextBody } from "@/lib/rich-text";
+import { SOURCE_DOCUMENT_MIME_TYPES } from "@/lib/document-types";
 
 export const TechnicalReports: CollectionConfig = {
   slug: "technical-reports",
@@ -66,6 +68,51 @@ export const TechnicalReports: CollectionConfig = {
       },
     },
     {
+      name: "sourceDocument",
+      type: "upload",
+      relationTo: "media",
+      filterOptions: {
+        mimeType: {
+          in: [...SOURCE_DOCUMENT_MIME_TYPES],
+        },
+      },
+      admin: {
+        description:
+          "Upload a PDF or Word document to publish as a technical report. Word files are imported into the article body automatically; PDFs are shown in a professional document reader.",
+      },
+    },
+    {
+      name: "documentImportStatus",
+      type: "select",
+      defaultValue: "idle",
+      options: [
+        { label: "Not imported", value: "idle" },
+        { label: "Imported", value: "imported" },
+        { label: "Import failed", value: "failed" },
+      ],
+      admin: {
+        readOnly: true,
+        position: "sidebar",
+        condition: (_, siblingData) => Boolean(siblingData?.sourceDocument),
+      },
+    },
+    {
+      name: "documentImportError",
+      type: "text",
+      admin: {
+        readOnly: true,
+        position: "sidebar",
+        condition: (_, siblingData) => siblingData?.documentImportStatus === "failed",
+      },
+    },
+    {
+      name: "lastImportedDocumentId",
+      type: "number",
+      admin: {
+        hidden: true,
+      },
+    },
+    {
       name: "presentation",
       type: "upload",
       relationTo: "media",
@@ -97,10 +144,20 @@ export const TechnicalReports: CollectionConfig = {
     {
       name: "content",
       type: "richText",
-      required: true,
+      required: false,
+      validate: (value, { siblingData }) => {
+        const data = siblingData as { sourceDocument?: unknown };
+        if (value && hasRichTextBody(value as Parameters<typeof hasRichTextBody>[0])) {
+          return true;
+        }
+        if (data.sourceDocument) {
+          return true;
+        }
+        return "Add article content or upload a source document (PDF or Word).";
+      },
       admin: {
         description:
-          "Use the toolbar upload button to insert images between paragraphs inside the post body.",
+          "Write directly or upload a Word document above — content is imported automatically. PDF reports use the document viewer instead.",
       },
       editor: lexicalEditor({
         features: ({ rootFeatures }) => [
@@ -216,6 +273,39 @@ export const TechnicalReports: CollectionConfig = {
       ],
     },
   ],
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, req, context }) => {
+        if (context?.skipDocumentImport) return;
+
+        const sourceDocumentId =
+          typeof doc.sourceDocument === "number"
+            ? doc.sourceDocument
+            : doc.sourceDocument?.id;
+
+        if (!sourceDocumentId) return;
+
+        const previousSourceDocumentId =
+          typeof previousDoc?.sourceDocument === "number"
+            ? previousDoc.sourceDocument
+            : previousDoc?.sourceDocument?.id ?? null;
+
+        const { maybeImportSourceDocument } = await import(
+          "@/lib/document-import"
+        );
+
+        await maybeImportSourceDocument({
+          payload: req.payload,
+          reportId: doc.id,
+          sourceDocumentId,
+          previousSourceDocumentId,
+          currentContent: doc.content,
+          currentExcerpt: doc.excerpt,
+          currentReadTime: doc.readTime,
+        });
+      },
+    ],
+  },
   endpoints: [
     {
       path: "/:id/share-linkedin",

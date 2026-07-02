@@ -17,6 +17,20 @@ export const Media: CollectionConfig = {
       name: "alt",
       type: "text",
       required: true,
+      admin: {
+        description:
+          "Describe the file for accessibility. Defaults to the filename for documents.",
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value, siblingData }) => {
+            if (value?.trim()) return value;
+            const filename = (siblingData as { filename?: string })?.filename;
+            if (filename) return filename.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ");
+            return value;
+          },
+        ],
+      },
     },
   ],
   upload: {
@@ -37,6 +51,8 @@ export const Media: CollectionConfig = {
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.presentationml.presentation",
       "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/msword",
     ],
   },
 };

@@ -69,7 +69,15 @@ export function getReadinessChecks(fields: {
   published?: boolean;
   linkedInConnected?: boolean;
   presentation?: string | number | null;
+  sourceDocument?: string | number | null;
+  documentImportStatus?: string;
 }) {
+  const hasDocument = Boolean(fields.sourceDocument);
+  const documentImported =
+    !hasDocument ||
+    fields.documentImportStatus === "imported" ||
+    fields.documentImportStatus === "idle";
+
   return [
     {
       id: "title",
@@ -90,6 +98,20 @@ export function getReadinessChecks(fields: {
       id: "slug",
       label: "URL slug ready",
       done: Boolean(fields.slug?.trim()),
+    },
+    {
+      id: "sourceDocument",
+      label: hasDocument
+        ? "Source document uploaded"
+        : "Source document (PDF or Word)",
+      done: hasDocument,
+      optional: !hasDocument,
+    },
+    {
+      id: "documentImport",
+      label: "Word document imported into article",
+      done: documentImported,
+      optional: !hasDocument || fields.documentImportStatus !== "failed",
     },
     {
       id: "presentation",

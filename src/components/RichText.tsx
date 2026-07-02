@@ -54,7 +54,7 @@ const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
 export default function RichText({
   data,
 }: {
-  data: TechnicalReport["content"];
+  data: NonNullable<TechnicalReport["content"]>;
 }) {
   return (
     <div className="article-prose">

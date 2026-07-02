@@ -20,6 +20,8 @@ export function PostEditorDashboard() {
     slug: formFields.slug?.value as string | undefined,
     category: formFields.category?.value as string | number | undefined,
     presentation: formFields.presentation?.value as string | number | undefined,
+    sourceDocument: formFields.sourceDocument?.value as string | number | undefined,
+    documentImportStatus: formFields.documentImportStatus?.value as string | undefined,
     status: formFields._status?.value as string | undefined,
     linkedInPostUrl: formFields.linkedInPostUrl?.value as string | undefined,
     linkedInSharedAt: formFields.linkedInSharedAt?.value as string | undefined,
@@ -43,6 +45,8 @@ export function PostEditorDashboard() {
         published: fields.status === "published",
         linkedInConnected,
         presentation: fields.presentation,
+        sourceDocument: fields.sourceDocument,
+        documentImportStatus: fields.documentImportStatus,
       }),
     [fields, linkedInConnected],
   );
@@ -63,7 +67,7 @@ export function PostEditorDashboard() {
           <div>
             <h3 className={styles.panelTitle}>Post command center</h3>
             <p className={styles.panelSubtitle}>
-              Track readiness, preview your live article, and ship to LinkedIn from
+              Track readiness, preview your live report, and ship to LinkedIn from
               one place.
             </p>
           </div>

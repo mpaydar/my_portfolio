@@ -798,7 +798,47 @@ body {
   transform: translateX(100%);
 }
 
-.view-panel {
+.view-toggle--triple {
+  width: min(100%, 28rem);
+}
+
+.view-toggle--triple .view-toggle-btn {
+  min-width: 0;
+  padding-inline: 0.65rem;
+}
+
+.view-toggle-indicator[data-count="3"] {
+  width: calc(33.333% - 0.2rem);
+}
+
+.view-toggle-indicator[data-count="3"][data-active="document"] {
+  transform: translateX(100%);
+}
+
+.view-toggle-indicator[data-count="3"][data-active="slides"] {
+  transform: translateX(200%);
+}
+
+.document-viewer {
+  overflow: hidden;
+}
+
+.document-iframe {
+  min-height: 70vh;
+  aspect-ratio: auto;
+}
+
+.document-page canvas {
+  display: block;
+  margin-inline: auto;
+}
+
+.document-pages .react-pdf__Page__textContent {
+  opacity: 0.85;
+}
+
+.view-panel.is-document,
+.view-panel.is-slides {
   animation: view-fade-in 0.28s ease;
 }
 
