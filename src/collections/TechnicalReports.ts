@@ -11,10 +11,9 @@ import { slugField } from "payload";
 import { getSiteUrl } from "@/lib/linkedin/config";
 import { hasRichTextBody } from "@/lib/rich-text";
 import {
-  applySourceDocumentImport,
   hasPublishableContent,
   resolveSourceDocumentId,
-} from "@/lib/document-import";
+} from "@/lib/document-import-utils";
 import { SOURCE_DOCUMENT_MIME_TYPES } from "@/lib/document-types";
 
 export const TechnicalReports: CollectionConfig = {
@@ -285,6 +284,10 @@ export const TechnicalReports: CollectionConfig = {
 
         const previousSourceDocumentId = resolveSourceDocumentId(
           originalDoc?.sourceDocument as typeof data.sourceDocument,
+        );
+
+        const { applySourceDocumentImport } = await import(
+          "@/lib/document-import"
         );
 
         return applySourceDocumentImport(req.payload, data, previousSourceDocumentId);

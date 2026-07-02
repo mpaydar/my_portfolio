@@ -1,13 +1,12 @@
-import mammoth from "mammoth";
 import type { Payload } from "payload";
 
 import { fetchMediaBuffer } from "@/lib/fetch-media-buffer";
+import { resolveSourceDocumentId } from "@/lib/document-import-utils";
 import {
   DOCX_MIME_TYPES,
   getSourceDocumentKind,
   PDF_MIME_TYPE,
 } from "@/lib/document-types";
-import { htmlToLexicalContent } from "@/lib/html-to-lexical";
 import { hasRichTextBody } from "@/lib/rich-text";
 import type { Media, TechnicalReport } from "@/payload-types";
 
@@ -29,16 +28,6 @@ type SourceDocumentData = {
   lastImportedDocumentId?: number | null;
 };
 
-function resolveSourceDocumentId(
-  sourceDocument: SourceDocumentData["sourceDocument"],
-): number | null {
-  if (typeof sourceDocument === "number") return sourceDocument;
-  if (sourceDocument && typeof sourceDocument === "object" && "id" in sourceDocument) {
-    return sourceDocument.id;
-  }
-  return null;
-}
-
 function estimateReadTime(text: string): string {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
   const minutes = Math.max(1, Math.ceil(words / 200));
@@ -53,6 +42,11 @@ function extractExcerptFromText(text: string, maxLength = 220): string {
 }
 
 async function importDocx(buffer: Buffer): Promise<DocumentImportResult> {
+  const [{ default: mammoth }, { htmlToLexicalContent }] = await Promise.all([
+    import("mammoth"),
+    import("@/lib/html-to-lexical"),
+  ]);
+
   const [htmlResult, textResult] = await Promise.all([
     mammoth.convertToHtml({ buffer }),
     mammoth.extractRawText({ buffer }),
@@ -111,15 +105,6 @@ export async function importSourceDocument(
           : "Failed to import Word document.",
     };
   }
-}
-
-export function hasPublishableContent(data: {
-  content?: TechnicalReport["content"] | null;
-  sourceDocument?: unknown;
-}): boolean {
-  if (hasRichTextBody(data.content)) return true;
-  if (data.sourceDocument) return true;
-  return false;
 }
 
 export async function applySourceDocumentImport(
@@ -190,49 +175,3 @@ export async function applySourceDocumentImport(
 
   return next;
 }
-
-/** @deprecated Use applySourceDocumentImport in beforeChange instead. */
-export async function maybeImportSourceDocument({
-  payload,
-  reportId,
-  sourceDocumentId,
-  previousSourceDocumentId,
-  currentContent,
-  currentExcerpt,
-  currentReadTime,
-}: {
-  payload: Payload;
-  reportId: string | number;
-  sourceDocumentId: number;
-  previousSourceDocumentId?: number | null;
-  currentContent?: TechnicalReport["content"] | null;
-  currentExcerpt?: string | null;
-  currentReadTime?: string | null;
-}): Promise<void> {
-  const updated = await applySourceDocumentImport(
-    payload,
-    {
-      sourceDocument: sourceDocumentId,
-      content: currentContent,
-      excerpt: currentExcerpt,
-      readTime: currentReadTime,
-    },
-    previousSourceDocumentId,
-  );
-
-  await payload.update({
-    collection: "technical-reports",
-    id: reportId,
-    data: {
-      documentImportStatus: updated.documentImportStatus,
-      documentImportError: updated.documentImportError ?? undefined,
-      lastImportedDocumentId: updated.lastImportedDocumentId ?? undefined,
-      content: updated.content ?? undefined,
-      excerpt: updated.excerpt ?? undefined,
-      readTime: updated.readTime ?? undefined,
-    },
-    context: { skipDocumentImport: true },
-  });
-}
-
-export { resolveSourceDocumentId };
