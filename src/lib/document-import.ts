@@ -19,6 +19,26 @@ export type DocumentImportResult = {
   error?: string;
 };
 
+type SourceDocumentData = {
+  sourceDocument?: number | Media | null;
+  content?: TechnicalReport["content"] | null;
+  excerpt?: string | null;
+  readTime?: string | null;
+  documentImportStatus?: TechnicalReport["documentImportStatus"];
+  documentImportError?: string | null;
+  lastImportedDocumentId?: number | null;
+};
+
+function resolveSourceDocumentId(
+  sourceDocument: SourceDocumentData["sourceDocument"],
+): number | null {
+  if (typeof sourceDocument === "number") return sourceDocument;
+  if (sourceDocument && typeof sourceDocument === "object" && "id" in sourceDocument) {
+    return sourceDocument.id;
+  }
+  return null;
+}
+
 function estimateReadTime(text: string): string {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
   const minutes = Math.max(1, Math.ceil(words / 200));
@@ -93,6 +113,85 @@ export async function importSourceDocument(
   }
 }
 
+export function hasPublishableContent(data: {
+  content?: TechnicalReport["content"] | null;
+  sourceDocument?: unknown;
+}): boolean {
+  if (hasRichTextBody(data.content)) return true;
+  if (data.sourceDocument) return true;
+  return false;
+}
+
+export async function applySourceDocumentImport(
+  payload: Payload,
+  data: SourceDocumentData,
+  previousSourceDocumentId?: number | null,
+): Promise<SourceDocumentData> {
+  const sourceDocumentId = resolveSourceDocumentId(data.sourceDocument);
+  if (!sourceDocumentId) {
+    return {
+      ...data,
+      documentImportStatus: "idle",
+      documentImportError: null,
+      lastImportedDocumentId: null,
+    };
+  }
+
+  const unchangedDocument =
+    previousSourceDocumentId != null &&
+    sourceDocumentId === previousSourceDocumentId &&
+    data.documentImportStatus === "imported";
+
+  if (unchangedDocument) {
+    return data;
+  }
+
+  const media = await payload.findByID({
+    collection: "media",
+    id: sourceDocumentId,
+    depth: 0,
+  });
+
+  const mimeType = media.mimeType;
+  if (
+    mimeType !== PDF_MIME_TYPE &&
+    (!mimeType || !DOCX_MIME_TYPES.has(mimeType))
+  ) {
+    return {
+      ...data,
+      documentImportStatus: "failed",
+      documentImportError: "Upload a PDF or Word (.docx) document.",
+      lastImportedDocumentId: sourceDocumentId,
+    };
+  }
+
+  const result = await importSourceDocument(media as Media);
+  const next: SourceDocumentData = {
+    ...data,
+    documentImportStatus: result.status,
+    documentImportError: result.error ?? null,
+    lastImportedDocumentId: sourceDocumentId,
+  };
+
+  if (
+    result.content &&
+    (!next.content || !hasRichTextBody(next.content))
+  ) {
+    next.content = result.content;
+  }
+
+  if (result.excerpt && !next.excerpt?.trim()) {
+    next.excerpt = result.excerpt;
+  }
+
+  if (result.readTime && !next.readTime?.trim()) {
+    next.readTime = result.readTime;
+  }
+
+  return next;
+}
+
+/** @deprecated Use applySourceDocumentImport in beforeChange instead. */
 export async function maybeImportSourceDocument({
   payload,
   reportId,
@@ -110,61 +209,30 @@ export async function maybeImportSourceDocument({
   currentExcerpt?: string | null;
   currentReadTime?: string | null;
 }): Promise<void> {
-  if (sourceDocumentId === previousSourceDocumentId) {
-    return;
-  }
-
-  const media = await payload.findByID({
-    collection: "media",
-    id: sourceDocumentId,
-    depth: 0,
-  });
-
-  const mimeType = media.mimeType;
-  if (
-    mimeType !== PDF_MIME_TYPE &&
-    (!mimeType || !DOCX_MIME_TYPES.has(mimeType))
-  ) {
-    await payload.update({
-      collection: "technical-reports",
-      id: reportId,
-      data: {
-        documentImportStatus: "failed",
-        documentImportError: "Upload a PDF or Word (.docx) document.",
-        lastImportedDocumentId: sourceDocumentId,
-      },
-      context: { skipDocumentImport: true },
-    });
-    return;
-  }
-
-  const result = await importSourceDocument(media as Media);
-
-  const updateData: Record<string, unknown> = {
-    documentImportStatus: result.status,
-    documentImportError: result.error ?? null,
-    lastImportedDocumentId: sourceDocumentId,
-  };
-
-  if (
-    result.content &&
-    (!currentContent || !hasRichTextBody(currentContent))
-  ) {
-    updateData.content = result.content;
-  }
-
-  if (result.excerpt && !currentExcerpt?.trim()) {
-    updateData.excerpt = result.excerpt;
-  }
-
-  if (result.readTime && !currentReadTime?.trim()) {
-    updateData.readTime = result.readTime;
-  }
+  const updated = await applySourceDocumentImport(
+    payload,
+    {
+      sourceDocument: sourceDocumentId,
+      content: currentContent,
+      excerpt: currentExcerpt,
+      readTime: currentReadTime,
+    },
+    previousSourceDocumentId,
+  );
 
   await payload.update({
     collection: "technical-reports",
     id: reportId,
-    data: updateData,
+    data: {
+      documentImportStatus: updated.documentImportStatus,
+      documentImportError: updated.documentImportError ?? undefined,
+      lastImportedDocumentId: updated.lastImportedDocumentId ?? undefined,
+      content: updated.content ?? undefined,
+      excerpt: updated.excerpt ?? undefined,
+      readTime: updated.readTime ?? undefined,
+    },
     context: { skipDocumentImport: true },
   });
 }
+
+export { resolveSourceDocumentId };

@@ -73,10 +73,12 @@ export function getReadinessChecks(fields: {
   documentImportStatus?: string;
 }) {
   const hasDocument = Boolean(fields.sourceDocument);
-  const documentImported =
+  const isPdfDocument =
+    hasDocument && fields.documentImportStatus !== "failed";
+  const documentReady =
     !hasDocument ||
     fields.documentImportStatus === "imported" ||
-    fields.documentImportStatus === "idle";
+    (fields.documentImportStatus === "idle" && isPdfDocument);
 
   return [
     {
@@ -109,8 +111,10 @@ export function getReadinessChecks(fields: {
     },
     {
       id: "documentImport",
-      label: "Word document imported into article",
-      done: documentImported,
+      label: hasDocument
+        ? "Document ready for publishing"
+        : "Document import (PDF or Word)",
+      done: documentReady,
       optional: !hasDocument || fields.documentImportStatus !== "failed",
     },
     {

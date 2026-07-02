@@ -10,6 +10,11 @@ import { slugField } from "payload";
 
 import { getSiteUrl } from "@/lib/linkedin/config";
 import { hasRichTextBody } from "@/lib/rich-text";
+import {
+  applySourceDocumentImport,
+  hasPublishableContent,
+  resolveSourceDocumentId,
+} from "@/lib/document-import";
 import { SOURCE_DOCUMENT_MIME_TYPES } from "@/lib/document-types";
 
 export const TechnicalReports: CollectionConfig = {
@@ -145,12 +150,12 @@ export const TechnicalReports: CollectionConfig = {
       name: "content",
       type: "richText",
       required: false,
-      validate: (value, { siblingData }) => {
-        const data = siblingData as { sourceDocument?: unknown };
+      validate: (value, { data }) => {
+        const docData = data as { sourceDocument?: unknown };
         if (value && hasRichTextBody(value as Parameters<typeof hasRichTextBody>[0])) {
           return true;
         }
-        if (data.sourceDocument) {
+        if (docData?.sourceDocument) {
           return true;
         }
         return "Add article content or upload a source document (PDF or Word).";
@@ -274,35 +279,35 @@ export const TechnicalReports: CollectionConfig = {
     },
   ],
   hooks: {
-    afterChange: [
-      async ({ doc, previousDoc, req, context }) => {
-        if (context?.skipDocumentImport) return;
+    beforeChange: [
+      async ({ data, originalDoc, req, context }) => {
+        if (context?.skipDocumentImport) return data;
 
-        const sourceDocumentId =
-          typeof doc.sourceDocument === "number"
-            ? doc.sourceDocument
-            : doc.sourceDocument?.id;
-
-        if (!sourceDocumentId) return;
-
-        const previousSourceDocumentId =
-          typeof previousDoc?.sourceDocument === "number"
-            ? previousDoc.sourceDocument
-            : previousDoc?.sourceDocument?.id ?? null;
-
-        const { maybeImportSourceDocument } = await import(
-          "@/lib/document-import"
+        const previousSourceDocumentId = resolveSourceDocumentId(
+          originalDoc?.sourceDocument as typeof data.sourceDocument,
         );
 
-        await maybeImportSourceDocument({
-          payload: req.payload,
-          reportId: doc.id,
-          sourceDocumentId,
-          previousSourceDocumentId,
-          currentContent: doc.content,
-          currentExcerpt: doc.excerpt,
-          currentReadTime: doc.readTime,
-        });
+        return applySourceDocumentImport(req.payload, data, previousSourceDocumentId);
+      },
+    ],
+    beforeValidate: [
+      ({ data }) => {
+        if (!data) return data;
+
+        if (!hasPublishableContent(data)) {
+          return data;
+        }
+
+        const sourceDocumentId = resolveSourceDocumentId(data.sourceDocument);
+        if (
+          sourceDocumentId &&
+          !hasRichTextBody(data.content) &&
+          data.documentImportStatus !== "imported"
+        ) {
+          data.documentImportStatus = "imported";
+        }
+
+        return data;
       },
     ],
   },

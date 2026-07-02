@@ -156,6 +156,9 @@ export interface User {
  */
 export interface Media {
   id: number;
+  /**
+   * Describe the file for accessibility. Defaults to the filename for documents.
+   */
   alt: string;
   updatedAt: string;
   createdAt: string;
