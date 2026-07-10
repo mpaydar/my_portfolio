@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import CertificationTeaser from "@/components/CertificationTeaser";
+import PromptPackagingTeaser from "@/components/PromptPackagingTeaser";
 import JsonLd from "@/components/JsonLd";
 import SocialIcons from "@/components/SocialIcons";
 import { getPublishedReports } from "@/lib/posts";
@@ -72,7 +73,7 @@ export default async function Home() {
           ) : null}
           <div className="flex items-center gap-4">
             <span className="font-mono text-xs text-muted">Author</span>
-            <SocialIcons />
+            <SocialIcons hideNotebookLM />
             <Link
               href="/about"
               className="font-mono text-xs text-accent transition hover:text-foreground"
@@ -84,8 +85,9 @@ export default async function Home() {
       </section>
 
       <div className="border-b border-border">
-        <div className="mx-auto max-w-5xl px-6 py-5">
+        <div className="mx-auto flex max-w-5xl flex-col gap-3 px-6 py-5">
           <CertificationTeaser />
+          <PromptPackagingTeaser />
         </div>
       </div>
 

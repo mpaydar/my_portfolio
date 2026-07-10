@@ -1,0 +1,52 @@
+import {
+  promptPackagingTrack,
+  promptPackages,
+} from "@/lib/data";
+import PromptPackageCard from "@/components/PromptPackageCard";
+
+export default function PromptPackagingShowcase() {
+  return (
+    <section className="prompt-showcase" aria-labelledby="prompt-packaging-heading">
+      <div className="prompt-track-banner">
+        <div className="prompt-track-copy">
+          <p className="section-label mb-2">Methodology</p>
+          <h2 id="prompt-packaging-heading" className="prompt-track-title">
+            {promptPackagingTrack.title}
+          </h2>
+          <p className="prompt-track-subtitle">{promptPackagingTrack.subtitle}</p>
+          <p className="prompt-track-description">
+            {promptPackagingTrack.description}
+          </p>
+        </div>
+
+        <div className="prompt-track-stats" aria-label="Prompt packaging focus">
+          <div className="prompt-stat">
+            <span className="prompt-stat-value">{promptPackages.length}</span>
+            <span className="prompt-stat-label">Packages</span>
+          </div>
+          <div className="prompt-stat-divider" aria-hidden />
+          <div className="prompt-stat">
+            <span className="prompt-stat-value">
+              {promptPackagingTrack.focusAreas.length}
+            </span>
+            <span className="prompt-stat-label">Focus areas</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="prompt-focus-pills" aria-label="Primary focus areas">
+        {promptPackagingTrack.focusAreas.map((area) => (
+          <span key={area} className="prompt-focus-pill">
+            {area}
+          </span>
+        ))}
+      </div>
+
+      <div className="prompt-grid">
+        {promptPackages.map((pkg) => (
+          <PromptPackageCard key={pkg.id} pkg={pkg} />
+        ))}
+      </div>
+    </section>
+  );
+}

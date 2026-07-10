@@ -3,6 +3,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 const links = [
   { href: "/", label: "Articles" },
+  { href: "/prompt-packaging", label: "Prompts" },
   { href: "/about", label: "About" },
 ];
 

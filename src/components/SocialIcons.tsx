@@ -23,16 +23,21 @@ const links = [
 export default function SocialIcons({
   size = "md",
   className = "",
+  hideNotebookLM = false,
 }: {
   size?: "sm" | "md";
   className?: string;
+  hideNotebookLM?: boolean;
 }) {
   const box = size === "sm" ? "h-9 w-9" : "h-10 w-10";
   const icon = size === "sm" ? "h-4 w-4" : "h-[18px] w-[18px]";
+  const visibleLinks = hideNotebookLM
+    ? links.filter((link) => link.name !== "NotebookLM")
+    : links;
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      {links.map(({ name, href, Icon }) => (
+      {visibleLinks.map(({ name, href, Icon }) => (
         <a
           key={name}
           href={href}

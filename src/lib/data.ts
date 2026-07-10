@@ -285,3 +285,150 @@ export const certifications: Certification[] = [
     accent: "#ff3621",
   },
 ];
+
+export type PromptPackageLevel = "engineer" | "senior" | "architect";
+
+export type PromptPackage = {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  useCase: string;
+  level: PromptPackageLevel;
+  tags: string[];
+  accent: string;
+  prompt: string;
+};
+
+export const promptPackagingTrack = {
+  title: "Prompt Packaging",
+  subtitle: "Engineer-leveled prompts for cloud architecture & Azure SDK",
+  description:
+    "Structured prompt systems for designing and implementing complex cloud architectures faster. Each package combines robust cloud engineering context with prompt engineering patterns — focused on Azure, the Python SDK, and production-grade data platform work.",
+  focusAreas: ["Cloud Engineering", "Azure Python SDK", "Data Factory", "Prompt Engineering"],
+};
+
+export const promptPackages: PromptPackage[] = [
+  {
+    id: "azure-architecture-blueprint",
+    title: "Azure Architecture Blueprint",
+    subtitle: "Design complex cloud systems before writing code",
+    description:
+      "Frames a full architecture pass — requirements, constraints, service selection, failure modes, and implementation sequencing for Azure workloads.",
+    useCase: "Greenfield platform design, migration planning, or architecture review before sprint work.",
+    level: "architect",
+    tags: ["Azure", "Architecture", "IaC", "Reliability"],
+    accent: "#0078d4",
+    prompt: `You are a senior Azure cloud architect. Design a production-grade architecture for the following workload.
+
+## Context
+- Workload: [describe the system — e.g. batch ETL, real-time ingestion, ML inference API]
+- Scale: [users, events/sec, data volume, regions]
+- Compliance: [e.g. PII, HIPAA, SOC2, data residency]
+- Team constraints: [team size, IaC maturity, existing services]
+
+## Deliverables
+1. **Reference architecture** — diagram in Mermaid, with clear data/control planes
+2. **Azure service map** — justify each service (compute, storage, messaging, identity, observability)
+3. **Network & security** — VNet layout, private endpoints, Key Vault usage, RBAC model
+4. **Failure modes** — single points of failure, retry/idempotency strategy, DR approach
+5. **Implementation phases** — ordered build plan with milestones and rollback points
+6. **Cost & ops** — rough cost drivers and monitoring/alerting essentials
+
+Be specific to Azure. Prefer managed services. Flag trade-offs explicitly. Do not hand-wave — every recommendation must tie to a requirement.`,
+  },
+  {
+    id: "azure-python-sdk-scaffold",
+    title: "Azure Python SDK Scaffold",
+    subtitle: "Generate typed, production-ready SDK integration code",
+    description:
+      "Produces Azure SDK Python modules with auth, error handling, retries, logging, and test hooks — not tutorial snippets.",
+    useCase: "Bootstrapping service integrations for Blob, Data Factory, Key Vault, or Resource Manager.",
+    level: "engineer",
+    tags: ["Azure SDK", "Python", "DefaultAzureCredential", "Error handling"],
+    accent: "#0078d4",
+    prompt: `You are a senior Python engineer specializing in the Azure SDK for Python.
+
+## Task
+Implement a production-ready integration for: [Azure service — e.g. Blob Storage, Data Factory, Key Vault]
+
+## Requirements
+- Use \`azure-identity\` (\`DefaultAzureCredential\`) — no hardcoded secrets
+- Async where the SDK supports it; explain sync fallback if needed
+- Typed function signatures with docstrings
+- Retry policy for transient errors (429, 5xx, timeouts)
+- Structured logging (no print statements)
+- Configuration via environment variables with sensible defaults
+- Idempotent operations where applicable
+- Unit test stubs with \`unittest.mock\` or \`pytest\` fixtures
+
+## Output format
+1. \`requirements.txt\` additions
+2. Module code (\`services/<name>.py\`)
+3. Example usage script
+4. Brief README section: auth setup, local dev, common pitfalls
+
+Target Python 3.11+. Follow Azure SDK best practices from official docs. No placeholder TODOs — ship complete, runnable code.`,
+  },
+  {
+    id: "adf-pipeline-designer",
+    title: "ADF Pipeline Designer",
+    subtitle: "Design Azure Data Factory pipelines with operational rigor",
+    description:
+      "Packages prompts for linked services, datasets, pipeline DAGs, triggers, and observability for ADF-centric data engineering.",
+    useCase: "Building or refactoring ADF pipelines for batch ingestion, transformation, or lakehouse loads.",
+    level: "engineer",
+    tags: ["Azure Data Factory", "ETL", "Linked Services", "Medallion"],
+    accent: "#0078d4",
+    prompt: `You are an Azure Data Factory specialist designing a production ETL/ELT pipeline.
+
+## Pipeline context
+- Source(s): [e.g. REST API, on-prem SQL, Blob CSV, Event Hub]
+- Destination: [e.g. ADLS Gen2 bronze/silver/gold, Synapse, Databricks]
+- Schedule: [tumbling window, event-driven, daily batch]
+- SLA: [freshness, max runtime, retry budget]
+
+## Deliverables
+1. **Linked services & datasets** — naming conventions, parameterization strategy
+2. **Pipeline DAG** — activities, dependencies, fan-out/fan-in patterns
+3. **Data flow or mapping** — transformation logic, schema drift handling
+4. **Error handling** — failure paths, dead-letter storage, alerting hooks
+5. **ARM/Bicep or Terraform sketch** — key resources to provision alongside ADF
+6. **Operational runbook** — what to check when a run fails, common root causes
+
+Use medallion/lakehouse terminology where appropriate. Prefer parameterized pipelines over copy-paste. Include monitoring integration (Log Analytics / App Insights).`,
+  },
+  {
+    id: "cloud-prompt-engineering-kit",
+    title: "Cloud Prompt Engineering Kit",
+    subtitle: "Meta-prompts that improve your architecture prompts",
+    description:
+      "Engineer-leveled templates for refining, decomposing, and stress-testing cloud design prompts before handing them to an LLM.",
+    useCase: "Improving prompt quality, splitting large architecture asks, or adding verification loops.",
+    level: "senior",
+    tags: ["Prompt Engineering", "Chain-of-thought", "Verification", "Cloud"],
+    accent: "#7c3aed",
+    prompt: `You are a prompt engineering specialist for cloud architecture workflows.
+
+## Input
+I will provide a draft prompt used for cloud engineering tasks. Your job is to upgrade it.
+
+## Upgrade checklist
+1. **Role & expertise** — Is the persona specific enough (Azure architect vs generic cloud expert)?
+2. **Context slots** — Are all variable inputs clearly marked with \`[brackets]\`?
+3. **Output structure** — Does it request numbered deliverables, not prose walls?
+4. **Constraints** — Are non-goals, compliance, and scale limits explicit?
+5. **Verification** — Add a self-check step: "Before finalizing, list assumptions and risks"
+6. **Anti-patterns** — Instruct the model to avoid vague recommendations and missing trade-offs
+
+## Output
+1. Revised prompt (copy-paste ready)
+2. Changelog — what you improved and why
+3. Optional **decomposition** — if the prompt is too large, split into Phase 1 (design) and Phase 2 (implementation) prompts
+
+Draft prompt to upgrade:
+---
+[paste your draft prompt here]
+---`,
+  },
+];
