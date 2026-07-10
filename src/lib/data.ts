@@ -76,7 +76,7 @@ export const projects: Project[] = [
 
 export const resume = {
   name: "Moe Bayat",
-  title: "DevOps & Platform Engineer | Agentic AI Systems",
+  title: "AI Data Engineer & Cloud Engineer",
   location: "New York, NY",
   phone: "917-434-3777",
   summary:

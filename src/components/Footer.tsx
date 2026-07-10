@@ -13,12 +13,6 @@ export default function Footer() {
             <Link href="/about" className="text-muted transition hover:text-foreground">
               About
             </Link>
-            <Link href="/resume" className="text-muted transition hover:text-foreground">
-              Resume
-            </Link>
-            <Link href="/projects" className="text-muted transition hover:text-foreground">
-              Projects
-            </Link>
           </nav>
           <SocialIcons size="sm" />
         </div>

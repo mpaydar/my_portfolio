@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import SocialIcons from "@/components/SocialIcons";
 import CertificationShowcase from "@/components/CertificationShowcase";
@@ -74,35 +73,6 @@ export default function AboutPage() {
             LinkedIn.
           </p>
           <SocialIcons />
-        </section>
-
-        <section className="border-t border-border pt-10">
-          <h2 className="mb-2 text-sm font-semibold text-foreground">
-            Also available
-          </h2>
-          <p className="mb-4 text-sm text-muted">
-            Background material, kept separate from the articles.
-          </p>
-          <ul className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
-            <li>
-              <Link href="/resume" className="text-accent transition hover:text-foreground">
-                resume →
-              </Link>
-            </li>
-            <li>
-              <Link href="/projects" className="text-accent transition hover:text-foreground">
-                projects →
-              </Link>
-            </li>
-            <li>
-              <a
-                href={resume.links.email}
-                className="text-accent transition hover:text-foreground"
-              >
-                email →
-              </a>
-            </li>
-          </ul>
         </section>
       </div>
     </div>
