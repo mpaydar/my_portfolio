@@ -27,9 +27,9 @@ export default function PromptPackagingShowcase() {
           <div className="prompt-stat-divider" aria-hidden />
           <div className="prompt-stat">
             <span className="prompt-stat-value">
-              {promptPackagingTrack.focusAreas.length}
+              {promptPackagingTrack.series.number}
             </span>
-            <span className="prompt-stat-label">Focus areas</span>
+            <span className="prompt-stat-label">Series</span>
           </div>
         </div>
       </div>

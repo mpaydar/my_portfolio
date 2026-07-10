@@ -306,6 +306,18 @@ export const promptPackagingTrack = {
   description:
     "Structured prompt systems for designing and implementing complex cloud architectures faster. Each package combines robust cloud engineering context with prompt engineering patterns — focused on Azure, the Python SDK, and production-grade data platform work.",
   focusAreas: ["Cloud Engineering", "Azure Python SDK", "Data Factory", "Prompt Engineering"],
+  series: {
+    number: 1,
+    title: "Cloud Engineering & Azure Python SDK",
+    status: "preparing" as const,
+  },
+  announcement: {
+    badge: "New feature",
+    title: "Introducing Prompt Packaging",
+    description:
+      "A dedicated engineer toolkit for cloud architecture and Azure SDK workflows. Series 1 is live and growing — starter packages are available now while the full collection is being prepared.",
+    cta: "Explore Series 1",
+  },
 };
 
 export const promptPackages: PromptPackage[] = [

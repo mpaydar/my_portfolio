@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
+import PromptPackagingAnnouncement from "@/components/PromptPackagingAnnouncement";
 import PromptPackagingShowcase from "@/components/PromptPackagingShowcase";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -43,6 +44,10 @@ export default function PromptPackagingPage() {
           Azure, the Python SDK, and production data platform work.
         </p>
       </header>
+
+      <div className="mb-10">
+        <PromptPackagingAnnouncement variant="inline" />
+      </div>
 
       <PromptPackagingShowcase />
     </div>

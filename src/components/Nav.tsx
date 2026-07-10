@@ -1,9 +1,10 @@
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
+import PromptLockIcon from "@/components/PromptLockIcon";
 
 const links = [
   { href: "/", label: "Articles" },
-  { href: "/prompt-packaging", label: "Prompts" },
+  { href: "/prompt-packaging", label: "Prompts", locked: true },
   { href: "/about", label: "About" },
 ];
 
@@ -19,13 +20,27 @@ export default function Nav() {
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
           <ul className="flex items-center gap-0.5 sm:gap-1">
-            {links.map(({ href, label }) => (
+            {links.map(({ href, label, locked }) => (
               <li key={href}>
                 <Link
                   href={href}
-                  className="rounded-md px-2.5 py-1.5 text-sm text-muted transition hover:bg-surface-hover hover:text-foreground sm:px-3"
+                  className={
+                    locked
+                      ? "nav-prompts-link rounded-md px-2.5 py-1.5 text-sm sm:px-3"
+                      : "rounded-md px-2.5 py-1.5 text-sm text-muted transition hover:bg-surface-hover hover:text-foreground sm:px-3"
+                  }
                 >
-                  {label}
+                  {locked ? (
+                    <>
+                      <span className="nav-prompts-lock" aria-hidden>
+                        <PromptLockIcon className="h-3.5 w-3.5" />
+                      </span>
+                      <span>{label}</span>
+                      <span className="nav-prompts-new">New</span>
+                    </>
+                  ) : (
+                    label
+                  )}
                 </Link>
               </li>
             ))}
