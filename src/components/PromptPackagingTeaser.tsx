@@ -24,8 +24,8 @@ export default function PromptPackagingTeaser() {
           </span>
         </div>
 
-        <Link href="/prompt-packaging" className="prompt-teaser-link">
-          preview series
+        <Link href="/prompt-packaging/optimization" className="prompt-teaser-link">
+          try preview
           <span aria-hidden>→</span>
         </Link>
       </div>

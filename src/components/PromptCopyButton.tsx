@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 
-export default function PromptCopyButton({ text }: { text: string }) {
+export default function PromptCopyButton({
+  text,
+  className = "",
+  label = "Copy prompt",
+}: {
+  text: string;
+  className?: string;
+  label?: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
@@ -19,7 +27,7 @@ export default function PromptCopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="prompt-copy-btn"
+      className={`prompt-copy-btn ${className}`.trim()}
       aria-label={copied ? "Copied to clipboard" : "Copy prompt to clipboard"}
     >
       {copied ? (
@@ -30,7 +38,7 @@ export default function PromptCopyButton({ text }: { text: string }) {
       ) : (
         <>
           <CopyIcon />
-          Copy prompt
+          {label}
         </>
       )}
     </button>

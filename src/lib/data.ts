@@ -316,7 +316,8 @@ export const promptPackagingTrack = {
     title: "Introducing Prompt Packaging",
     description:
       "A dedicated engineer toolkit for cloud architecture and Azure SDK workflows. Series 1 is currently in preparation — packages are not available yet.",
-    cta: "Preview Series 1",
+    cta: "Try interactive preview",
+    ctaHref: "/prompt-packaging/optimization",
     statusNote: "In preparation",
     footnote: "Packages not yet released",
   },

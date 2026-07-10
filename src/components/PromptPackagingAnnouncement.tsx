@@ -71,7 +71,7 @@ export default function PromptPackagingAnnouncement({
           </div>
         </div>
 
-        <Link href="/prompt-packaging" className="prompt-announcement-cta">
+        <Link href={announcement.ctaHref ?? "/prompt-packaging"} className="prompt-announcement-cta">
           <PromptLockIcon className="h-4 w-4" />
           {announcement.cta}
           <span aria-hidden>→</span>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import PromptPackagingAnnouncement from "@/components/PromptPackagingAnnouncement";
 import PromptPackagingShowcase from "@/components/PromptPackagingShowcase";
@@ -47,6 +48,24 @@ export default function PromptPackagingPage() {
 
       <div className="mb-10">
         <PromptPackagingAnnouncement variant="inline" />
+      </div>
+
+      <div className="mb-10">
+        <Link href="/prompt-packaging/optimization" className="optiprompt-preview-card">
+          <div className="optiprompt-preview-card-copy">
+            <p className="optiprompt-preview-card-label">Interactive preview</p>
+            <h2 className="optiprompt-preview-card-title">Prompt Optimization Engine</h2>
+            <p className="optiprompt-preview-card-description">
+              Explore how <code>azure.optiprompt</code> tiers —{" "}
+              <code>.fidelity</code>, <code>.frugal</code>, and <code>.hybrid</code> — transform
+              raw Azure payloads into production-grade prompts. No API keys required.
+            </p>
+          </div>
+          <span className="optiprompt-preview-card-cta">
+            Launch preview
+            <span aria-hidden>→</span>
+          </span>
+        </Link>
       </div>
 
       <PromptPackagingShowcase />
