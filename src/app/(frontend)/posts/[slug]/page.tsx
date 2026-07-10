@@ -60,8 +60,8 @@ export default async function PostPage({ params }: Props) {
         hasArticle={Boolean(showRichText)}
       >
         <article
-          className={`mx-auto min-w-0 overflow-x-clip px-4 pb-16 pt-6 sm:px-6 sm:pb-24 sm:pt-10 ${
-            post.presentation || post.sourceDocument ? "max-w-5xl" : "max-w-2xl"
+          className={`post-article mx-auto min-w-0 overflow-x-clip px-5 pb-14 pt-6 sm:px-8 sm:pb-20 sm:pt-9 ${
+            post.presentation || post.sourceDocument ? "max-w-6xl" : "max-w-4xl"
           }`}
         >
         <JsonLd
@@ -78,8 +78,8 @@ export default async function PostPage({ params }: Props) {
           ]}
         />
 
-        <header className="mb-8">
-          <nav aria-label="Breadcrumb" className="mb-6">
+        <header className="post-header mb-6 sm:mb-7">
+          <nav aria-label="Breadcrumb" className="mb-4">
             <ol className="flex flex-wrap items-center gap-2 font-mono text-xs text-muted">
               <li>
                 <Link href="/" className="transition hover:text-accent">
@@ -102,12 +102,12 @@ export default async function PostPage({ params }: Props) {
 
           <Link
             href={`/posts/category/${post.category}`}
-            className="mb-4 inline-flex rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-xs text-accent transition hover:border-accent"
+            className="mb-3 inline-flex rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-xs text-accent transition hover:border-accent"
           >
             {post.categoryLabel}
           </Link>
 
-          <h1 className="mb-4 text-2xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-3xl md:text-4xl">
+          <h1 className="mb-3 text-2xl font-bold leading-[1.2] tracking-tight text-foreground sm:text-3xl md:text-[2.125rem]">
             {post.title}
           </h1>
 
@@ -131,7 +131,7 @@ export default async function PostPage({ params }: Props) {
         </header>
 
         {coverSrc ? (
-          <figure className="article-figure article-cover mb-8">
+          <figure className="article-figure article-cover mb-6">
             <img
               src={coverSrc}
               alt={post.coverImage?.alt || post.title}
@@ -154,9 +154,9 @@ export default async function PostPage({ params }: Props) {
           <p className="article-prose text-muted">No content yet.</p>
         ) : null}
 
-        <footer className="mt-12 border-t border-border pt-8">
+        <footer className="post-footer mt-8 border-t border-border pt-6 sm:mt-10 sm:pt-7">
           {post.tags.length > 0 ? (
-            <div className="mb-6 flex flex-wrap gap-2">
+            <div className="mb-5 flex flex-wrap gap-2">
               {post.tags.map((tag) => (
                 <span
                   key={tag}
@@ -170,7 +170,7 @@ export default async function PostPage({ params }: Props) {
           <p className="mb-1 font-mono text-xs uppercase tracking-widest text-accent">
             Written by
           </p>
-          <p className="mb-5 text-lg font-semibold text-foreground">
+          <p className="mb-4 text-lg font-semibold text-foreground">
             {SITE_SHORT_NAME}
           </p>
           <div className="flex flex-wrap gap-4 font-mono text-sm">
