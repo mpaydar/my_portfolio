@@ -315,8 +315,10 @@ export const promptPackagingTrack = {
     badge: "New feature",
     title: "Introducing Prompt Packaging",
     description:
-      "A dedicated engineer toolkit for cloud architecture and Azure SDK workflows. Series 1 is live and growing — starter packages are available now while the full collection is being prepared.",
-    cta: "Explore Series 1",
+      "A dedicated engineer toolkit for cloud architecture and Azure SDK workflows. Series 1 is currently in preparation — packages are not available yet.",
+    cta: "Preview Series 1",
+    statusNote: "In preparation",
+    footnote: "Packages not yet released",
   },
 };
 

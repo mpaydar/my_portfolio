@@ -22,7 +22,7 @@ export default function PromptPackagingShowcase() {
         <div className="prompt-track-stats" aria-label="Prompt packaging focus">
           <div className="prompt-stat">
             <span className="prompt-stat-value">{promptPackages.length}</span>
-            <span className="prompt-stat-label">Packages</span>
+            <span className="prompt-stat-label">Planned</span>
           </div>
           <div className="prompt-stat-divider" aria-hidden />
           <div className="prompt-stat">
@@ -40,6 +40,14 @@ export default function PromptPackagingShowcase() {
             {area}
           </span>
         ))}
+      </div>
+
+      <div className="prompt-planned-header">
+        <h3 className="prompt-planned-title">Planned packages</h3>
+        <p className="prompt-planned-copy">
+          Series {promptPackagingTrack.series.number} is in preparation. These
+          packages are planned — prompts are not available yet.
+        </p>
       </div>
 
       <div className="prompt-grid">

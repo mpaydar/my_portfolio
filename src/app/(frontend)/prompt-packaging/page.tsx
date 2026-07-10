@@ -39,9 +39,9 @@ export default function PromptPackagingPage() {
           Prompt Packaging
         </h1>
         <p className="max-w-2xl leading-relaxed text-muted">
-          Reusable, engineer-leveled prompts that speed up designing and
-          implementing complex cloud architectures — with a primary focus on
-          Azure, the Python SDK, and production data platform work.
+          Engineer-leveled prompts for designing and implementing complex cloud
+          architectures — focused on Azure, the Python SDK, and production data
+          platform work. Series 1 is in preparation.
         </p>
       </header>
 

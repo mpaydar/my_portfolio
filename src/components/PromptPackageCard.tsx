@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import type { PromptPackage } from "@/lib/data";
+import { promptPackagingTrack } from "@/lib/data";
 import PromptCopyButton from "@/components/PromptCopyButton";
+import PromptLockIcon from "@/components/PromptLockIcon";
 
 const levelLabels = {
   engineer: "Engineer",
@@ -11,10 +13,10 @@ const levelLabels = {
 } as const;
 
 export default function PromptPackageCard({ pkg }: { pkg: PromptPackage }) {
-  const [expanded, setExpanded] = useState(false);
+  const locked = promptPackagingTrack.series.status === "preparing";
 
   return (
-    <article className="prompt-card" id={pkg.id}>
+    <article className={`prompt-card ${locked ? "prompt-card--locked" : ""}`} id={pkg.id}>
       <div
         className="prompt-card-accent"
         style={{ background: pkg.accent }}
@@ -47,27 +49,46 @@ export default function PromptPackageCard({ pkg }: { pkg: PromptPackage }) {
           ))}
         </div>
 
-        <div className="prompt-card-actions">
-          <button
-            type="button"
-            onClick={() => setExpanded((open) => !open)}
-            className="prompt-expand-btn"
-            aria-expanded={expanded}
-            aria-controls={`prompt-${pkg.id}`}
-          >
-            {expanded ? "Hide prompt" : "View prompt"}
-            <ChevronIcon expanded={expanded} />
-          </button>
-          {expanded ? <PromptCopyButton text={pkg.prompt} /> : null}
-        </div>
-
-        {expanded ? (
-          <pre id={`prompt-${pkg.id}`} className="prompt-block">
-            <code>{pkg.prompt}</code>
-          </pre>
-        ) : null}
+        {locked ? (
+          <div className="prompt-card-actions">
+            <span className="prompt-locked-badge">
+              <PromptLockIcon className="h-3.5 w-3.5" />
+              Coming in Series {promptPackagingTrack.series.number}
+            </span>
+          </div>
+        ) : (
+          <PromptPackageActions pkg={pkg} />
+        )}
       </div>
     </article>
+  );
+}
+
+function PromptPackageActions({ pkg }: { pkg: PromptPackage }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <>
+      <div className="prompt-card-actions">
+        <button
+          type="button"
+          onClick={() => setExpanded((open) => !open)}
+          className="prompt-expand-btn"
+          aria-expanded={expanded}
+          aria-controls={`prompt-${pkg.id}`}
+        >
+          {expanded ? "Hide prompt" : "View prompt"}
+          <ChevronIcon expanded={expanded} />
+        </button>
+        {expanded ? <PromptCopyButton text={pkg.prompt} /> : null}
+      </div>
+
+      {expanded ? (
+        <pre id={`prompt-${pkg.id}`} className="prompt-block">
+          <code>{pkg.prompt}</code>
+        </pre>
+      ) : null}
+    </>
   );
 }
 

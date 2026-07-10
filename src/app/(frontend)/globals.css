@@ -1121,6 +1121,59 @@ body {
   color: var(--foreground);
 }
 
+.prompt-announcement-stat--locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 60%, var(--surface));
+  padding: 0.35rem 0.65rem;
+  color: var(--muted);
+}
+
+.prompt-card--locked {
+  opacity: 0.92;
+}
+
+.prompt-card--locked:hover {
+  box-shadow: none;
+}
+
+.prompt-locked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 0.5rem;
+  border: 1px dashed var(--border);
+  background: color-mix(in srgb, var(--bg) 70%, var(--surface));
+  padding: 0.45rem 0.75rem;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+
+.prompt-planned-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.prompt-planned-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.prompt-planned-copy {
+  margin: 0;
+  max-width: 38rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
 .prompt-announcement-cta {
   display: inline-flex;
   flex-shrink: 0;

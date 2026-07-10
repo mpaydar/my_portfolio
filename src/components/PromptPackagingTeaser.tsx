@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { promptPackagingTrack, promptPackages } from "@/lib/data";
+import { promptPackagingTrack } from "@/lib/data";
 import PromptLockIcon from "@/components/PromptLockIcon";
 
 export default function PromptPackagingTeaser() {
+  const { series, announcement } = promptPackagingTrack;
+
   return (
     <aside className="prompt-teaser" aria-label="Prompt Packaging">
       <div className="prompt-teaser-inner">
@@ -10,14 +12,12 @@ export default function PromptPackagingTeaser() {
           <p className="prompt-teaser-label">Engineer toolkit</p>
           <p className="prompt-teaser-title">{promptPackagingTrack.title}</p>
           <p className="prompt-teaser-subtitle">
-            Series {promptPackagingTrack.series.number} · {promptPackagingTrack.series.title}
+            Series {series.number} · {series.title}
           </p>
         </div>
 
         <div className="prompt-teaser-meta">
-          <span className="prompt-teaser-count">
-            {promptPackages.length} packages live
-          </span>
+          <span className="prompt-teaser-count">{announcement.statusNote}</span>
           <span className="prompt-teaser-focus">
             <PromptLockIcon className="h-3 w-3" />
             Azure · Python SDK
@@ -25,7 +25,7 @@ export default function PromptPackagingTeaser() {
         </div>
 
         <Link href="/prompt-packaging" className="prompt-teaser-link">
-          browse prompts
+          preview series
           <span aria-hidden>→</span>
         </Link>
       </div>

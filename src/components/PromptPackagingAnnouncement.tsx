@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { promptPackagingTrack, promptPackages } from "@/lib/data";
+import { promptPackagingTrack } from "@/lib/data";
 import PromptLockIcon from "@/components/PromptLockIcon";
 
 export default function PromptPackagingAnnouncement({
@@ -8,6 +8,7 @@ export default function PromptPackagingAnnouncement({
   variant?: "hero" | "inline";
 }) {
   const { announcement, series } = promptPackagingTrack;
+  const isPreparing = series.status === "preparing";
 
   if (variant === "inline") {
     return (
@@ -22,17 +23,20 @@ export default function PromptPackagingAnnouncement({
           <div className="prompt-announcement-meta">
             <span className="prompt-announcement-badge">{announcement.badge}</span>
             <span className="prompt-announcement-series">
-              Series {series.number} · {series.status === "preparing" ? "In preparation" : "Live"}
+              Series {series.number} · {isPreparing ? announcement.statusNote : "Available"}
             </span>
           </div>
           <p className="prompt-announcement-title">{announcement.title}</p>
           <p className="prompt-announcement-description">{announcement.description}</p>
         </div>
-        <div className="prompt-announcement-stats" aria-label="Current availability">
-          <span className="prompt-announcement-stat">
-            <strong>{promptPackages.length}</strong> packages available
-          </span>
-        </div>
+        {isPreparing ? (
+          <div className="prompt-announcement-stats" aria-label="Availability status">
+            <span className="prompt-announcement-stat prompt-announcement-stat--locked">
+              <PromptLockIcon className="h-3.5 w-3.5" />
+              {announcement.footnote}
+            </span>
+          </div>
+        ) : null}
       </aside>
     );
   }
@@ -59,10 +63,10 @@ export default function PromptPackagingAnnouncement({
           <p className="prompt-announcement-description">{announcement.description}</p>
           <div className="prompt-announcement-foot">
             <span className="prompt-announcement-pill">
-              {promptPackages.length} starter packages live
+              {announcement.statusNote}
             </span>
             <span className="prompt-announcement-pill prompt-announcement-pill--muted">
-              More arriving in Series 1
+              {announcement.footnote}
             </span>
           </div>
         </div>
