@@ -1,22 +1,21 @@
-export type OptipromptTier = "fidelity" | "frugal" | "hybrid";
+export type PromptEngineTier = "precision" | "compression" | "balanced";
 
-export type OptipromptMetric = {
+export type PromptEngineMetric = {
   label: string;
   value: string;
   tone: "azure" | "emerald" | "neutral" | "amber";
   highlight?: boolean;
 };
 
-export type OptipromptTierConfig = {
-  id: OptipromptTier;
-  namespace: string;
+export type PromptEngineTierConfig = {
+  id: PromptEngineTier;
   label: string;
   tagline: string;
   focus: string;
-  engineClass: string;
+  profileName: string;
   rawPayload: string;
   optimizedPrompt: string;
-  metrics: OptipromptMetric[];
+  metrics: PromptEngineMetric[];
 };
 
 const sharedRawPayload = `{
@@ -135,16 +134,15 @@ const sharedRawPayload = `{
   }
 }`;
 
-export const optipromptTiers: OptipromptTierConfig[] = [
+export const promptEngineTiers: PromptEngineTierConfig[] = [
   {
-    id: "fidelity",
-    namespace: ".fidelity",
-    label: "Fidelity",
-    tagline: "High Precision / Zero-Hallucination",
-    focus: "Strict schema anchoring, chain-of-logic forcing, eliminating hallucinations.",
-    engineClass: "FidelityEngine",
+    id: "precision",
+    label: "Precision",
+    tagline: "High precision / schema anchoring",
+    focus: "Strict schema anchoring, chain-of-logic forcing, minimizing hallucinations.",
+    profileName: "Precision profile",
     rawPayload: sharedRawPayload,
-    optimizedPrompt: `SYSTEM — Azure AKS Platform Review (FidelityEngine)
+    optimizedPrompt: `SYSTEM — Azure AKS Platform Review (Prompt Engine · Precision)
 
 ROLE
 You are a senior Azure platform engineer. Answer ONLY from the anchored payload below.
@@ -175,24 +173,23 @@ HALLUCINATION GUARD: If a field is absent, respond "NOT IN PAYLOAD" — do not g
     metrics: [
       {
         label: "Hallucination Risk",
-        value: "Negligible (Strictly Anchored)",
+        value: "Target: Strictly anchored",
         tone: "emerald",
         highlight: true,
       },
-      { label: "Context Validity", value: "100%", tone: "emerald" },
-      { label: "Tokens", value: "Baseline", tone: "neutral" },
-      { label: "Schema Enforcement", value: "Strict JSON Output", tone: "azure" },
+      { label: "Context Validity", value: "Target: 100%", tone: "emerald" },
+      { label: "Tokens", value: "Baseline (illustrative)", tone: "neutral" },
+      { label: "Schema Enforcement", value: "Structured output", tone: "azure" },
     ],
   },
   {
-    id: "frugal",
-    namespace: ".frugal",
-    label: "Frugal",
-    tagline: "Token Squeezing / Cost-Optimization",
+    id: "compression",
+    label: "Compression",
+    tagline: "Token reduction / cost focus",
     focus: "Aggressive context compression, stripping JSON noise, syntax abbreviation.",
-    engineClass: "FrugalEngine",
+    profileName: "Compression profile",
     rawPayload: sharedRawPayload,
-    optimizedPrompt: `SYS|AKS-REVIEW|frugal-v2
+    optimizedPrompt: `SYS|AKS-REVIEW|compression-profile
 
 CTX:
 sub=a3f8c2e1|rG=rg-prod-aks-eastus|cls=aks-prod-platform|reg=eastus|k8s=1.29.7|st=Run/OK
@@ -205,23 +202,22 @@ TASK: compress review → bullet findings w/ field refs only
 OUT: {risks:[sev+evidence+fix], topology:1ln, gaps:[]}
 RULE: no expand beyond CTX | abbrev OK | skip null/verbose metadata`,
     metrics: [
-      { label: "Tokens Saved", value: "~42%", tone: "emerald", highlight: true },
-      { label: "Est. Cost Reduction", value: "40%+", tone: "emerald" },
-      { label: "Data Density", value: "Ultra-Compressed", tone: "azure" },
-      { label: "Payload Stripped", value: "Metadata + Noise Removed", tone: "neutral" },
+      { label: "Tokens Saved", value: "Target: ~42%", tone: "emerald", highlight: true },
+      { label: "Est. Cost Reduction", value: "Target: 40%+", tone: "emerald" },
+      { label: "Data Density", value: "Ultra-compressed", tone: "azure" },
+      { label: "Payload Stripped", value: "Metadata + noise removed", tone: "neutral" },
     ],
   },
   {
-    id: "hybrid",
-    namespace: ".hybrid",
-    label: "Hybrid",
-    tagline: "Balanced Core",
-    focus: "Dynamic routing based on payload complexity, adaptive compression.",
-    engineClass: "HybridEngine",
+    id: "balanced",
+    label: "Balanced",
+    tagline: "Adaptive routing",
+    focus: "Dynamic routing based on payload complexity, selective compression.",
+    profileName: "Balanced profile",
     rawPayload: sharedRawPayload,
-    optimizedPrompt: `SYSTEM — Azure AKS Platform Review (HybridEngine / adaptive)
+    optimizedPrompt: `SYSTEM — Azure AKS Platform Review (Prompt Engine · Balanced)
 
-ROUTING: complexity=HIGH → fidelity anchors for security/network; compression=MODERATE for tags/metadata
+ROUTING: complexity=HIGH → precision anchors for security/network; compression=MODERATE for tags/metadata
 
 ANCHORED CORE
 cluster=aks-prod-platform | region=eastus | k8s=1.29.7 | prov=Succeeded
@@ -235,22 +231,14 @@ ADAPTIVE RULES
 - Route ambiguous fields to UNVERIFIED bucket
 
 OUTPUT
-{ risks[], topology_summary, compression_profile: "hybrid-25%", routing: "adaptive" }
+{ risks[], topology_summary, compression_profile: "balanced-25%", routing: "adaptive" }
 
 GUARDRAILS: hallucination checks ACTIVE on security + identity sections`,
     metrics: [
-      { label: "Tokens Saved", value: "~25%", tone: "emerald", highlight: true },
+      { label: "Tokens Saved", value: "Target: ~25%", tone: "emerald", highlight: true },
       { label: "Hallucination Guardrails", value: "Active", tone: "azure" },
       { label: "Routing Mode", value: "Adaptive", tone: "azure" },
       { label: "Compression Profile", value: "Selective", tone: "neutral" },
     ],
   },
 ];
-
-export const optipromptTierMap = Object.fromEntries(
-  optipromptTiers.map((tier) => [tier.id, tier]),
-) as Record<OptipromptTier, OptipromptTierConfig>;
-
-export const optipromptInstallCommand = "pip install azure-optiprompt";
-
-export const optipromptImportSnippet = `from azure.optiprompt import FidelityEngine, FrugalEngine, HybridEngine`;

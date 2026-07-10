@@ -1969,7 +1969,7 @@ body {
   }
 }
 
-/* Prompt Optimization preview — azure.optiprompt dashboard */
+/* Prompt Engine concept preview dashboard */
 .optiprompt-page {
   --opt-azure: #007fff;
   --opt-azure-dim: #008ad7;
@@ -2151,6 +2151,52 @@ body {
   border: 1px solid var(--opt-slate-700);
   background: var(--opt-slate-850);
   padding: 0.85rem 1rem;
+}
+
+.optiprompt-status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: min(100%, 22rem);
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, #f59e0b 35%, var(--opt-slate-700));
+  background: color-mix(in srgb, #f59e0b 6%, var(--opt-slate-850));
+  padding: 0.85rem 1rem;
+}
+
+.optiprompt-status-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f59e0b;
+}
+
+.optiprompt-status-value {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.optiprompt-status-note {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: var(--opt-slate-500);
+}
+
+.optiprompt-engine-badge-note {
+  margin-left: 0.35rem;
+  border-radius: 9999px;
+  border: 1px solid var(--opt-slate-700);
+  background: var(--opt-slate-950);
+  padding: 0.1rem 0.45rem;
+  font-size: 0.5625rem;
+  color: var(--opt-slate-500);
 }
 
 .optiprompt-install-label {

@@ -316,11 +316,21 @@ export const promptPackagingTrack = {
     title: "Introducing Prompt Packaging",
     description:
       "A dedicated engineer toolkit for cloud architecture and Azure SDK workflows. Series 1 is currently in preparation — packages are not available yet.",
-    cta: "Try interactive preview",
+    cta: "View concept preview",
     ctaHref: "/prompt-packaging/optimization",
     statusNote: "In preparation",
     footnote: "Packages not yet released",
   },
+};
+
+export const promptEngine = {
+  name: "Prompt Engine",
+  status: "in-development" as const,
+  subtitle: "Built for Prompt Packaging",
+  description:
+    "Our own prompt compilation layer for turning raw Azure automation payloads into structured, production-grade prompts. Currently in development — not ready for use.",
+  previewDisclaimer:
+    "Concept preview only. The prompt engine is not available yet. Outputs and metrics below are illustrative mockups.",
 };
 
 export const promptPackages: PromptPackage[] = [

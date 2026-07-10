@@ -2,19 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import PromptOptimizationWorkspace from "@/components/optiprompt/PromptOptimizationWorkspace";
+import { promptEngine } from "@/lib/data";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Prompt Optimization Preview",
+  title: "Prompt Engine Preview",
   description:
-    "Interactive client-side preview of azure.optiprompt — visualize how .fidelity, .frugal, and .hybrid tiers transform raw Azure payloads into production-grade prompts.",
+    "Concept preview of the Prompt Packaging engine — visualize how precision, compression, and balanced profiles may transform raw Azure payloads into structured prompts.",
   path: "/prompt-packaging/optimization",
   keywords: [
-    "prompt optimization",
-    "azure.optiprompt",
+    "prompt engine",
+    "prompt packaging",
+    "cloud engineering",
     "Azure Python SDK",
     "prompt engineering",
-    "cloud engineering",
     "Mohammad Bayat",
   ],
 });
@@ -26,9 +27,8 @@ export default function PromptOptimizationPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "WebPage",
-          name: "Prompt Optimization Preview",
-          description:
-            "Interactive preview of azure.optiprompt tier-based prompt optimization.",
+          name: "Prompt Engine Preview",
+          description: promptEngine.previewDisclaimer,
           url: "https://www.bayatcompute.com/prompt-packaging/optimization",
         }}
       />
@@ -37,7 +37,7 @@ export default function PromptOptimizationPage() {
         <Link href="/prompt-packaging" className="optiprompt-back-link">
           ← Prompt Packaging
         </Link>
-        <span className="optiprompt-preview-badge">Interactive preview</span>
+        <span className="optiprompt-preview-badge">Concept preview · not available yet</span>
       </div>
 
       <PromptOptimizationWorkspace />

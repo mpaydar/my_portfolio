@@ -53,16 +53,16 @@ export default function PromptPackagingPage() {
       <div className="mb-10">
         <Link href="/prompt-packaging/optimization" className="optiprompt-preview-card">
           <div className="optiprompt-preview-card-copy">
-            <p className="optiprompt-preview-card-label">Interactive preview</p>
-            <h2 className="optiprompt-preview-card-title">Prompt Optimization Engine</h2>
+            <p className="optiprompt-preview-card-label">Concept preview</p>
+            <h2 className="optiprompt-preview-card-title">Prompt Engine</h2>
             <p className="optiprompt-preview-card-description">
-              Explore how <code>azure.optiprompt</code> tiers —{" "}
-              <code>.fidelity</code>, <code>.frugal</code>, and <code>.hybrid</code> — transform
-              raw Azure payloads into production-grade prompts. No API keys required.
+              A concept preview of our in-development prompt engine — see how precision,
+              compression, and balanced profiles may transform raw Azure payloads into
+              structured prompts. Illustrative only; not ready for use.
             </p>
           </div>
           <span className="optiprompt-preview-card-cta">
-            Launch preview
+            View concept preview
             <span aria-hidden>→</span>
           </span>
         </Link>
