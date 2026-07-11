@@ -9,9 +9,10 @@ export const CATEGORY_META: Record<
   KnownPostCategory,
   { icon: string; accent: string }
 > = {
-  "linux-docker-kubernetes": { icon: "🐳", accent: "#0891b2" },
-  "cloud-exploration": { icon: "☁️", accent: "#2563eb" },
+  "data-engineering": { icon: "🗄️", accent: "#16a34a" },
+  "azure-cloud-architecture": { icon: "☁️", accent: "#0078d4" },
   "agent-development-tools": { icon: "🤖", accent: "#7c3aed" },
+  "linux-docker-kubernetes": { icon: "🐳", accent: "#0891b2" },
   "core-coding-intuition": { icon: "💡", accent: "#d97706" },
 };
 
