@@ -284,6 +284,10 @@ export interface TechnicalReport {
    * Estimated read time, e.g. "8 min"
    */
   readTime?: string | null;
+  /**
+   * Times readers clicked "Want more like this" on the published post. Updated by the public reaction endpoint, not editable here.
+   */
+  interestCount?: number | null;
   publishedAt?: string | null;
   /**
    * Optional custom LinkedIn post text. Leave blank to auto-compose from title, excerpt, and blog URL.
@@ -495,6 +499,7 @@ export interface TechnicalReportsSelect<T extends boolean = true> {
         id?: T;
       };
   readTime?: T;
+  interestCount?: T;
   publishedAt?: T;
   linkedInCommentary?: T;
   linkedInAttachment?: T;

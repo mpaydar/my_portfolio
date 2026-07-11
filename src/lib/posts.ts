@@ -39,6 +39,7 @@ export function getDocumentProxyUrl(slug: string) {
 }
 
 export type Post = {
+  id: number;
   slug: string;
   title: string;
   excerpt: string;
@@ -51,6 +52,7 @@ export type Post = {
   sourceDocument: PostSourceDocument | null;
   tags: string[];
   readTime: string;
+  interestCount: number;
   content?: TechnicalReport["content"];
 };
 
@@ -199,6 +201,7 @@ function mapReport(
   const category = resolveCategory(doc.category);
 
   return {
+    id: doc.id,
     slug: doc.slug,
     title: doc.title,
     excerpt: doc.excerpt,
@@ -211,6 +214,7 @@ function mapReport(
     sourceDocument: resolveSourceDocument(doc.sourceDocument),
     tags: (doc.tags ?? []).map((t) => t.tag),
     readTime: doc.readTime || "",
+    interestCount: doc.interestCount ?? 0,
     content,
   };
 }

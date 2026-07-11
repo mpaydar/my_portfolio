@@ -9,6 +9,7 @@ import {
   PostViewToggle,
 } from "@/components/PostViewSwitcher";
 import JsonLd from "@/components/JsonLd";
+import PostReaction from "@/components/PostReaction";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { getDocumentProxyUrl, getPresentationProxyUrl, getReportBySlug } from "@/lib/posts";
 import { hasRichTextBody } from "@/lib/rich-text";
@@ -153,6 +154,17 @@ export default async function PostPage({ params }: Props) {
         {!post.presentation && !post.sourceDocument && !showRichText && !post.excerpt ? (
           <p className="article-prose text-muted">No content yet.</p>
         ) : null}
+
+        <div className="my-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface-hover px-5 py-4 sm:my-10">
+          <p className="text-sm text-muted">
+            Want more on {post.categoryLabel.toLowerCase()}?
+          </p>
+          <PostReaction
+            id={post.id}
+            slug={post.slug}
+            initialCount={post.interestCount}
+          />
+        </div>
 
         <footer className="post-footer mt-8 border-t border-border pt-6 sm:mt-10 sm:pt-7">
           {post.tags.length > 0 ? (

@@ -20,7 +20,13 @@ export const TechnicalReports: CollectionConfig = {
   slug: "technical-reports",
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "publishedAt", "updatedAt"],
+    defaultColumns: [
+      "title",
+      "category",
+      "interestCount",
+      "publishedAt",
+      "updatedAt",
+    ],
     description:
       "Daily technical reports — distributed systems, agentic apps, and scalable architecture.",
     group: "Content",
@@ -200,6 +206,17 @@ export const TechnicalReports: CollectionConfig = {
       },
     },
     {
+      name: "interestCount",
+      type: "number",
+      defaultValue: 0,
+      admin: {
+        readOnly: true,
+        position: "sidebar",
+        description:
+          "Times readers clicked \"Want more like this\" on the published post. Updated by the public reaction endpoint, not editable here.",
+      },
+    },
+    {
       name: "publishedAt",
       type: "date",
       admin: {
@@ -315,6 +332,42 @@ export const TechnicalReports: CollectionConfig = {
     ],
   },
   endpoints: [
+    {
+      path: "/:id/react",
+      method: "post",
+      handler: async (req) => {
+        const reportId = req.routeParams?.id;
+        if (!reportId || Array.isArray(reportId)) {
+          return Response.json({ error: "Post id is required." }, { status: 400 });
+        }
+
+        try {
+          const current = await req.payload.findByID({
+            collection: "technical-reports",
+            id: reportId as string | number,
+            depth: 0,
+            overrideAccess: true,
+          });
+
+          const nextCount = (current.interestCount ?? 0) + 1;
+
+          const updated = await req.payload.update({
+            collection: "technical-reports",
+            id: reportId as string | number,
+            data: { interestCount: nextCount },
+            overrideAccess: true,
+            context: { skipDocumentImport: true },
+          });
+
+          return Response.json({ interestCount: updated.interestCount });
+        } catch {
+          return Response.json(
+            { error: "Failed to record reaction." },
+            { status: 400 },
+          );
+        }
+      },
+    },
     {
       path: "/:id/share-linkedin",
       method: "post",

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PostReaction from "@/components/PostReaction";
 import type { Post } from "@/lib/posts";
 
 export default function PostCard({ post }: { post: Post }) {
@@ -44,7 +45,7 @@ export default function PostCard({ post }: { post: Post }) {
           {post.excerpt}
         </p>
         {post.tags.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
+          <div className="mb-4 flex flex-wrap gap-2">
             {post.tags.slice(0, 4).map((tag) => (
               <span
                 key={tag}
@@ -55,6 +56,12 @@ export default function PostCard({ post }: { post: Post }) {
             ))}
           </div>
         ) : null}
+        <PostReaction
+          id={post.id}
+          slug={post.slug}
+          initialCount={post.interestCount}
+          size="sm"
+        />
       </div>
     </article>
   );

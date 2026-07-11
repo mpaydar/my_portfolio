@@ -6,6 +6,7 @@ import * as migration_20260610_162500_dynamic_post_categories from './20260610_1
 import * as migration_20260610_180000_add_post_cover_image from './20260610_180000_add_post_cover_image';
 import * as migration_20260619_add_post_presentation from './20260619_add_post_presentation';
 import * as migration_20260702_add_source_document from './20260702_add_source_document';
+import * as migration_20260711_add_post_interest_count from './20260711_add_post_interest_count';
 
 export const migrations = [
   {
@@ -47,5 +48,10 @@ export const migrations = [
     up: migration_20260702_add_source_document.up,
     down: migration_20260702_add_source_document.down,
     name: '20260702_add_source_document',
+  },
+  {
+    up: migration_20260711_add_post_interest_count.up,
+    down: migration_20260711_add_post_interest_count.down,
+    name: '20260711_add_post_interest_count',
   },
 ];
