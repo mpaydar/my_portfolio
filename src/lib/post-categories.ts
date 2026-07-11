@@ -1,21 +1,27 @@
 export const POST_CATEGORIES = [
   {
+    value: "data-engineering",
+    label: "Data Engineering",
+    description:
+      "Pipelines, lakehouse and medallion architecture, Azure Data Factory/Databricks, and large-scale data systems.",
+  },
+  {
+    value: "azure-cloud-architecture",
+    label: "Azure Cloud Architecture",
+    description:
+      "Azure services, infrastructure-as-code, networking, and production-grade cloud system design.",
+  },
+  {
+    value: "agent-development-tools",
+    label: "LLM & Agentic Systems on Azure",
+    description:
+      "Applying large language models and agentic frameworks on Azure — model hosting, orchestration, and cloud-native AI architecture.",
+  },
+  {
     value: "linux-docker-kubernetes",
     label: "Linux, Docker & Kubernetes",
     description:
       "Container orchestration, Linux internals, Docker workflows, and Kubernetes operations.",
-  },
-  {
-    value: "cloud-exploration",
-    label: "Cloud Exploration",
-    description:
-      "Cloud platforms, managed services, infrastructure patterns, and deployment strategies.",
-  },
-  {
-    value: "agent-development-tools",
-    label: "Agent Development Tools",
-    description:
-      "Agentic frameworks, LLM tooling, orchestration patterns, and autonomous system design.",
   },
   {
     value: "core-coding-intuition",

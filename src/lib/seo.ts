@@ -7,19 +7,19 @@ export const SITE_NAME = "Mohammad Bayat";
 export const SITE_SHORT_NAME = "Moe Bayat";
 export const SITE_TITLE = `${SITE_SHORT_NAME} · Technical Writing`;
 export const SITE_DESCRIPTION =
-  "In-depth technical articles on distributed systems, cloud infrastructure, Kubernetes, agentic software, and core engineering intuition.";
+  "In-depth technical writing on Azure cloud architecture, data engineering pipelines, and applied LLM systems on the cloud.";
 export const SITE_KEYWORDS = [
   "Mohammad Bayat",
   "Moe Bayat",
   "technical blog",
-  "systems engineering",
-  "distributed systems",
-  "serverless",
-  "machine learning",
-  "agentic AI",
-  "cloud infrastructure",
-  "Kubernetes",
-  "DevOps",
+  "Azure",
+  "Azure cloud architecture",
+  "data engineering",
+  "Azure Data Factory",
+  "Azure Databricks",
+  "large language models",
+  "cloud AI",
+  "Azure SDK",
 ];
 
 export type PostCategorySection = {
@@ -210,7 +210,7 @@ export function buildPersonJsonLd() {
     name: SITE_NAME,
     alternateName: SITE_SHORT_NAME,
     url: absoluteUrl("/"),
-    jobTitle: "Systems Engineer",
+    jobTitle: "Data Engineer",
     description: SITE_DESCRIPTION,
     sameAs: [resume.links.github, resume.links.linkedin],
   };

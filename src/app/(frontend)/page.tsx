@@ -18,18 +18,19 @@ export const dynamic = "force-dynamic";
 export const metadata = buildPageMetadata({
   useLayoutTitle: true,
   description:
-    "In-depth technical articles on distributed systems, cloud infrastructure, Kubernetes, agentic software, and core engineering intuition.",
+    "In-depth technical writing on Azure cloud architecture, data engineering pipelines, and applied LLM systems on the cloud.",
   path: "/",
   keywords: [
     "technical blog",
     "Mohammad Bayat",
-    "distributed systems",
-    "serverless machine learning",
-    "agentic AI",
-    "Kubernetes",
-    "cloud infrastructure",
-    "systems engineering",
-    "DevOps",
+    "Azure",
+    "Azure cloud architecture",
+    "data engineering",
+    "Azure Data Factory",
+    "Azure Databricks",
+    "large language models",
+    "cloud AI",
+    "Azure SDK",
   ],
 });
 
@@ -44,17 +45,18 @@ export default async function Home() {
       <section className="relative overflow-hidden border-b border-border">
         <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
         <div className="relative mx-auto max-w-5xl px-6 py-20 sm:py-28">
-          <p className="section-label mb-6">Technical Writing</p>
+          <p className="section-label mb-6">Azure Cloud &amp; Data Engineering</p>
           <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl">
             Deep dives on{" "}
-            <span className="text-accent">systems</span>,{" "}
-            <span className="text-accent">infrastructure</span>, and{" "}
-            <span className="text-accent">agentic software</span>
+            <span className="text-accent">data engineering</span>,{" "}
+            <span className="text-accent">Azure cloud architecture</span>, and{" "}
+            <span className="text-accent">LLMs on the cloud</span>
           </h1>
           <p className="mb-8 max-w-2xl text-lg leading-relaxed text-muted">
-            Long-form notes on distributed systems, cloud platforms, containers,
-            and building with LLMs — written by Mohammad (Moe) Bayat, a systems
-            engineer based in New York.
+            Long-form technical notes on data pipelines and lakehouse
+            architecture, production Azure cloud design, and how large
+            language models get built into cloud-native systems — written by
+            Mohammad (Moe) Bayat, a data engineer based in New York.
           </p>
           {postsByCategory.length > 0 ? (
             <nav
