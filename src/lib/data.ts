@@ -328,9 +328,9 @@ export const promptEngine = {
   status: "in-development" as const,
   subtitle: "Built for Prompt Packaging",
   description:
-    "Our own prompt compilation layer for turning raw Azure automation payloads into structured, production-grade prompts. Currently in development — not ready for use.",
+    "A local script that reads one Azure resource's metadata via your own az CLI session and compiles it into a structured, production-grade prompt for a specific tool pairing (e.g. Databricks ingestion from Blob Storage). Currently in development — not ready for use.",
   previewDisclaimer:
-    "Concept preview only. The prompt engine is not available yet. Outputs and metrics below are illustrative mockups.",
+    "Concept preview only — outputs and metrics below are illustrative mockups. When released: runs locally on your machine, performs a read-only Azure Resource Manager lookup using your own az CLI session, and your credentials never leave your machine or touch our servers.",
 };
 
 export const promptPackages: PromptPackage[] = [

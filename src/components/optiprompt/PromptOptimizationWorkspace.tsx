@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { promptEngineTiers, type PromptEngineTier } from "@/lib/prompt-engine-data";
+import {
+  minimalConfigSchema,
+  promptEngineTiers,
+  type PromptEngineTier,
+} from "@/lib/prompt-engine-data";
 import { promptEngine } from "@/lib/data";
+import PromptCopyButton from "@/components/PromptCopyButton";
 import PromptLockIcon from "@/components/PromptLockIcon";
 
 export default function PromptOptimizationWorkspace() {
@@ -28,6 +33,31 @@ export default function PromptOptimizationWorkspace() {
           <p className="optiprompt-status-note">{promptEngine.previewDisclaimer}</p>
         </aside>
       </header>
+
+      <section className="optiprompt-install-card" aria-label="How the Prompt Engine runs">
+        <p className="optiprompt-install-label">
+          <PromptLockIcon className="h-3 w-3" />
+          Local &amp; read-only — no hosted connection
+        </p>
+        <p className="optiprompt-status-note">
+          You run this yourself with your own <code>az</code> CLI session. The
+          script performs a single read-only ARM lookup
+          (<code>resources.get_by_id</code>) for the one resource you point it
+          at — nothing is written, modified, or transmitted to any server we
+          operate. Your credentials never leave your machine.
+        </p>
+        <p className="optiprompt-install-label">
+          Minimal input — identifies exactly one resource
+        </p>
+        <pre className="optiprompt-import-block">
+          <code>{minimalConfigSchema}</code>
+        </pre>
+        <PromptCopyButton
+          text={minimalConfigSchema}
+          label="Copy config schema"
+          className="optiprompt-copy-btn"
+        />
+      </section>
 
       <div className="optiprompt-tabs" role="tablist" aria-label="Optimization profiles">
         {promptEngineTiers.map((item, index) => {
@@ -59,8 +89,8 @@ export default function PromptOptimizationWorkspace() {
 
       <div className="optiprompt-diff" key={`diff-${tier}`}>
         <Panel
-          title="Raw Azure Automation Payload"
-          subtitle="Verbose JSON · unoptimized"
+          title="Raw Resource Payload · resources.get_by_id"
+          subtitle="Single resource · read-only lookup"
           lines={countLines(active.rawPayload)}
           tone="raw"
         >

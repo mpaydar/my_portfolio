@@ -8,7 +8,7 @@ import { buildPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildPageMetadata({
   title: "Prompt Engine Preview",
   description:
-    "Concept preview of the Prompt Packaging engine — visualize how precision, compression, and balanced profiles may transform raw Azure payloads into structured prompts.",
+    "Concept preview of the Prompt Packaging engine — a local, read-only script that turns a single Azure resource's metadata into structured, production-grade prompts across precision, compression, and balanced profiles.",
   path: "/prompt-packaging/optimization",
   keywords: [
     "prompt engine",

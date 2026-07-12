@@ -18,120 +18,68 @@ export type PromptEngineTierConfig = {
   metrics: PromptEngineMetric[];
 };
 
+// Shape matches the Azure SDK's resources.get_by_id() response for ONE resource —
+// no query wrapper, no correlation/billing metadata. This is what a local, read-only
+// ARM lookup actually returns.
 const sharedRawPayload = `{
-  "subscriptionId": "a3f8c2e1-9b4d-4f6a-8c2e-1a9b4d4f6a8c",
-  "resourceGroup": "rg-prod-aks-eastus",
-  "timestamp": "2026-07-10T18:42:11.384Z",
-  "correlationId": "8f3a2c1b-9d4e-5f6a-8c2e-1a9b4d4f6a8c",
-  "queryKind": "ResourceGraph",
-  "data": {
-    "totalRecords": 1,
-    "count": 1,
-    "resultTruncated": false,
-    "resources": [
-      {
-        "id": "/subscriptions/a3f8c2e1-9b4d-4f6a-8c2e-1a9b4d4f6a8c/resourceGroups/rg-prod-aks-eastus/providers/Microsoft.ContainerService/managedClusters/aks-prod-platform",
-        "name": "aks-prod-platform",
-        "type": "microsoft.containerservice/managedclusters",
-        "location": "eastus",
-        "tags": {
-          "environment": "production",
-          "costCenter": "CC-4821",
-          "owner": "platform-engineering",
-          "dataClassification": "internal",
-          "backupPolicy": "daily-geo-redundant",
-          "complianceScope": "soc2-type2"
-        },
-        "properties": {
-          "kubernetesVersion": "1.29.7",
-          "provisioningState": "Succeeded",
-          "powerState": { "code": "Running" },
-          "dnsPrefix": "aksprodplatform",
-          "fqdn": "aksprodplatform-8f3a2c1b.hcp.eastus.azmk8s.io",
-          "agentPoolProfiles": [
-            {
-              "name": "systempool",
-              "count": 3,
-              "vmSize": "Standard_D4s_v5",
-              "osType": "Linux",
-              "mode": "System",
-              "enableAutoScaling": true,
-              "minCount": 3,
-              "maxCount": 6,
-              "availabilityZones": ["1", "2", "3"],
-              "nodeLabels": { "workload": "system", "tier": "platform" },
-              "nodeTaints": ["CriticalAddonsOnly=true:NoSchedule"]
-            },
-            {
-              "name": "workloadpool",
-              "count": 8,
-              "vmSize": "Standard_D8s_v5",
-              "osType": "Linux",
-              "mode": "User",
-              "enableAutoScaling": true,
-              "minCount": 4,
-              "maxCount": 20,
-              "availabilityZones": ["1", "2", "3"],
-              "nodeLabels": { "workload": "application", "tier": "compute" }
-            }
-          ],
-          "networkProfile": {
-            "networkPlugin": "azure",
-            "networkPolicy": "calico",
-            "loadBalancerSku": "standard",
-            "serviceCidr": "10.1.0.0/16",
-            "dnsServiceIP": "10.1.0.10",
-            "outboundType": "loadBalancer",
-            "podCidr": "10.244.0.0/16"
-          },
-          "addonProfiles": {
-            "omsagent": {
-              "enabled": true,
-              "config": {
-                "logAnalyticsWorkspaceResourceID": "/subscriptions/a3f8c2e1-9b4d-4f6a-8c2e-1a9b4d4f6a8c/resourcegroups/rg-prod-aks-eastus/providers/microsoft.operationalinsights/workspaces/law-prod-platform"
-              }
-            },
-            "azurepolicy": { "enabled": true },
-            "azureKeyvaultSecretsProvider": { "enabled": true, "config": { "enableSecretRotation": "true" } }
-          },
-          "aadProfile": {
-            "managed": true,
-            "enableAzureRBAC": true,
-            "adminGroupObjectIDs": ["c4d5e6f7-8a9b-0c1d-2e3f-4a5b6c7d8e9f"]
-          },
-          "securityProfile": {
-            "workloadIdentity": { "enabled": true },
-            "defender": { "logAnalyticsWorkspaceResourceId": "/subscriptions/a3f8c2e1-9b4d-4f6a-8c2e-1a9b4d4f6a8c/resourcegroups/rg-prod-aks-eastus/providers/microsoft.operationalinsights/workspaces/law-prod-platform" }
-          },
-          "diagnosticSettings": {
-            "logs": ["kube-apiserver", "kube-audit", "kube-controller-manager", "cluster-autoscaler"],
-            "metrics": ["AllMetrics"],
-            "retentionDays": 90
-          }
-        },
-        "sku": { "name": "Base", "tier": "Standard" }
-      }
-    ]
+  "id": "/subscriptions/a3f8c2e1-9b4d-4f6a-8c2e-1a9b4d4f6a8c/resourceGroups/rg-prod-data-eastus/providers/Microsoft.Storage/storageAccounts/stprodingestblob",
+  "name": "stprodingestblob",
+  "type": "Microsoft.Storage/storageAccounts",
+  "location": "eastus",
+  "tags": {
+    "environment": "production",
+    "costCenter": "CC-4821",
+    "owner": "data-engineering",
+    "dataClassification": "confidential",
+    "pipeline": "databricks-blob-ingestion"
   },
-  "metadata": {
-    "requestRegion": "eastus",
-    "apiVersion": "2024-01-01",
-    "requestCharge": 2.84,
-    "resultSizeBytes": 48392,
-    "warnings": [],
-    "extensions": {
-      "bicepLintState": {
-        "filePath": "./infra/aks-platform.bicep",
-        "errors": 0,
-        "warnings": 3,
-        "suppressed": [
-          "no-unused-existing-resources",
-          "use-recent-api-versions",
-          "secure-parameter-defaults"
-        ]
+  "sku": { "name": "Standard_ZRS", "tier": "Standard" },
+  "kind": "StorageV2",
+  "properties": {
+    "provisioningState": "Succeeded",
+    "primaryEndpoints": {
+      "blob": "https://stprodingestblob.blob.core.windows.net/",
+      "dfs": "https://stprodingestblob.dfs.core.windows.net/"
+    },
+    "isHnsEnabled": true,
+    "accessTier": "Hot",
+    "minimumTlsVersion": "TLS1_2",
+    "allowBlobPublicAccess": false,
+    "allowSharedKeyAccess": false,
+    "networkAcls": {
+      "defaultAction": "Deny",
+      "bypass": "AzureServices",
+      "virtualNetworkRules": [
+        {
+          "id": "/subscriptions/a3f8c2e1-9b4d-4f6a-8c2e-1a9b4d4f6a8c/resourceGroups/rg-prod-data-eastus/providers/Microsoft.Network/virtualNetworks/vnet-prod-data/subnets/snet-databricks",
+          "action": "Allow"
+        }
+      ]
+    },
+    "encryption": {
+      "keySource": "Microsoft.Keyvault",
+      "keyvaultproperties": {
+        "keyvaulturi": "https://kv-prod-data.vault.azure.net/",
+        "keyname": "storage-cmk"
+      },
+      "services": {
+        "blob": { "enabled": true, "keyType": "Account" }
       }
-    }
+    },
+    "primaryLocation": "eastus",
+    "statusOfPrimary": "available"
   }
+}`;
+
+// The only input the local script needs — a direct ARM resource path,
+// mirroring resources.get_by_id(resource_group_name, resource_provider_namespace,
+// parent_resource_path, resource_type, resource_name, api_version).
+export const minimalConfigSchema = `{
+  "resource_group_name": "",
+  "resource_provider_namespace": "",
+  "parent_resource_path": "",
+  "resource_type": "",
+  "resource_name": ""
 }`;
 
 export const promptEngineTiers: PromptEngineTierConfig[] = [
@@ -142,30 +90,31 @@ export const promptEngineTiers: PromptEngineTierConfig[] = [
     focus: "Strict schema anchoring, chain-of-logic forcing, minimizing hallucinations.",
     profileName: "Precision profile",
     rawPayload: sharedRawPayload,
-    optimizedPrompt: `SYSTEM — Azure AKS Platform Review (Prompt Engine · Precision)
+    optimizedPrompt: `SYSTEM — Databricks Ingestion from Blob Storage (Prompt Engine · Precision)
 
 ROLE
-You are a senior Azure platform engineer. Answer ONLY from the anchored payload below.
-Do not infer resources, SKUs, regions, or policies not explicitly present.
+You are a senior Azure data engineer. Answer ONLY from the anchored resource facts below.
+Do not infer regions, endpoints, or security settings not explicitly present.
 
 ANCHORED FACTS
-- Cluster: aks-prod-platform (Microsoft.ContainerService/managedClusters)
-- Region: eastus | K8s: 1.29.7 | State: Running / Succeeded
-- Pools: systempool (3–6× D4s_v5, System, taint CriticalAddonsOnly) + workloadpool (4–20× D8s_v5, User)
-- Network: Azure CNI + Calico | serviceCidr 10.1.0.0/16 | podCidr 10.244.0.0/16
-- Identity: AAD-managed RBAC | Workload Identity ON | Key Vault CSI + rotation ON
-- Observability: Log Analytics wired | Defender enabled | 90-day diagnostic retention
-- Tags: production, SOC2 scope, owner platform-engineering
+- Source: stprodingestblob (Microsoft.Storage/storageAccounts) | SKU: Standard_ZRS | Kind: StorageV2
+- Region: eastus | HNS (ADLS Gen2): enabled | Access tier: Hot
+- Endpoints: blob=https://stprodingestblob.blob.core.windows.net/ | dfs=https://stprodingestblob.dfs.core.windows.net/
+- Network: defaultAction=Deny | bypass=AzureServices | VNet rule → snet-databricks allowed
+- Security: TLS 1.2 min | shared key access DISABLED | public blob access DISABLED
+- Encryption: CMK via Key Vault (kv-prod-data) | blob service encryption ON
+- Tags: production, confidential, pipeline=databricks-blob-ingestion
 
 CHAIN-OF-LOGIC (required before recommendations)
-1. List explicit constraints from payload (HA zones, autoscale bounds, taints).
-2. Map each recommendation → anchored field reference.
-3. Flag any unknowns as UNVERIFIED — never fabricate.
+1. Confirm Databricks can reach this account only via the allowed VNet rule (snet-databricks) — no public path exists.
+2. Map the ingestion auth method to the shared-key-disabled + CMK constraints (must use Entra ID / managed identity, not account keys).
+3. Flag any unknowns (e.g. container names, path-level ACLs) as UNVERIFIED — never fabricate.
 
 OUTPUT SCHEMA
 {
+  "ingestion_auth_method": string,
+  "network_path": { "allowed": boolean, "via": string },
   "risk_findings": [{ "severity", "evidence_field", "recommendation" }],
-  "topology_summary": string,
   "unverified_gaps": string[]
 }
 
@@ -189,17 +138,17 @@ HALLUCINATION GUARD: If a field is absent, respond "NOT IN PAYLOAD" — do not g
     focus: "Aggressive context compression, stripping JSON noise, syntax abbreviation.",
     profileName: "Compression profile",
     rawPayload: sharedRawPayload,
-    optimizedPrompt: `SYS|AKS-REVIEW|compression-profile
+    optimizedPrompt: `SYS|DATABRICKS-BLOB-INGEST|compression-profile
 
 CTX:
-sub=a3f8c2e1|rG=rg-prod-aks-eastus|cls=aks-prod-platform|reg=eastus|k8s=1.29.7|st=Run/OK
-pools: sys=3-6@D4s_v5[taint:CriticalAddonsOnly] usr=4-20@D8s_v5|az=1,2,3
-net: azure+calico|svc=10.1.0.0/16|pod=10.244.0.0/16|lb=std
-sec: aad-rbac|wi=on|kv-csi+rot=on|defender=on|diag=90d
-tags: prod|soc2|owner=platform-eng
+src=stprodingestblob|sku=Std_ZRS|kind=StorageV2|reg=eastus|hns=on|tier=Hot
+ep: blob=stprodingestblob.blob.core.windows.net dfs=stprodingestblob.dfs.core.windows.net
+net: default=Deny|bypass=AzureServices|vnet=snet-databricks:Allow
+sec: tls>=1.2|sharedKey=OFF|publicBlob=OFF|cmk=kv-prod-data
+tags: prod|confidential|pipeline=databricks-blob-ingestion
 
-TASK: compress review → bullet findings w/ field refs only
-OUT: {risks:[sev+evidence+fix], topology:1ln, gaps:[]}
+TASK: compress ingestion-readiness review → bullet findings w/ field refs only
+OUT: {auth_method, network_path:1ln, risks:[sev+evidence+fix], gaps:[]}
 RULE: no expand beyond CTX | abbrev OK | skip null/verbose metadata`,
     metrics: [
       { label: "Tokens Saved", value: "Target: ~42%", tone: "emerald", highlight: true },
@@ -215,25 +164,24 @@ RULE: no expand beyond CTX | abbrev OK | skip null/verbose metadata`,
     focus: "Dynamic routing based on payload complexity, selective compression.",
     profileName: "Balanced profile",
     rawPayload: sharedRawPayload,
-    optimizedPrompt: `SYSTEM — Azure AKS Platform Review (Prompt Engine · Balanced)
+    optimizedPrompt: `SYSTEM — Databricks Ingestion from Blob Storage (Prompt Engine · Balanced)
 
-ROUTING: complexity=HIGH → precision anchors for security/network; compression=MODERATE for tags/metadata
+ROUTING: complexity=HIGH → precision anchors for network/security/encryption; compression=MODERATE for tags/endpoints
 
 ANCHORED CORE
-cluster=aks-prod-platform | region=eastus | k8s=1.29.7 | prov=Succeeded
-pools: system(3-6,D4s_v5,taint) + workload(4-20,D8s_v5) | zones=1,2,3
-network: azureCNI+calico | svcCidr=10.1.0.0/16
-security: aadRBAC | workloadIdentity | kvCSI+rotation | defender+law
+source=stprodingestblob | region=eastus | kind=StorageV2 | hns=on | tier=Hot
+network: default=Deny | bypass=AzureServices | vnetRule=snet-databricks:Allow
+security: tls>=1.2 | sharedKeyAccess=OFF | publicBlobAccess=OFF | cmk=kv-prod-data
 
 ADAPTIVE RULES
-- Preserve exact IDs for identity, network, and compliance fields
-- Compress repetitive agentPool keys and diagnostic enumerations
-- Route ambiguous fields to UNVERIFIED bucket
+- Preserve exact IDs for network, encryption, and auth fields
+- Compress repetitive endpoint and tag metadata
+- Route ambiguous fields (container ACLs, lifecycle policy) to UNVERIFIED bucket
 
 OUTPUT
-{ risks[], topology_summary, compression_profile: "balanced-25%", routing: "adaptive" }
+{ auth_method, network_path, risks[], compression_profile: "balanced-25%", routing: "adaptive" }
 
-GUARDRAILS: hallucination checks ACTIVE on security + identity sections`,
+GUARDRAILS: hallucination checks ACTIVE on network + security + encryption sections`,
     metrics: [
       { label: "Tokens Saved", value: "Target: ~25%", tone: "emerald", highlight: true },
       { label: "Hallucination Guardrails", value: "Active", tone: "azure" },

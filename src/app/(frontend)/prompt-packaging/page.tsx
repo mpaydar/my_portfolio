@@ -56,9 +56,9 @@ export default function PromptPackagingPage() {
             <p className="optiprompt-preview-card-label">Concept preview</p>
             <h2 className="optiprompt-preview-card-title">Prompt Engine</h2>
             <p className="optiprompt-preview-card-description">
-              A concept preview of our in-development prompt engine — see how precision,
-              compression, and balanced profiles may transform raw Azure payloads into
-              structured prompts. Illustrative only; not ready for use.
+              A concept preview of our in-development prompt engine — a local, read-only
+              script that turns a single Azure resource&apos;s metadata into a structured
+              prompt for a specific tool pairing. Illustrative only; not ready for use.
             </p>
           </div>
           <span className="optiprompt-preview-card-cta">
