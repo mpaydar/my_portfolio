@@ -1,8 +1,10 @@
 import Link from "next/link";
 import PostCard from "@/components/PostCard";
+import AuthorPresence from "@/components/AuthorPresence";
 import CertificationTeaser from "@/components/CertificationTeaser";
 import JsonLd from "@/components/JsonLd";
 import SocialIcons from "@/components/SocialIcons";
+import { getAuthorPresence } from "@/lib/author-profile";
 import { getPublishedReports } from "@/lib/posts";
 import {
   buildPageMetadata,
@@ -10,6 +12,7 @@ import {
   buildWebSiteJsonLd,
   groupPostsByCategory,
 } from "@/lib/seo";
+import { getReactionCountThreshold } from "@/lib/site-settings";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +36,11 @@ export const metadata = buildPageMetadata({
 });
 
 export default async function Home() {
-  const posts = await getPublishedReports();
+  const [posts, reactionCountThreshold, author] = await Promise.all([
+    getPublishedReports(),
+    getReactionCountThreshold(),
+    getAuthorPresence(),
+  ]);
   const postsByCategory = groupPostsByCategory(posts);
 
   return (
@@ -85,6 +92,8 @@ export default async function Home() {
         </div>
       </section>
 
+      {author ? <AuthorPresence author={author} /> : null}
+
       <div className="border-b border-border">
         <div className="mx-auto flex max-w-5xl flex-col gap-3 px-6 py-5">
           <CertificationTeaser />
@@ -121,7 +130,11 @@ export default async function Home() {
                 </div>
                 <div className="grid gap-6 md:grid-cols-2">
                   {section.posts.map((post) => (
-                    <PostCard key={post.slug} post={post} />
+                    <PostCard
+                      key={post.slug}
+                      post={post}
+                      reactionCountThreshold={reactionCountThreshold}
+                    />
                   ))}
                 </div>
               </section>

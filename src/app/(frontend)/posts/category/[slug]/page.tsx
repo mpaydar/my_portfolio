@@ -9,6 +9,7 @@ import {
   buildCategoryMetadata,
   groupPostsByCategory,
 } from "@/lib/seo";
+import { getReactionCountThreshold } from "@/lib/site-settings";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPostsPage({ params }: Props) {
   const { slug } = await params;
-  const posts = await getPublishedReports();
+  const [posts, reactionCountThreshold] = await Promise.all([
+    getPublishedReports(),
+    getReactionCountThreshold(),
+  ]);
   const section = groupPostsByCategory(posts).find((item) => item.value === slug);
 
   if (!section) notFound();
@@ -58,7 +62,11 @@ export default async function CategoryPostsPage({ params }: Props) {
       </header>
       <div className="grid gap-6 md:grid-cols-2">
         {section.posts.map((post) => (
-          <PostCard key={post.slug} post={post} />
+          <PostCard
+            key={post.slug}
+            post={post}
+            reactionCountThreshold={reactionCountThreshold}
+          />
         ))}
       </div>
     </div>

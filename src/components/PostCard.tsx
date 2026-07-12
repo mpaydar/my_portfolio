@@ -1,8 +1,15 @@
 import Link from "next/link";
 import PostReaction from "@/components/PostReaction";
+import PostTypeTag from "@/components/PostTypeTag";
 import type { Post } from "@/lib/posts";
 
-export default function PostCard({ post }: { post: Post }) {
+export default function PostCard({
+  post,
+  reactionCountThreshold,
+}: {
+  post: Post;
+  reactionCountThreshold: number;
+}) {
   return (
     <article className="card group relative overflow-hidden rounded-xl">
       <Link
@@ -29,6 +36,7 @@ export default function PostCard({ post }: { post: Post }) {
           >
             {post.categoryLabel}
           </Link>
+          <PostTypeTag postType={post.postType} />
           <span className="text-border">·</span>
           <time dateTime={post.date}>{formatDate(post.date)}</time>
           {post.readTime && (
@@ -41,6 +49,11 @@ export default function PostCard({ post }: { post: Post }) {
         <h3 className="mb-2 text-lg font-semibold text-foreground transition group-hover:text-accent">
           {post.title}
         </h3>
+        {post.tldr ? (
+          <p className="mb-1.5 text-sm font-light italic text-muted/80">
+            {post.tldr}
+          </p>
+        ) : null}
         <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-muted">
           {post.excerpt}
         </p>
@@ -51,7 +64,7 @@ export default function PostCard({ post }: { post: Post }) {
                 key={tag}
                 className="rounded-full border border-border bg-surface-hover px-2.5 py-0.5 font-mono text-xs text-accent"
               >
-                {tag}
+                {tag.replace(/^#+/, "")}
               </span>
             ))}
           </div>
@@ -60,6 +73,7 @@ export default function PostCard({ post }: { post: Post }) {
           id={post.id}
           slug={post.slug}
           initialCount={post.interestCount}
+          countThreshold={reactionCountThreshold}
           size="sm"
         />
       </div>

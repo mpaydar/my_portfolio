@@ -8,6 +8,7 @@ import {
 import { getSourceDocumentKind } from "@/lib/document-types";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { populateUploadNodesInContent } from "@/lib/populate-rich-text";
+import { hasRichTextBody } from "@/lib/rich-text";
 
 export type PostCoverImage = {
   url: string;
@@ -30,6 +31,14 @@ export type PostSourceDocument = {
   kind: "pdf" | "docx";
 };
 
+export type PostType = "explainer" | "build-log";
+
+export type ProofOfWork = {
+  githubRepoUrl: string | null;
+  datasetUsed: string | null;
+  reproduceSteps: TechnicalReport["reproduceSteps"] | null;
+};
+
 export function getPresentationProxyUrl(slug: string) {
   return `/api/posts/${encodeURIComponent(slug)}/presentation`;
 }
@@ -42,6 +51,8 @@ export type Post = {
   id: number;
   slug: string;
   title: string;
+  postType: PostType | null;
+  tldr: string | null;
   excerpt: string;
   date: string;
   category: string;
@@ -51,6 +62,8 @@ export type Post = {
   presentation: PostPresentation | null;
   sourceDocument: PostSourceDocument | null;
   tags: string[];
+  prerequisiteTag: string | null;
+  proofOfWork: ProofOfWork | null;
   readTime: string;
   interestCount: number;
   content?: TechnicalReport["content"];
@@ -166,6 +179,26 @@ function resolvePresentation(
   };
 }
 
+// Returns null (hide the whole Proof of Work panel) unless at least one
+// field is actually filled in — no empty box, no "coming soon".
+function resolveProofOfWork(doc: TechnicalReport): ProofOfWork | null {
+  const githubRepoUrl = doc.githubRepoUrl?.trim() || null;
+  const datasetUsed = doc.datasetUsed?.trim() || null;
+  const hasReproduceSteps = hasRichTextBody(
+    doc.reproduceSteps as Parameters<typeof hasRichTextBody>[0],
+  );
+
+  if (!githubRepoUrl && !datasetUsed && !hasReproduceSteps) {
+    return null;
+  }
+
+  return {
+    githubRepoUrl,
+    datasetUsed,
+    reproduceSteps: hasReproduceSteps ? doc.reproduceSteps : null,
+  };
+}
+
 function resolveCategory(category: CategoryValue) {
   if (category && typeof category === "object") {
     const slug = category.slug || toCategorySlug(category.title || "");
@@ -204,6 +237,8 @@ function mapReport(
     id: doc.id,
     slug: doc.slug,
     title: doc.title,
+    postType: doc.postType ?? null,
+    tldr: doc.tldr?.trim() || null,
     excerpt: doc.excerpt,
     date: doc.publishedAt || doc.createdAt,
     category: category.slug,
@@ -213,6 +248,8 @@ function mapReport(
     presentation: resolvePresentation(doc.presentation),
     sourceDocument: resolveSourceDocument(doc.sourceDocument),
     tags: (doc.tags ?? []).map((t) => t.tag),
+    prerequisiteTag: doc.prerequisiteTag?.trim() || null,
+    proofOfWork: resolveProofOfWork(doc),
     readTime: doc.readTime || "",
     interestCount: doc.interestCount ?? 0,
     content,

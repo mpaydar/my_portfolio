@@ -9,7 +9,9 @@ import { Media } from "./collections/Media";
 import { PostCategories } from "./collections/PostCategories";
 import { TechnicalReports } from "./collections/TechnicalReports";
 import { Users } from "./collections/Users";
+import { AuthorProfile } from "./globals/AuthorProfile";
 import { LinkedInIntegration } from "./globals/LinkedInIntegration";
+import { SiteSettings } from "./globals/SiteSettings";
 import {
   hasBlobReadWriteToken,
   isBlobStorageEnabled,
@@ -27,7 +29,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, PostCategories, TechnicalReports],
-  globals: [LinkedInIntegration],
+  globals: [LinkedInIntegration, SiteSettings, AuthorProfile],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

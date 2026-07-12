@@ -25,6 +25,10 @@ export function PostEditorDashboard() {
     status: formFields._status?.value as string | undefined,
     linkedInPostUrl: formFields.linkedInPostUrl?.value as string | undefined,
     linkedInSharedAt: formFields.linkedInSharedAt?.value as string | undefined,
+    postType: formFields.postType?.value as string | undefined,
+    githubRepoUrl: formFields.githubRepoUrl?.value as string | undefined,
+    datasetUsed: formFields.datasetUsed?.value as string | undefined,
+    tldr: formFields.tldr?.value as string | undefined,
   }));
 
   useEffect(() => {
@@ -47,6 +51,8 @@ export function PostEditorDashboard() {
         presentation: fields.presentation,
         sourceDocument: fields.sourceDocument,
         documentImportStatus: fields.documentImportStatus,
+        postType: fields.postType,
+        githubRepoUrl: fields.githubRepoUrl,
       }),
     [fields, linkedInConnected],
   );
@@ -117,6 +123,23 @@ export function PostEditorDashboard() {
               {fields.title?.length ?? 0} / {fields.excerpt?.length ?? 0}
             </div>
             <p className={styles.panelSubtitle}>title / excerpt chars</p>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statLabel}>Preview &amp; proof</div>
+            <div className={styles.statValue}>
+              {[
+                fields.tldr?.trim() ? "TL;DR" : null,
+                fields.githubRepoUrl?.trim() ? "Repo" : null,
+                fields.datasetUsed?.trim() ? "Dataset" : null,
+              ]
+                .filter(Boolean)
+                .join(" · ") || "None set"}
+            </div>
+            <p className={styles.panelSubtitle}>
+              {fields.postType === "build-log"
+                ? "Build Log — repo link recommended"
+                : "Optional extras"}
+            </p>
           </div>
         </div>
 

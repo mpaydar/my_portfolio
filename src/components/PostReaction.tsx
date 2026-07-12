@@ -6,6 +6,7 @@ type PostReactionProps = {
   id: number;
   slug: string;
   initialCount: number;
+  countThreshold: number;
   size?: "sm" | "md";
 };
 
@@ -17,6 +18,7 @@ export default function PostReaction({
   id,
   slug,
   initialCount,
+  countThreshold,
   size = "md",
 }: PostReactionProps) {
   const [count, setCount] = useState(initialCount);
@@ -80,13 +82,15 @@ export default function PostReaction({
     >
       <span aria-hidden>{reacted ? "✓" : "🔥"}</span>
       <span>{reacted ? "Want more like this" : "Want more like this?"}</span>
-      <span
-        className={`rounded-full px-1.5 ${
-          reacted ? "bg-accent/20" : "bg-border/60"
-        }`}
-      >
-        {count}
-      </span>
+      {count >= countThreshold ? (
+        <span
+          className={`rounded-full px-1.5 ${
+            reacted ? "bg-accent/20" : "bg-border/60"
+          }`}
+        >
+          {count}
+        </span>
+      ) : null}
     </button>
   );
 }

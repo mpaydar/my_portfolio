@@ -72,8 +72,11 @@ export function getReadinessChecks(fields: {
   presentation?: string | number | null;
   sourceDocument?: string | number | null;
   documentImportStatus?: string;
+  postType?: string;
+  githubRepoUrl?: string;
 }) {
   const hasDocument = Boolean(fields.sourceDocument);
+  const isBuildLog = fields.postType === "build-log";
   const isPdfDocument =
     hasDocument && fields.documentImportStatus !== "failed";
   const documentReady =
@@ -124,6 +127,17 @@ export function getReadinessChecks(fields: {
       done: Boolean(fields.presentation),
       optional: true,
     },
+    ...(isBuildLog
+      ? [
+          {
+            id: "buildLogRepo",
+            label: "Build Log has a repo link",
+            done: Boolean(fields.githubRepoUrl?.trim()),
+            // Non-blocking: shown as unmet, but never prevents publishing.
+            optional: true,
+          },
+        ]
+      : []),
     {
       id: "published",
       label: "Published on portfolio",

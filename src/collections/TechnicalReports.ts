@@ -15,6 +15,7 @@ import {
   resolveSourceDocumentId,
 } from "@/lib/document-import-utils";
 import { SOURCE_DOCUMENT_MIME_TYPES } from "@/lib/document-types";
+import { normalizeTagList, tagListsDiffer } from "@/lib/tag-normalization";
 
 export const TechnicalReports: CollectionConfig = {
   slug: "technical-reports",
@@ -22,13 +23,14 @@ export const TechnicalReports: CollectionConfig = {
     useAsTitle: "title",
     defaultColumns: [
       "title",
+      "postType",
       "category",
       "interestCount",
       "publishedAt",
       "updatedAt",
     ],
     description:
-      "Daily technical reports — distributed systems, agentic apps, and scalable architecture.",
+      "Technical reports — Explainers (conceptual deep-dives) and Build Logs (real repo + dataset, reproducible pipelines).",
     group: "Content",
     components: {
       edit: {
@@ -36,6 +38,9 @@ export const TechnicalReports: CollectionConfig = {
           "@/components/admin/PostQuickActions#PostQuickActions",
         ],
       },
+      beforeListTable: [
+        "@/components/admin/TagNormalizerPanel#TagNormalizerPanel",
+      ],
     },
   },
   access: {
@@ -57,6 +62,28 @@ export const TechnicalReports: CollectionConfig = {
       required: true,
     },
     slugField(),
+    {
+      name: "postType",
+      type: "select",
+      options: [
+        { label: "Explainer", value: "explainer" },
+        { label: "Build Log", value: "build-log" },
+      ],
+      admin: {
+        position: "sidebar",
+        description:
+          'Explainer = conceptual deep-dive. Build Log = real repo + dataset, reproducible pipeline. Leave unset if unsure.',
+      },
+    },
+    {
+      name: "tldr",
+      type: "text",
+      maxLength: 200,
+      admin: {
+        description:
+          "Optional one-sentence summary, shown above the excerpt on preview cards.",
+      },
+    },
     {
       name: "excerpt",
       type: "textarea",
@@ -150,6 +177,75 @@ export const TechnicalReports: CollectionConfig = {
         description:
           "Primary focus area for this post. Create a new category if none of the existing categories fit.",
       },
+    },
+    {
+      name: "prerequisiteTag",
+      type: "text",
+      admin: {
+        position: "sidebar",
+        description:
+          'Optional reading-level hint, e.g. "Assumes: basic ARM/Bicep knowledge".',
+      },
+    },
+    {
+      type: "collapsible",
+      label: "Proof of Work (optional)",
+      admin: {
+        initCollapsed: true,
+        description:
+          "For Build Log posts: link the real repo and dataset. Leave all blank for Explainer posts — the section won't render on the site unless at least one field is filled in.",
+      },
+      fields: [
+        {
+          name: "githubRepoUrl",
+          type: "text",
+          admin: {
+            description:
+              "Repo URL — renders as a styled link/button near the top of the post.",
+          },
+          validate: (value: string | null | undefined) => {
+            if (!value) return true;
+            try {
+              new URL(value);
+              return true;
+            } catch {
+              return "Enter a full URL, e.g. https://github.com/you/repo";
+            }
+          },
+        },
+        {
+          name: "datasetUsed",
+          type: "text",
+          admin: {
+            description:
+              "Dataset name or link. Rendered as a link if it starts with http, plain text otherwise.",
+          },
+        },
+        {
+          name: "reproduceSteps",
+          type: "richText",
+          editor: lexicalEditor({
+            features: ({ rootFeatures }) => [
+              ...rootFeatures,
+              FixedToolbarFeature(),
+              InlineToolbarFeature(),
+            ],
+          }),
+          admin: {
+            description: "Optional step-by-step reproduction instructions.",
+          },
+        },
+        {
+          name: "proofOfWorkPreview",
+          type: "ui",
+          admin: {
+            components: {
+              Field:
+                "@/components/admin/ProofOfWorkPreview#ProofOfWorkPreview",
+            },
+          },
+        },
+      ],
     },
     {
       name: "content",
@@ -332,6 +428,59 @@ export const TechnicalReports: CollectionConfig = {
     ],
   },
   endpoints: [
+    {
+      path: "/normalize-tags",
+      method: "post",
+      handler: async (req) => {
+        if (!req.user) {
+          return Response.json({ error: "Authentication required." }, { status: 401 });
+        }
+
+        let apply = false;
+        try {
+          const body = (await req.json?.()) as { apply?: boolean } | undefined;
+          apply = Boolean(body?.apply);
+        } catch {
+          apply = false;
+        }
+
+        const result = await req.payload.find({
+          collection: "technical-reports",
+          limit: 1000,
+          depth: 0,
+          overrideAccess: true,
+          draft: true,
+        });
+
+        const changes: Array<{
+          id: number;
+          title: string;
+          before: string[];
+          after: string[];
+        }> = [];
+
+        for (const doc of result.docs) {
+          const before = (doc.tags ?? []).map((t) => t.tag);
+          const after = normalizeTagList(doc.tags ?? []);
+
+          if (!tagListsDiffer(before, after)) continue;
+
+          changes.push({ id: doc.id, title: doc.title, before, after });
+
+          if (apply) {
+            await req.payload.update({
+              collection: "technical-reports",
+              id: doc.id,
+              data: { tags: after.map((tag) => ({ tag })) },
+              overrideAccess: true,
+              context: { skipDocumentImport: true },
+            });
+          }
+        }
+
+        return Response.json({ applied: apply, changes });
+      },
+    },
     {
       path: "/:id/react",
       method: "post",

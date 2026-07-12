@@ -93,9 +93,13 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'linkedin-integration': LinkedinIntegration;
+    'site-settings': SiteSetting;
+    'author-profile': AuthorProfile;
   };
   globalsSelect: {
     'linkedin-integration': LinkedinIntegrationSelect<false> | LinkedinIntegrationSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    'author-profile': AuthorProfileSelect<false> | AuthorProfileSelect<true>;
   };
   locale: null;
   widgets: {
@@ -220,7 +224,7 @@ export interface PostCategory {
   createdAt: string;
 }
 /**
- * Daily technical reports — distributed systems, agentic apps, and scalable architecture.
+ * Technical reports — Explainers (conceptual deep-dives) and Build Logs (real repo + dataset, reproducible pipelines).
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "technical-reports".
@@ -233,6 +237,14 @@ export interface TechnicalReport {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Explainer = conceptual deep-dive. Build Log = real repo + dataset, reproducible pipeline. Leave unset if unsure.
+   */
+  postType?: ('explainer' | 'build-log') | null;
+  /**
+   * Optional one-sentence summary, shown above the excerpt on preview cards.
+   */
+  tldr?: string | null;
   /**
    * Short summary shown on the posts listing and home page.
    */
@@ -256,6 +268,36 @@ export interface TechnicalReport {
    * Primary focus area for this post. Create a new category if none of the existing categories fit.
    */
   category: number | PostCategory;
+  /**
+   * Optional reading-level hint, e.g. "Assumes: basic ARM/Bicep knowledge".
+   */
+  prerequisiteTag?: string | null;
+  /**
+   * Repo URL — renders as a styled link/button near the top of the post.
+   */
+  githubRepoUrl?: string | null;
+  /**
+   * Dataset name or link. Rendered as a link if it starts with http, plain text otherwise.
+   */
+  datasetUsed?: string | null;
+  /**
+   * Optional step-by-step reproduction instructions.
+   */
+  reproduceSteps?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Write directly or upload a Word document above — content is imported automatically. PDF reports use the document viewer instead.
    */
@@ -483,6 +525,8 @@ export interface TechnicalReportsSelect<T extends boolean = true> {
   title?: T;
   generateSlug?: T;
   slug?: T;
+  postType?: T;
+  tldr?: T;
   excerpt?: T;
   coverImage?: T;
   sourceDocument?: T;
@@ -491,6 +535,10 @@ export interface TechnicalReportsSelect<T extends boolean = true> {
   lastImportedDocumentId?: T;
   presentation?: T;
   category?: T;
+  prerequisiteTag?: T;
+  githubRepoUrl?: T;
+  datasetUsed?: T;
+  reproduceSteps?: T;
   content?: T;
   tags?:
     | T
@@ -570,6 +618,39 @@ export interface LinkedinIntegration {
   createdAt?: string | null;
 }
 /**
+ * Site-wide display settings for the public frontend.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * Minimum "Want more like this" count before the number is shown publicly. Below this threshold, only the button renders — no visible tally.
+   */
+  reactionCountThreshold?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Rendered near the top of the homepage. Stays fully hidden until at least a name is set — no placeholder shows in the meantime.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "author-profile".
+ */
+export interface AuthorProfile {
+  id: number;
+  photo?: (number | null) | Media;
+  name?: string | null;
+  role?: string | null;
+  /**
+   * One-line statement of what you're currently focused on.
+   */
+  focusStatement?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "linkedin-integration_select".
  */
@@ -579,6 +660,29 @@ export interface LinkedinIntegrationSelect<T extends boolean = true> {
   expiresAt?: T;
   accessToken?: T;
   refreshToken?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  reactionCountThreshold?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "author-profile_select".
+ */
+export interface AuthorProfileSelect<T extends boolean = true> {
+  photo?: T;
+  name?: T;
+  role?: T;
+  focusStatement?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

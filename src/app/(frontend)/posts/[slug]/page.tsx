@@ -10,9 +10,12 @@ import {
 } from "@/components/PostViewSwitcher";
 import JsonLd from "@/components/JsonLd";
 import PostReaction from "@/components/PostReaction";
+import PostTypeTag from "@/components/PostTypeTag";
+import ProofOfWorkPanel from "@/components/ProofOfWorkPanel";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { getDocumentProxyUrl, getPresentationProxyUrl, getReportBySlug } from "@/lib/posts";
 import { hasRichTextBody } from "@/lib/rich-text";
+import { getReactionCountThreshold } from "@/lib/site-settings";
 import {
   buildBlogPostingJsonLd,
   buildBreadcrumbJsonLd,
@@ -41,7 +44,10 @@ function formatDate(date: string) {
 
 export default async function PostPage({ params }: Props) {
   const { slug } = await params;
-  const post = await getReportBySlug(slug);
+  const [post, reactionCountThreshold] = await Promise.all([
+    getReportBySlug(slug),
+    getReactionCountThreshold(),
+  ]);
   if (!post) notFound();
 
   const coverSrc = post.coverImage
@@ -101,12 +107,20 @@ export default async function PostPage({ params }: Props) {
             </ol>
           </nav>
 
-          <Link
-            href={`/posts/category/${post.category}`}
-            className="mb-3 inline-flex rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-xs text-accent transition hover:border-accent"
-          >
-            {post.categoryLabel}
-          </Link>
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <Link
+              href={`/posts/category/${post.category}`}
+              className="inline-flex rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-xs text-accent transition hover:border-accent"
+            >
+              {post.categoryLabel}
+            </Link>
+            <PostTypeTag postType={post.postType} />
+            {post.prerequisiteTag ? (
+              <span className="inline-flex rounded-full border border-dashed border-border px-3 py-1 font-mono text-xs text-muted">
+                {post.prerequisiteTag}
+              </span>
+            ) : null}
+          </div>
 
           <h1 className="mb-3 text-2xl font-bold leading-[1.2] tracking-tight text-foreground sm:text-3xl md:text-[2.125rem]">
             {post.title}
@@ -130,6 +144,10 @@ export default async function PostPage({ params }: Props) {
 
           <PostViewToggle />
         </header>
+
+        {post.proofOfWork ? (
+          <ProofOfWorkPanel proofOfWork={post.proofOfWork} />
+        ) : null}
 
         {coverSrc ? (
           <figure className="article-figure article-cover mb-6">
@@ -163,6 +181,7 @@ export default async function PostPage({ params }: Props) {
             id={post.id}
             slug={post.slug}
             initialCount={post.interestCount}
+            countThreshold={reactionCountThreshold}
           />
         </div>
 
@@ -174,7 +193,7 @@ export default async function PostPage({ params }: Props) {
                   key={tag}
                   className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-xs text-muted"
                 >
-                  {tag}
+                  {tag.replace(/^#+/, "")}
                 </span>
               ))}
             </div>
