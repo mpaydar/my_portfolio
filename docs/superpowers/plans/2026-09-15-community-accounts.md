@@ -401,7 +401,7 @@ git commit -m "Add getCurrentMember session helper"
 - Produces: `export type AuthActionState = { error: string | null }`,
   `export async function signupAction(prevState: AuthActionState, formData: FormData): Promise<AuthActionState>`,
   `export async function loginAction(prevState: AuthActionState, formData: FormData): Promise<AuthActionState>`,
-  `export async function logoutAction(formData: FormData): Promise<void>`.
+  `export async function logoutAction(): Promise<void>`.
   Tasks 7–9 (the form components) call these by name with these exact signatures.
 
 - [ ] **Step 1: Write the server actions**
@@ -497,7 +497,7 @@ export async function loginAction(
   redirect("/community/dashboard");
 }
 
-export async function logoutAction(_formData: FormData): Promise<void> {
+export async function logoutAction(): Promise<void> {
   await logout({ config });
   redirect("/community");
 }
