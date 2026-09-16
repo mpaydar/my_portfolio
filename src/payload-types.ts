@@ -64,11 +64,13 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    members: MemberAuthOperations;
   };
   blocks: {};
   collections: {
     users: User;
     media: Media;
+    members: Member;
     'post-categories': PostCategory;
     'technical-reports': TechnicalReport;
     'payload-kv': PayloadKv;
@@ -80,6 +82,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
     'post-categories': PostCategoriesSelect<false> | PostCategoriesSelect<true>;
     'technical-reports': TechnicalReportsSelect<false> | TechnicalReportsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -105,13 +108,31 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: User | Member;
   jobs: {
     tasks: unknown;
     workflows: unknown;
   };
 }
 export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface MemberAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -201,6 +222,32 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: number;
+  name: string;
+  password?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  collection: 'members';
 }
 /**
  * Reusable focus areas for technical reports. Add a new category here when the existing ones do not fit.
@@ -382,6 +429,10 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'members';
+        value: number | Member;
+      } | null)
+    | ({
         relationTo: 'post-categories';
         value: number | PostCategory;
       } | null)
@@ -390,10 +441,15 @@ export interface PayloadLockedDocument {
         value: number | TechnicalReport;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'members';
+        value: number | Member;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -403,10 +459,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'members';
+        value: number | Member;
+      };
   key?: string | null;
   value?:
     | {
@@ -503,6 +564,30 @@ export interface MediaSelect<T extends boolean = true> {
               filesize?: T;
               filename?: T;
             };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  name?: T;
+  password?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
       };
 }
 /**

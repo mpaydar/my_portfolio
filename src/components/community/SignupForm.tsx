@@ -1,0 +1,81 @@
+"use client";
+
+import Link from "next/link";
+import { useActionState } from "react";
+import {
+  signupAction,
+  type AuthActionState,
+} from "@/lib/community/auth-actions";
+
+const initialState: AuthActionState = { error: null };
+
+export default function SignupForm() {
+  const [state, formAction, isPending] = useActionState(
+    signupAction,
+    initialState,
+  );
+
+  return (
+    <form action={formAction} className="card space-y-4 rounded-xl p-6">
+      <div className="space-y-1.5">
+        <label htmlFor="name" className="block text-sm font-medium text-foreground">
+          Name
+        </label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          required
+          autoComplete="name"
+          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent-dim"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <label htmlFor="email" className="block text-sm font-medium text-foreground">
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          autoComplete="email"
+          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent-dim"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-foreground"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          required
+          minLength={8}
+          autoComplete="new-password"
+          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent-dim"
+        />
+      </div>
+      {state.error ? (
+        <p className="text-sm text-danger">{state.error}</p>
+      ) : null}
+      <button
+        type="submit"
+        disabled={isPending}
+        className="btn-primary w-full rounded-md px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
+      >
+        {isPending ? "Creating account…" : "Create account"}
+      </button>
+      <p className="text-center text-sm text-muted">
+        Already have an account?{" "}
+        <Link href="/community/login" className="text-accent hover:underline">
+          Log in
+        </Link>
+      </p>
+    </form>
+  );
+}

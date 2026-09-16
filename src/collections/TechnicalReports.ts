@@ -5,7 +5,7 @@ import {
   UploadFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
-import type { CollectionConfig } from "payload";
+import type { Access, CollectionConfig } from "payload";
 import { slugField } from "payload";
 
 import { getSiteUrl } from "@/lib/linkedin/config";
@@ -16,6 +16,11 @@ import {
 } from "@/lib/document-import-utils";
 import { SOURCE_DOCUMENT_MIME_TYPES } from "@/lib/document-types";
 import { normalizeTagList, tagListsDiffer } from "@/lib/tag-normalization";
+
+// Payload's default access for an unspecified operation is `Boolean(user)` —
+// true for any authenticated session, including a self-registered `members`
+// account. Writes here must be restricted to admin (`users`-collection) sessions.
+const isAdmin: Access = ({ req: { user } }) => user?.collection === "users";
 
 export const TechnicalReports: CollectionConfig = {
   slug: "technical-reports",
@@ -45,6 +50,9 @@ export const TechnicalReports: CollectionConfig = {
   },
   access: {
     read: () => true,
+    create: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
   },
   fields: [
     {
@@ -432,7 +440,7 @@ export const TechnicalReports: CollectionConfig = {
       path: "/normalize-tags",
       method: "post",
       handler: async (req) => {
-        if (!req.user) {
+        if (req.user?.collection !== "users") {
           return Response.json({ error: "Authentication required." }, { status: 401 });
         }
 
@@ -521,7 +529,7 @@ export const TechnicalReports: CollectionConfig = {
       path: "/:id/share-linkedin",
       method: "post",
       handler: async (req) => {
-        if (!req.user) {
+        if (req.user?.collection !== "users") {
           return Response.json({ error: "Authentication required." }, { status: 401 });
         }
 
