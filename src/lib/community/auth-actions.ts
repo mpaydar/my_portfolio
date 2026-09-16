@@ -33,14 +33,19 @@ export async function signupAction(
 
   const payload = await getPayload({ config });
 
-  const existing = await payload.find({
-    collection: "members",
-    where: { email: { equals: email } },
-    limit: 1,
-  });
+  try {
+    const existing = await payload.find({
+      collection: "members",
+      where: { email: { equals: email } },
+      limit: 1,
+    });
 
-  if (existing.docs.length > 0) {
-    return { error: "An account with this email already exists." };
+    if (existing.docs.length > 0) {
+      return { error: "An account with this email already exists." };
+    }
+  } catch (error) {
+    console.error("Failed to check existing member:", error);
+    return { error: "Something went wrong creating your account. Please try again." };
   }
 
   try {
