@@ -34,10 +34,16 @@ challenges/prizes are each separate follow-on specs, gated behind this one.
 ### New collection: `Members`
 
 - File: `src/collections/Members.ts`, slug `members`.
-- `auth: true` — Payload gives this collection its own login/logout/me REST endpoints
-  and its own session cookie (distinct from the admin `Users` collection's cookie,
-  since only `Users` is set as `config.admin.user`). Members can never log into
-  `/admin`.
+- `auth: true` — Payload gives this collection its own login/logout/me REST endpoints.
+  Note: Payload uses a single global auth cookie per app (name derived from
+  `config.cookiePrefix`, default `payload-token`); the JWT itself encodes which
+  collection (`users` vs `members`) the session belongs to, via `user.collection`.
+  Payload's admin panel already restricts `/admin` access to sessions where
+  `user.collection === config.admin.user` (`"users"`), so members can never log into
+  `/admin` regardless of cookie sharing. Known limitation: logging in as the admin
+  and as a member in the *same browser* will overwrite one session with the other,
+  since they share one cookie — acceptable since these are different real people in
+  practice, not a concurrent-use case.
 - Fields: `name` (text, required) plus the built-in `email`/`password` fields from
   `auth: true`.
 - Access control:
@@ -58,18 +64,24 @@ challenges/prizes are each separate follow-on specs, gated behind this one.
 ### Auth flow
 
 - Signup, login, and logout are implemented as Next.js Server Actions
-  (`src/lib/community/auth-actions.ts`), calling Payload's **local API**
-  (`getPayload({ config })`) directly on the server:
-  - `signupAction`: creates the Member via `payload.create`, then logs in via
-    `payload.login` and sets the session cookie (httpOnly) via `next/headers` cookies.
-  - `loginAction`: calls `payload.login`, sets the session cookie.
-  - `logoutAction`: clears the session cookie.
+  (`src/lib/community/auth-actions.ts`), using `@payloadcms/next/auth`'s `login`/
+  `logout` server-function helpers (which manage the httpOnly cookie automatically)
+  plus Payload's **local API** (`getPayload({ config })`) for the create step:
+  - `signupAction`: checks for an existing member by email via `payload.find`
+    (returns a friendly "account already exists" error if found), creates the Member
+    via `payload.create`, then calls `login({ collection: "members", config, email,
+    password })` to establish the session.
+  - `loginAction`: calls `login({ collection: "members", config, email, password })`;
+    catches and reports invalid-credentials errors as a friendly inline message.
+  - `logoutAction`: calls `logout({ config })`.
 - No client-side fetch to `/api/members/*` — forms post directly to server actions, so
   the session token never touches browser JS.
-- Session lookup helper (`src/lib/community/session.ts`): reads the member session
-  cookie and calls Payload's `auth({ headers })` to resolve the current member (or
-  `null`). Used by `/community`, `/community/dashboard`, `/community/login`, and
-  `/community/signup` to decide what to render/redirect.
+- Session lookup helper (`src/lib/community/session.ts`): calls Payload's
+  `auth({ headers })` (headers from `next/headers`) and returns the user only if
+  `user.collection === "members"` (guards against an admin session on the same
+  browser being mistaken for a member session). Used by `/community`,
+  `/community/dashboard`, `/community/login`, and `/community/signup` to decide what
+  to render/redirect.
 
 ## Routes & pages
 
