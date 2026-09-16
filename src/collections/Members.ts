@@ -30,5 +30,16 @@ export const Members: CollectionConfig = {
       type: "text",
       required: true,
     },
+    {
+      name: "password",
+      type: "text",
+      hidden: true,
+      validate: (value: string | null | undefined) => {
+        if (!value || value.length < 8) {
+          return "Password must be at least 8 characters.";
+        }
+        return true;
+      },
+    },
   ],
 };

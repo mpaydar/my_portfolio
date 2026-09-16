@@ -55,13 +55,13 @@ export default function SignupForm() {
           name="password"
           type="password"
           required
-          minLength={3}
+          minLength={8}
           autoComplete="new-password"
           className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent-dim"
         />
       </div>
       {state.error ? (
-        <p className="text-sm text-red-500 dark:text-red-400">{state.error}</p>
+        <p className="text-sm text-danger">{state.error}</p>
       ) : null}
       <button
         type="submit"

@@ -10,16 +10,21 @@ export type CommunityMember = {
 };
 
 export async function getCurrentMember(): Promise<CommunityMember | null> {
-  const payload = await getPayload({ config });
-  const headers = await getHeaders();
-  const { user } = await payload.auth({ headers });
+  try {
+    const payload = await getPayload({ config });
+    const headers = await getHeaders();
+    const { user } = await payload.auth({ headers });
 
-  // Payload shares one session cookie across all auth-enabled collections —
-  // an admin session must never be mistaken for a Community member.
-  if (!user || user.collection !== "members") {
+    // Payload shares one session cookie across all auth-enabled collections —
+    // an admin session must never be mistaken for a Community member.
+    if (!user || user.collection !== "members") {
+      return null;
+    }
+
+    const member = user as Member;
+    return { id: member.id, name: member.name, email: member.email };
+  } catch (error) {
+    console.error("Failed to resolve current Community member:", error);
     return null;
   }
-
-  const member = user as Member;
-  return { id: member.id, name: member.name, email: member.email };
 }

@@ -60,6 +60,10 @@ Media uploads (`src/collections/Media.ts`) use Vercel Blob when `BLOB_READ_WRITE
 
 Non-CMS content (projects, resume, expertise, certifications, prompt-packaging copy) is hardcoded in `src/lib/data.ts` rather than pulled from Payload — edit that file directly for resume/project/certification changes rather than looking for a CMS collection.
 
+### Community accounts (`src/lib/community/`, `src/collections/Members.ts`)
+
+Visitor signup/login for the "Community" section (quizzes, group projects, challenges — not yet built) uses a second Payload auth collection, `members`, completely separate from the admin `Users` collection (`config.admin.user` stays `Users.slug`, so members can never log into `/admin`). Important: Payload uses **one global auth cookie per app**, shared across every `auth: true` collection — there is no per-collection cookie. A JWT's `user.collection` field (`"users"` vs `"members"`) is the only discriminator; `src/lib/community/session.ts`'s `getCurrentMember()` checks it explicitly and must never be bypassed. Side effect of the shared cookie: logging into the Community section logs the owner out of `/admin` in the same browser, and vice versa — this is expected, not a bug, since these are different real people in practice. **Any new collection or global added after this one must declare explicit `access` rules for every operation it defines** — Payload's default access for an unspecified key is `Boolean(user)`, which is true for a `members` session too, not just an admin session (see the git history around "Fix admin-privilege escalation via self-registered members" for the incident this rule comes from).
+
 ### Site URL resolution (`src/lib/site-url.ts`)
 
 Used for metadata/OAuth redirect URLs. Prefers `NEXT_PUBLIC_SITE_URL`, then the incoming request's `Host`/`X-Forwarded-Host` header (`getRequestSiteUrl`, request-context only), then `VERCEL_URL`, then `localhost:3000`. Keep production's `NEXT_PUBLIC_SITE_URL` in sync with the domain used for Google Search Console (noted in `.env.example`) and the LinkedIn app's redirect URI.

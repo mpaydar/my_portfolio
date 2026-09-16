@@ -24,11 +24,15 @@ export async function signupAction(
   formData: FormData,
 ): Promise<AuthActionState> {
   const name = readTrimmedString(formData, "name");
-  const email = readTrimmedString(formData, "email");
+  const email = readTrimmedString(formData, "email").toLowerCase();
   const password = readPassword(formData);
 
   if (!name || !email || !password) {
     return { error: "Name, email, and password are all required." };
+  }
+
+  if (password.length < 8) {
+    return { error: "Password must be at least 8 characters." };
   }
 
   const payload = await getPayload({ config });
@@ -62,9 +66,7 @@ export async function signupAction(
     await login({ collection: "members", config, email, password });
   } catch (error) {
     console.error("Auto-login after signup failed:", error);
-    return {
-      error: "Your account was created. Please log in.",
-    };
+    redirect("/community/login");
   }
 
   redirect("/community/dashboard");
@@ -92,6 +94,10 @@ export async function loginAction(
 }
 
 export async function logoutAction(): Promise<void> {
-  await logout({ config });
+  try {
+    await logout({ config });
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
   redirect("/community");
 }

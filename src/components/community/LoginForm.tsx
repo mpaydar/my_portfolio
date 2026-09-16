@@ -47,7 +47,7 @@ export default function LoginForm() {
         />
       </div>
       {state.error ? (
-        <p className="text-sm text-red-500 dark:text-red-400">{state.error}</p>
+        <p className="text-sm text-danger">{state.error}</p>
       ) : null}
       <button
         type="submit"

@@ -230,6 +230,7 @@ export interface Media {
 export interface Member {
   id: number;
   name: string;
+  password?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -246,7 +247,6 @@ export interface Member {
         expiresAt: string;
       }[]
     | null;
-  password?: string | null;
   collection: 'members';
 }
 /**
@@ -572,6 +572,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface MembersSelect<T extends boolean = true> {
   name?: T;
+  password?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
