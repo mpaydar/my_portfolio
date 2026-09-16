@@ -1,4 +1,11 @@
-import type { GlobalConfig } from "payload";
+import type { Access, FieldAccess, GlobalConfig } from "payload";
+
+// Payload's default access for an unspecified operation is `Boolean(user)` —
+// true for any authenticated session, including a self-registered `members`
+// account. This global holds LinkedIn OAuth tokens, so both the global and its
+// token fields must be restricted to admin (`users`-collection) sessions.
+const isAdmin: Access = ({ req: { user } }) => user?.collection === "users";
+const isAdminField: FieldAccess = ({ req: { user } }) => user?.collection === "users";
 
 export const LinkedInIntegration: GlobalConfig = {
   slug: "linkedin-integration",
@@ -9,8 +16,8 @@ export const LinkedInIntegration: GlobalConfig = {
       "Connect your LinkedIn account once, then share technical reports from each post in the CMS.",
   },
   access: {
-    read: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
+    read: isAdmin,
+    update: isAdmin,
   },
   fields: [
     {
@@ -55,12 +62,18 @@ export const LinkedInIntegration: GlobalConfig = {
       admin: {
         hidden: true,
       },
+      access: {
+        read: isAdminField,
+      },
     },
     {
       name: "refreshToken",
       type: "text",
       admin: {
         hidden: true,
+      },
+      access: {
+        read: isAdminField,
       },
     },
   ],

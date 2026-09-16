@@ -14,11 +14,13 @@ export const Members: CollectionConfig = {
     create: () => true,
     read: ({ req: { user }, id }) => {
       if (user?.collection === "users") return true;
-      return Boolean(user) && user?.collection === "members" && user.id === id;
+      if (user?.collection !== "members") return false;
+      return id ? user.id === id : { id: { equals: user.id } };
     },
     update: ({ req: { user }, id }) => {
       if (user?.collection === "users") return true;
-      return Boolean(user) && user?.collection === "members" && user.id === id;
+      if (user?.collection !== "members") return false;
+      return id ? user.id === id : { id: { equals: user.id } };
     },
     delete: () => false,
   },

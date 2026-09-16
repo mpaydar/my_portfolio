@@ -1,4 +1,4 @@
-import type { CollectionConfig } from "payload";
+import type { Access, CollectionConfig } from "payload";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -7,10 +7,18 @@ import { shouldUseLocalMediaFilesystem } from "@/lib/blob-storage";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+// Payload's default access for an unspecified operation is `Boolean(user)` —
+// true for any authenticated session, including a self-registered `members`
+// account. Writes here must be restricted to admin (`users`-collection) sessions.
+const isAdmin: Access = ({ req: { user } }) => user?.collection === "users";
+
 export const Media: CollectionConfig = {
   slug: "media",
   access: {
     read: () => true,
+    create: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
   },
   fields: [
     {

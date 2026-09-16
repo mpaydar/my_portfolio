@@ -38,11 +38,33 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     CREATE INDEX IF NOT EXISTS "members_updated_at_idx" ON "members" USING btree ("updated_at");
     CREATE INDEX IF NOT EXISTS "members_created_at_idx" ON "members" USING btree ("created_at");
     CREATE UNIQUE INDEX IF NOT EXISTS "members_email_idx" ON "members" USING btree ("email");
+
+    ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "members_id" integer;
+    DO $$ BEGIN
+      ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_members_fk"
+        FOREIGN KEY ("members_id") REFERENCES "public"."members"("id") ON DELETE cascade ON UPDATE no action;
+    EXCEPTION WHEN duplicate_object THEN null; END $$;
+    CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_members_id_idx" ON "payload_locked_documents_rels" USING btree ("members_id");
+
+    ALTER TABLE "payload_preferences_rels" ADD COLUMN IF NOT EXISTS "members_id" integer;
+    DO $$ BEGIN
+      ALTER TABLE "payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_members_fk"
+        FOREIGN KEY ("members_id") REFERENCES "public"."members"("id") ON DELETE cascade ON UPDATE no action;
+    EXCEPTION WHEN duplicate_object THEN null; END $$;
+    CREATE INDEX IF NOT EXISTS "payload_preferences_rels_members_id_idx" ON "payload_preferences_rels" USING btree ("members_id");
   `);
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
+    DROP INDEX IF EXISTS "payload_preferences_rels_members_id_idx";
+    ALTER TABLE "payload_preferences_rels" DROP CONSTRAINT IF EXISTS "payload_preferences_rels_members_fk";
+    ALTER TABLE "payload_preferences_rels" DROP COLUMN IF EXISTS "members_id";
+
+    DROP INDEX IF EXISTS "payload_locked_documents_rels_members_id_idx";
+    ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_members_fk";
+    ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "members_id";
+
     DROP INDEX IF EXISTS "members_email_idx";
     DROP INDEX IF EXISTS "members_created_at_idx";
     DROP INDEX IF EXISTS "members_updated_at_idx";
