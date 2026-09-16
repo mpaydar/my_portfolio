@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import sharp from "sharp";
 
 import { Media } from "./collections/Media";
+import { Members } from "./collections/Members";
 import { PostCategories } from "./collections/PostCategories";
 import { TechnicalReports } from "./collections/TechnicalReports";
 import { Users } from "./collections/Users";
@@ -28,7 +29,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, PostCategories, TechnicalReports],
+  collections: [Users, Media, Members, PostCategories, TechnicalReports],
   globals: [LinkedInIntegration, SiteSettings, AuthorProfile],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
